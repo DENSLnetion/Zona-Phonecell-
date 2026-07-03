@@ -40,9 +40,6 @@
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
             --md-shape-3xl: 40px;
-
-            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.4), 0px 1px 3px 0px rgba(0, 0, 0, 0.6);
-            --md-elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.4), 0px 2px 3px 0px rgba(0, 0, 0, 0.6);
         }
 
         /* --- THEMES (ALL FORCED DARK MODE) --- */
@@ -204,22 +201,28 @@
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
         /* ==========================================================================
-           ANIMATIONS
+           ANIMATIONS (SPRING & EXPRESSIVE)
            ========================================================================== */
+        /* Core Spring Transition utility for bouncy scales/colors */
+        .spring-bounce {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
         @keyframes pageFadeIn {
-            0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.97); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .animate-page { animation: pageFadeIn 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) forwards; }
+        .animate-page { animation: pageFadeIn 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
 
         @keyframes slideUpSheet { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
-        .animate-sheet-up { animation: slideUpSheet 0.5s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        /* Slightly tighter spring for bottom sheet so it doesn't bounce detach from bottom edge */
+        .animate-sheet-up { animation: slideUpSheet 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; }
         
         @keyframes slideDownSheet { 0% { transform: translateY(0); } 100% { transform: translateY(100%); } }
         .animate-sheet-down { animation: slideDownSheet 0.4s cubic-bezier(0.3, 0, 0.8, 0.15) forwards; }
 
         @keyframes slideDownAppBar { 0% { transform: translateY(-100%); } 100% { transform: translateY(0); } }
-        .animate-appbar-down { animation: slideDownAppBar 0.3s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        .animate-appbar-down { animation: slideDownAppBar 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
 
         @keyframes fadeInOverlay { 0% { opacity: 0; } 100% { opacity: 1; } }
         .animate-overlay-in { animation: fadeInOverlay 0.4s ease forwards; }
@@ -241,12 +244,14 @@
         .m3-text-field {
             position: relative; background-color: var(--md-sys-color-surface-container-highest);
             border-radius: var(--md-shape-lg);
-            display: flex; flex-direction: column; min-height: 64px; transition: 0.2s;
+            display: flex; flex-direction: column; min-height: 64px; 
             border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
         }
         .m3-text-field:focus-within {
             background-color: var(--md-sys-color-surface-container);
             border-color: var(--md-sys-color-primary);
+            transform: scale(1.02);
         }
         .m3-input {
             width: 100%; border: none; outline: none; background: transparent;
@@ -257,7 +262,7 @@
         .m3-label {
             position: absolute; left: 16px; top: 20px; pointer-events: none;
             color: var(--md-sys-color-on-surface-variant); font-size: 16px; font-weight: 500;
-            transition: 0.2s cubic-bezier(0.2, 0, 0, 1); transform-origin: left top;
+            transition: 0.3s cubic-bezier(0.34, 1.3, 0.64, 1); transform-origin: left top;
         }
         .m3-input.has-icon ~ .m3-label { left: 56px; }
         
@@ -430,7 +435,7 @@
             const handleMove = (e) => { if(onPointerMove) onPointerMove(e); }
 
             return (
-                <div className={`ripple-root ${className}`} style={style}
+                <div className={`ripple-root active:scale-[0.98] spring-bounce ${className}`} style={style}
                      onPointerDown={addRipple} onPointerUp={cleanUp} onPointerLeave={cleanUp} onPointerMove={handleMove} onClick={onClick}>
                     {children}
                     {ripples.map(r => (
@@ -448,7 +453,7 @@
             if (variant === 'error') colors = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
             return (
-                <Ripple className={`h-14 px-8 rounded-full flex items-center justify-center font-bold text-[15px] transition-shadow shadow-md ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
+                <Ripple className={`h-14 px-8 rounded-full flex items-center justify-center font-bold text-[15px] shadow-md ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
                     {icon && <span className="material-symbols-rounded mr-2 text-[22px]">{icon}</span>}
                     {children}
                 </Ripple>
@@ -470,7 +475,6 @@
             );
         };
 
-        // FIXED: Pake React Portal biar Bottom Sheet bebas dari kurungan container scroll tab
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
             const [mounted, setMounted] = useState(false);
@@ -501,13 +505,12 @@
             if (!mounted) return null;
             if (!isOpen && !isClosing) return null;
 
-            // Di-render pakai createPortal supaya langsung nempel ke <body>, bukan dalem scroll tab
+            // Hapus backdrop-blur, hanya pakai opacity hitam, dijamin solid ga melayang di scroll
             const sheetContent = (
                 <div className="fixed inset-0 z-[9999] flex flex-col justify-end" style={{ pointerEvents: 'auto' }}>
-                    <div className={`absolute inset-0 bg-black/70 backdrop-blur-sm ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
+                    <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
                          onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
                     
-                    {/* Tingginya ditambah jadi 85dvh biar luas */}
                     <div className={`relative w-full max-w-lg mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
                          style={{ paddingBottom: 'var(--sa-bottom)', height: '85dvh' }}>
                         
@@ -516,7 +519,7 @@
                         </div>
                         <div className="px-6 pb-2 flex justify-between items-center shrink-0">
                             <h2 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">{title}</h2>
-                            <button onClick={handleUIClose} className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors">
+                            <button onClick={handleUIClose} className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)] hover:bg-[var(--md-sys-color-surface-variant)] spring-bounce active:scale-[0.85]">
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
@@ -553,7 +556,7 @@
             };
             return (
                 <div className="h-[100dvh] w-full flex flex-col items-center justify-center bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] p-6 relative">
-                    <div className="w-32 h-32 rounded-[40px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl animate-fab">
+                    <div className="w-32 h-32 rounded-[40px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl spring-bounce active:scale-95">
                         <span className="material-symbols-rounded text-[64px]">smartphone</span>
                     </div>
                     <h1 className="text-4xl font-bold mb-2 text-center animate-page" style={{animationDelay: '0.1s'}}>Zona Poncell</h1>
@@ -663,7 +666,7 @@
                             </div>
                         </div>
 
-                        <Ripple onClick={() => setActiveTab('catet')} className="w-full mt-4 h-16 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] flex items-center justify-center font-extrabold text-[16px] shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)] transition-colors">
+                        <Ripple onClick={() => setActiveTab('catet')} className="w-full mt-4 h-16 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] flex items-center justify-center font-extrabold text-[16px] shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)]">
                             <span className="material-symbols-rounded mr-2 text-[24px]">add_circle</span>
                             Catet Transaksi Baru
                         </Ripple>
@@ -747,11 +750,11 @@
 
             return (
                 <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
-                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root transition-all duration-200 border border-[var(--md-sys-color-outline-variant)] cursor-pointer
+                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root spring-bounce border border-[var(--md-sys-color-outline-variant)] cursor-pointer active:scale-[0.98]
                      ${selected ? 'bg-[var(--md-sys-color-secondary-container)]' : 'bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-on-surface)]'}`}>
                     
                     {selectable ? (
-                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 spring-bounce ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] scale-110' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] scale-100'}`}>
                             <span className="material-symbols-rounded text-2xl">{selected ? 'check' : 'circle'}</span>
                         </div>
                     ) : (
@@ -823,14 +826,14 @@
                 <div className="tab-content-area p-4 space-y-4 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Catet Duit Bos.</h1>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-4 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-3 ml-1">Pilih Kategori Dulu</p>
-                        <div className="grid grid-cols-2 gap-2 bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-2 shadow-inner">
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori Dulu</p>
+                        <div className="grid grid-cols-2 gap-3">
                             {['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => (
                                 <button key={j} type="button" onClick={() => setJenis(j)}
-                                    className={`py-3 px-2 text-[14px] font-bold rounded-[calc(var(--md-shape-xl)-8px)] transition-all duration-300 ${
-                                        jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md transform scale-[1.02]' 
-                                        : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
+                                    className={`py-4 px-3 text-[15px] font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 ${
+                                        jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
+                                        : 'bg-black/20 text-[var(--md-sys-color-on-surface-variant)] border border-transparent hover:bg-black/30'
                                     }`}>{j}</button>
                             ))}
                         </div>
@@ -839,18 +842,18 @@
                     {isTopUp && (
                         <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
                             <div>
-                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-2 uppercase tracking-wide">Top Up Apa?</p>
-                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
+                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                                     {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
-                                        <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-4 py-2 rounded-full font-bold text-[13px] transition-all border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>{sub}</button>
+                                        <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] spring-bounce active:scale-95 border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent scale-105' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
                                     ))}
                                 </div>
                             </div>
                             <div>
-                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-2 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
-                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
+                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                                     {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
-                                        <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-4 py-2 rounded-full font-bold text-[13px] transition-all border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>{via}</button>
+                                        <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] spring-bounce active:scale-95 border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent scale-105' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
                                     ))}
                                 </div>
                             </div>
@@ -935,21 +938,21 @@
             };
 
             return (
-                <div className="tab-content-area flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     
                     {isSelectionMode && (
                         <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-20 flex items-center justify-between px-4 animate-appbar-down shadow-lg rounded-b-[var(--md-shape-2xl)] border-b border-[var(--md-sys-color-outline-variant)]" style={{ paddingTop: 'var(--sa-top)', height: 'calc(80px + var(--sa-top))' }}>
                             <div className="flex items-center gap-4">
-                                <button onClick={closeSelectionModeUI} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+                                <button onClick={closeSelectionModeUI} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 spring-bounce active:scale-90">
                                     <span className="material-symbols-rounded text-2xl">close</span>
                                 </button>
                                 <span className="text-xl font-bold">{selectedIds.length} Dipilih</span>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={handleBulkCopy} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+                                <button onClick={handleBulkCopy} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 spring-bounce active:scale-90">
                                     <span className="material-symbols-rounded text-2xl">content_copy</span>
                                 </button>
-                                <button onClick={handleBulkDelete} className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--md-sys-color-error)]/20 hover:bg-[var(--md-sys-color-error)]/30 transition-colors text-[var(--md-sys-color-error)]">
+                                <button onClick={handleBulkDelete} className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--md-sys-color-error)]/20 hover:bg-[var(--md-sys-color-error)]/30 text-[var(--md-sys-color-error)] spring-bounce active:scale-90">
                                     <span className="material-symbols-rounded text-2xl">delete</span>
                                 </button>
                             </div>
@@ -959,7 +962,7 @@
                     <div className="px-4 space-y-5 pb-2 z-10 bg-[var(--md-sys-color-background)]">
                         <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Catetan Lama.</h1>
                         
-                        <div className="flex items-center h-16 bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-2xl)] px-5 text-[var(--md-sys-color-on-surface)] shadow-inner focus-within:ring-2 ring-[var(--md-sys-color-primary)] transition-all">
+                        <div className="flex items-center h-16 bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-2xl)] px-5 text-[var(--md-sys-color-on-surface)] shadow-inner focus-within:ring-2 ring-[var(--md-sys-color-primary)] spring-bounce">
                             <span className="material-symbols-rounded mr-4 opacity-70 text-[24px]">search</span>
                             <input type="text" placeholder="Nyari kerjaan siapa bos?..." value={search} onChange={e => setSearch(e.target.value)}
                                 className="bg-transparent border-none outline-none flex-1 text-[16px] font-bold placeholder:text-[var(--md-sys-color-on-surface-variant)]/60 placeholder:font-medium" />
@@ -969,9 +972,9 @@
                         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1">
                             {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(f => (
                                 <button key={f} onClick={() => setFilterType(f)}
-                                    className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 transition-colors shrink-0 ${
+                                    className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 ${
                                         filterType === f 
-                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' 
+                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
                                         : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{f}</button>
                             ))}
@@ -1121,16 +1124,16 @@
             }, [totalSelesai]);
 
             return (
-                <div className="tab-content-area p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+                        <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
                             <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">percent</span></div>
                             <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
                             <h2 className="text-4xl font-extrabold tracking-tighter">{margin}%</h2>
                         </Ripple>
-                        <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+                        <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
                             <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">done_all</span></div>
                             <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
                             <h2 className="text-4xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base font-bold">Nota</span></h2>
@@ -1252,7 +1255,7 @@
             };
 
             return (
-                <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
@@ -1260,7 +1263,7 @@
                         <div className="grid grid-cols-3 gap-4">
                             {themes.map(t => (
                                 <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
-                                     className={`h-16 rounded-[var(--md-shape-2xl)] flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105 opacity-80'}`}
+                                     className={`h-16 rounded-[var(--md-shape-2xl)] flex items-center justify-center cursor-pointer spring-bounce active:scale-90 ${settings.theme === t.id ? 'scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105 opacity-80'}`}
                                      style={{ backgroundColor: t.color }}>
                                      {settings.theme === t.id && <span className="material-symbols-rounded text-black text-[32px] opacity-80">check</span>}
                                 </div>
@@ -1274,8 +1277,8 @@
                         <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 shadow-inner">
                             {['Hari', 'Minggu', 'Bulan'].map(f => (
                                 <button key={f} type="button" onClick={() => setSettings({...settings, periodFormat: f})}
-                                    className={`flex-1 py-3 text-[14px] font-bold rounded-[calc(var(--md-shape-xl)-6px)] transition-all duration-300 ${
-                                        settings.periodFormat === f ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md transform scale-[1.02]' 
+                                    className={`flex-1 py-3 text-[14px] font-bold rounded-[calc(var(--md-shape-xl)-6px)] spring-bounce active:scale-95 ${
+                                        settings.periodFormat === f ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
                                         : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{f}</button>
                             ))}
@@ -1288,7 +1291,7 @@
                             <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">download</span></div>
                             <div className="text-left"><p className="font-bold text-base">Amankan Data (Backup)</p><p className="text-[13px] font-medium opacity-70">Download ke JSON</p></div>
                         </Ripple>
-                        <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer">
+                        <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer active:scale-[0.98] spring-bounce">
                             <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload</span></div>
                             <div className="text-left"><p className="font-bold text-base">Balikin Data (Restore)</p><p className="text-[13px] font-medium opacity-70">Ambil dari JSON</p></div>
                             <input type="file" accept=".json" className="hidden" onChange={handleRestore} />
@@ -1325,7 +1328,7 @@
                     showSnackbar('Satu data dibuang'); onClose();
                 }
             };
-            
+
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'account_balance_wallet' };
 
             return (
@@ -1372,11 +1375,11 @@
                                     else if (s === 'Jalan') activeClass = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] border-transparent shadow-lg scale-[1.03]';
                                     else if (s === 'Gagal') activeClass = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-transparent shadow-lg scale-[1.03]';
                                     
-                                    const inactiveClass = 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]';
+                                    const inactiveClass = 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)] active:scale-95';
 
                                     return (
                                         <button key={s} onClick={() => updateStatus(s)}
-                                            className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 transition-all duration-300 ${currentItem.status === s ? activeClass : inactiveClass}`}>
+                                            className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 spring-bounce ${currentItem.status === s ? activeClass : inactiveClass}`}>
                                             {s}
                                         </button>
                                     );
@@ -1423,10 +1426,10 @@
                             
                             return (
                                 <Ripple key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer">
-                                    <div className={`w-14 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
-                                        <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                    <div className={`w-14 h-8 rounded-full flex items-center justify-center spring-bounce ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                        <span className={`material-symbols-rounded text-2xl spring-bounce ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
                                     </div>
-                                    <span className={`text-[12px] font-extrabold mt-1.5 transition-colors tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
+                                    <span className={`text-[12px] font-extrabold mt-1.5 spring-bounce tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
                                 </Ripple>
                             );
                         })}

@@ -388,8 +388,11 @@
 
                 const dir = value >= prevValueRef.current ? 'up' : 'down';
                 const maxLen = Math.max(formatted.length, oldFormatted.length);
-                const newArr = formatted.padStart(maxLen, '\u0000').split('');
-                const oldArr = oldFormatted.padStart(maxLen, '\u0000').split('');
+                // Pakai padEnd (bukan padStart) biar teksnya tetep nempel rata KIRI --
+                // "Rp" & digit pertama ga pernah geser posisi, karakter yang nambah/
+                // ilang cuma nongol/ngilang di ujung kanan aja.
+                const newArr = formatted.padEnd(maxLen, '\u0000').split('');
+                const oldArr = oldFormatted.padEnd(maxLen, '\u0000').split('');
 
                 animIdRef.current += 1;
                 const id = animIdRef.current;

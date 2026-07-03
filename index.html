@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#ffffff" id="meta-theme-color">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Zona Poncell Ultimate</title>
+    <meta name="theme-color" content="#fbfdf8" id="meta-theme-color">
+    <title>Zona Poncell</title>
     
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -19,306 +17,312 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Google Fonts: Plus Jakarta Sans for Modern Expressive Look & Material Symbols -->
+    <!-- Google Fonts: Readex Pro (Expressive Google Sans alternative) & Material Symbols Rounded -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: 'var(--color-primary)',
-                        'primary-light': 'var(--color-primary-light)',
-                        'primary-dark': 'var(--color-primary-dark)',
-                        surface: 'var(--color-surface)',
-                        'surface-alt': 'var(--color-surface-alt)',
-                        background: 'var(--color-background)',
-                        text: 'var(--color-text)',
-                        'text-muted': 'var(--color-text-muted)',
-                        border: 'var(--color-border)',
-                        success: '#10b981',
-                        danger: '#f43f5e',
-                        warning: '#f59e0b',
-                    },
-                    boxShadow: {
-                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
-                        'glow': '0 0 20px var(--color-primary-glow)',
-                        'floating': '0 20px 40px -15px var(--color-primary-glow)',
-                    },
-                    borderRadius: {
-                        '4xl': '2rem',
-                        '5xl': '2.5rem',
-                    },
-                    animation: {
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
-                        'bounce-soft': 'bounceSoft 2s infinite',
-                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                    },
-                    keyframes: {
-                        slideUp: {
-                            '0%': { transform: 'translateY(100%)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        scaleIn: {
-                            '0%': { transform: 'scale(0.9)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' },
-                        },
-                        bounceSoft: {
-                            '0%, 100%': { transform: 'translateY(-2%)' },
-                            '50%': { transform: 'translateY(2%)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        /* === DYNAMIC THEME SYSTEM === */
+        /* === MATERIAL 3 (MATERIAL YOU) COLOR TOKENS === */
         :root {
-            /* Default Blue Theme (Light) */
-            --color-primary: #2563eb;
-            --color-primary-light: #dbeafe;
-            --color-primary-dark: #1d4ed8;
-            --color-primary-glow: rgba(37, 99, 235, 0.4);
+            /* Default: Blue/Indigo (Light) */
+            --md-sys-color-primary: #0061a4;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d1e4ff;
+            --md-sys-color-on-primary-container: #001d36;
             
-            --color-background: #f8fafc;
-            --color-surface: #ffffff;
-            --color-surface-alt: #f1f5f9;
-            --color-text: #0f172a;
-            --color-text-muted: #64748b;
-            --color-border: #e2e8f0;
+            --md-sys-color-secondary: #535f70;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #d7e3f7;
+            --md-sys-color-on-secondary-container: #101c2b;
+
+            --md-sys-color-tertiary: #6b5778;
+            --md-sys-color-on-tertiary: #ffffff;
+            --md-sys-color-tertiary-container: #f2daff;
+            --md-sys-color-on-tertiary-container: #251431;
             
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-on-error: #ffffff;
+            --md-sys-color-error-container: #ffdad6;
+            --md-sys-color-on-error-container: #410002;
+
+            --md-sys-color-success: #146c2e;
+            --md-sys-color-on-success: #ffffff;
+            --md-sys-color-success-container: #9ff7ae;
+            --md-sys-color-on-success-container: #002108;
+            
+            --md-sys-color-background: #fdfcff;
+            --md-sys-color-on-background: #1a1c1e;
+            --md-sys-color-surface: #fdfcff;
+            --md-sys-color-on-surface: #1a1c1e;
+            
+            --md-sys-color-surface-variant: #dfe2eb;
+            --md-sys-color-on-surface-variant: #42474e;
+            --md-sys-color-outline: #73777f;
+            --md-sys-color-outline-variant: #c3c7cf;
+
+            --md-sys-color-surface-container-low: #f7f6f9;
+            --md-sys-color-surface-container: #f1f0f4;
+            --md-sys-color-surface-container-high: #ebeaef;
+            
+            /* Elevation (Solid colors, no blur) */
+            --md-elevation-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            --md-elevation-2: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+            --md-elevation-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
         }
 
         /* Dark Mode Variables */
-        .dark {
-            --color-background: #0f172a;
-            --color-surface: #1e293b;
-            --color-surface-alt: #334155;
-            --color-text: #f8fafc;
-            --color-text-muted: #94a3b8;
-            --color-border: #334155;
+        .dark-theme {
+            --md-sys-color-primary: #9ecaeb;
+            --md-sys-color-on-primary: #003258;
+            --md-sys-color-primary-container: #00497d;
+            --md-sys-color-on-primary-container: #d1e4ff;
             
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --md-sys-color-secondary: #bbc7db;
+            --md-sys-color-on-secondary: #253140;
+            --md-sys-color-secondary-container: #3b4858;
+            --md-sys-color-on-secondary-container: #d7e3f7;
+
+            --md-sys-color-tertiary: #d6bee4;
+            --md-sys-color-on-tertiary: #3b2948;
+            --md-sys-color-tertiary-container: #523f5f;
+            --md-sys-color-on-tertiary-container: #f2daff;
+            
+            --md-sys-color-error: #ffb4ab;
+            --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a;
+            --md-sys-color-on-error-container: #ffb4ab;
+
+            --md-sys-color-success: #83da93;
+            --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a;
+            --md-sys-color-on-success-container: #9ff7ae;
+            
+            --md-sys-color-background: #1a1c1e;
+            --md-sys-color-on-background: #e2e2e6;
+            --md-sys-color-surface: #1a1c1e;
+            --md-sys-color-on-surface: #e2e2e6;
+            
+            --md-sys-color-surface-variant: #42474e;
+            --md-sys-color-on-surface-variant: #c3c7cf;
+            --md-sys-color-outline: #8d9199;
+            --md-sys-color-outline-variant: #42474e;
+
+            --md-sys-color-surface-container-low: #1c1b1f;
+            --md-sys-color-surface-container: #211f26;
+            --md-sys-color-surface-container-high: #2b2930;
+            
+            --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+            --md-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
         }
 
-        /* Theme Variants */
-        .theme-emerald {
-            --color-primary: #10b981;
-            --color-primary-light: #d1fae5;
-            --color-primary-dark: #047857;
-            --color-primary-glow: rgba(16, 185, 129, 0.4);
+        /* Expressive Themes (Green, Orange, Purple) */
+        .theme-green {
+            --md-sys-color-primary: #146c2e; --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #9ff7ae; --md-sys-color-on-primary-container: #002108;
+            --md-sys-color-secondary: #526350; --md-sys-color-secondary-container: #d5e8cf;
+            --md-sys-color-tertiary: #39656b; --md-sys-color-tertiary-container: #bcebf1;
         }
-        .dark.theme-emerald { --color-primary-light: #064e3b; }
-
-        .theme-amethyst {
-            --color-primary: #8b5cf6;
-            --color-primary-light: #ede9fe;
-            --color-primary-dark: #6d28d9;
-            --color-primary-glow: rgba(139, 92, 246, 0.4);
+        .dark-theme.theme-green {
+            --md-sys-color-primary: #83da93; --md-sys-color-on-primary: #003911;
+            --md-sys-color-primary-container: #00531a; --md-sys-color-on-primary-container: #9ff7ae;
+            --md-sys-color-secondary: #b9ccb4; --md-sys-color-secondary-container: #3a4b39;
+            --md-sys-color-tertiary: #a0cfd5; --md-sys-color-tertiary-container: #1f4d53;
         }
-        .dark.theme-amethyst { --color-primary-light: #4c1d95; }
 
-        .theme-rose {
-            --color-primary: #f43f5e;
-            --color-primary-light: #ffe4e6;
-            --color-primary-dark: #be123c;
-            --color-primary-glow: rgba(244, 63, 94, 0.4);
+        .theme-orange {
+            --md-sys-color-primary: #8f4c00; --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #ffdcc3; --md-sys-color-on-primary-container: #2e1500;
+            --md-sys-color-secondary: #745945; --md-sys-color-secondary-container: #ffdcbe;
+            --md-sys-color-tertiary: #5d6135; --md-sys-color-tertiary-container: #e2e6ad;
         }
-        .dark.theme-rose { --color-primary-light: #881337; }
-
-        .theme-sunset {
-            --color-primary: #f97316;
-            --color-primary-light: #ffedd5;
-            --color-primary-dark: #c2410c;
-            --color-primary-glow: rgba(249, 115, 22, 0.4);
+        .dark-theme.theme-orange {
+            --md-sys-color-primary: #ffb77c; --md-sys-color-on-primary: #4d2600;
+            --md-sys-color-primary-container: #6d3900; --md-sys-color-on-primary-container: #ffdcc3;
+            --md-sys-color-secondary: #e4bfa7; --md-sys-color-secondary-container: #5a422f;
+            --md-sys-color-tertiary: #c6ca93; --md-sys-color-tertiary-container: #45491f;
         }
-        .dark.theme-sunset { --color-primary-light: #7c2d12; }
 
-        /* === GLOBAL RESETS & UTILITIES === */
+        /* Global Reset & Utility */
         body { 
-            background-color: var(--color-background);
-            color: var(--color-text);
+            font-family: 'Readex Pro', sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
             -webkit-tap-highlight-color: transparent;
             margin: 0;
-            transition: background-color 0.4s ease, color 0.4s ease;
-            overflow: hidden; /* Prevent body scroll, handle in #root */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden;
         }
         
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Material Symbols Config */
         .material-symbols-rounded { 
             font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; 
-            transition: all 0.3s ease;
         }
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
-        /* Custom Ripple Effect */
-        .ripple-btn {
+        /* Animations */
+        @keyframes slideUp {
+            0% { transform: translateY(100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up { animation: slideUp 0.35s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+        /* Material 3 Ripple */
+        .ripple {
             position: relative;
             overflow: hidden;
-            transform: translate3d(0, 0, 0);
         }
-        .ripple-btn::after {
+        .ripple::after {
             content: "";
-            display: block;
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
-            background-repeat: no-repeat;
-            background-position: 50%;
-            transform: scale(10, 10);
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            background: currentColor;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
             opacity: 0;
-            transition: transform .5s, opacity 1s;
+            transition: transform 0.4s, opacity 0.4s;
         }
-        .ripple-btn:active::after {
-            transform: scale(0, 0);
-            opacity: 0.3;
+        .ripple:active::after {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0.12;
             transition: 0s;
         }
-        .dark .ripple-btn::after {
-            background-image: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 10.01%);
-        }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid var(--glass-border);
-        }
-
-        .glass-card {
-            background: var(--color-surface);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--color-border);
-            box-shadow: var(--tw-shadow-soft);
-        }
-
-        /* Custom Floating Inputs */
-        .floating-input-group {
+        /* === MATERIAL 3 COMPONENTS === */
+        
+        /* 1. M3 Text Field (Filled) - NO OVERLAP */
+        .md-filled-text-field {
             position: relative;
-            margin-bottom: 1.5rem;
+            background-color: var(--md-sys-color-surface-container-high);
+            border-radius: 4px 4px 0 0;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
         }
-        .floating-input {
-            width: 100%;
-            padding: 1.25rem 1rem 0.5rem 1rem;
-            background-color: var(--color-surface-alt);
-            border: 2px solid transparent;
-            border-radius: 1rem;
-            color: var(--color-text);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            outline: none;
+        .md-filled-text-field:hover {
+            background-color: var(--md-sys-color-surface-variant);
         }
-        .floating-input:focus {
-            border-color: var(--color-primary);
-            background-color: var(--color-surface);
-            box-shadow: 0 0 0 4px var(--color-primary-glow);
-        }
-        .floating-label {
+        .md-filled-text-field::after {
+            content: '';
             position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--color-text-muted);
-            pointer-events: none;
-            transition: all 0.2s ease-out;
-            font-size: 1rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--md-sys-color-on-surface-variant);
+            transition: height 0.2s, background-color 0.2s;
         }
-        .floating-input:focus ~ .floating-label,
-        .floating-input:not(:placeholder-shown) ~ .floating-label {
-            top: 0.5rem;
-            transform: translateY(0);
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--color-primary);
-        }
-        .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
-            color: var(--color-text-muted);
+        .md-filled-text-field:focus-within::after {
+            height: 2px;
+            background-color: var(--md-sys-color-primary);
         }
         
-        /* Select Styling */
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1em;
+        .md-input-element {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 24px 16px 8px 16px; /* Extra padding top to make room for label */
+            color: var(--md-sys-color-on-surface);
+            font-family: inherit;
+            font-size: 16px;
+            min-height: 56px;
         }
-        .dark select {
-             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        textarea.md-input-element {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .md-label {
+            position: absolute;
+            left: 16px;
+            top: 18px; /* Centered initially */
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 16px;
+            pointer-events: none;
+            transition: 0.2s cubic-bezier(0.2, 0, 0, 1);
+            transform-origin: left top;
+        }
+        
+        /* Magic: Shrink and move label when input is focused OR has value */
+        .md-input-element:focus ~ .md-label,
+        .md-input-element:not(:placeholder-shown) ~ .md-label {
+            transform: translateY(-10px) scale(0.75);
+        }
+        .md-input-element:focus ~ .md-label {
+            color: var(--md-sys-color-primary);
         }
 
-        /* Bottom Sheet Animation */
-        .bottom-sheet-overlay {
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .md-input-icon {
+            padding-left: 16px;
+            color: var(--md-sys-color-on-surface-variant);
         }
-        .bottom-sheet-overlay.active {
-            opacity: 1;
+        .md-input-element.has-icon {
+            padding-left: 12px;
         }
-        .bottom-sheet {
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+        /* 2. M3 FAB (Floating Action Button) */
+        .md-fab {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            box-shadow: var(--md-elevation-3);
+            transition: box-shadow 0.2s, background-color 0.2s;
         }
-        .bottom-sheet.active {
-            transform: translateY(0);
+        .md-fab:hover {
+            box-shadow: var(--md-elevation-2); /* Slightly lower on hover in M3, or use state layers */
         }
         
+        /* 3. M3 Segmented Button */
+        .md-segmented-btn-container {
+            display: flex;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 9999px; /* Pill */
+            overflow: hidden;
+        }
+        .md-segmented-btn {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            border-right: 1px solid var(--md-sys-color-outline);
+            transition: background-color 0.2s;
+        }
+        .md-segmented-btn:last-child { border-right: none; }
+        .md-segmented-btn.active {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
         /* Fullscreen modifications */
-        :fullscreen {
-            background-color: var(--color-background);
-        }
-        :-webkit-full-screen {
-            background-color: var(--color-background);
-        }
+        :fullscreen { background-color: var(--md-sys-color-background); }
+        :-webkit-full-screen { background-color: var(--md-sys-color-background); }
     </style>
 </head>
 <body>
-    <div id="root" class="h-[100dvh] w-full max-w-xl mx-auto flex flex-col relative overflow-hidden bg-background shadow-2xl ring-1 ring-border sm:rounded-3xl sm:h-[95dvh] sm:mt-[2.5dvh]"></div>
+    <!-- App Container -->
+    <div id="root" class="h-[100dvh] w-full max-w-xl mx-auto flex flex-col relative sm:border sm:border-[var(--md-sys-color-outline-variant)] sm:rounded-[32px] sm:h-[95dvh] sm:mt-[2.5dvh] sm:shadow-2xl overflow-hidden" style="background-color: var(--md-sys-color-background);"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef, useCallback } = React;
+        const { useState, useEffect, useMemo, useRef } = React;
 
         // --- UTILITIES ---
         const formatRupiah = (number) => {
             if (number === null || number === undefined || isNaN(number)) return '0';
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(number).replace('Rp', '').trim();
+            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(number);
         };
 
         const getRawNumber = (str) => {
@@ -331,48 +335,28 @@
             return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
         };
 
-        const getGreeting = () => {
-            const hour = new Date().getHours();
-            if (hour < 12) return 'Selamat Pagi';
-            if (hour < 15) return 'Selamat Siang';
-            if (hour < 18) return 'Selamat Sore';
-            return 'Selamat Malam';
-        };
+        // --- M3 COMPONENTS ---
 
-        // --- COMPONENTS ---
-
-        // 1. Toast Notification System
-        const Toast = ({ message, type = 'success', onClose }) => {
+        // Toast
+        const Snackbar = ({ message, onClose }) => {
             useEffect(() => {
-                const timer = setTimeout(onClose, 3000);
+                const timer = setTimeout(onClose, 3500);
                 return () => clearTimeout(timer);
             }, [onClose]);
 
-            const icons = {
-                success: 'check_circle',
-                error: 'error',
-                info: 'info'
-            };
-
-            const colors = {
-                success: 'bg-success text-white',
-                error: 'bg-danger text-white',
-                info: 'bg-primary text-white'
-            };
-
             return (
-                <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-slide-up" style={{ animationDirection: 'normal', animationName: 'slideDown' }}>
-                    <div class={`flex items-center gap-2 px-5 py-3 rounded-full shadow-floating ${colors[type]}`}>
-                        <span class="material-symbols-rounded text-xl">{icons[type]}</span>
-                        <span class="font-semibold text-sm tracking-wide">{message}</span>
+                <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] animate-slide-up w-11/12 max-w-md">
+                    <div class="flex items-center justify-between px-4 py-3 rounded-md shadow-md" style={{ backgroundColor: 'var(--md-sys-color-on-surface)', color: 'var(--md-sys-color-surface)' }}>
+                        <span class="text-sm font-medium">{message}</span>
+                        <button onClick={onClose} class="text-sm font-bold ml-4" style={{ color: 'var(--md-sys-color-primary-container)' }}>TUTUP</button>
                     </div>
                 </div>
             );
         };
 
-        // 2. Modern Floating Input
-        const TextField = ({ label, value, onChange, type = "text", inputMode = "text", disabled = false, isCurrency = false, list, icon }) => {
-            const displayValue = isCurrency ? (value ? formatRupiah(value) : '') : value;
+        // Material 3 Filled TextField
+        const TextField = ({ label, value, onChange, type = "text", inputMode = "text", disabled = false, isCurrency = false, list, icon, multiline = false }) => {
+            const displayValue = isCurrency ? (value ? `Rp ${formatRupiah(value)}` : '') : value;
             
             const handleChange = (e) => {
                 if (isCurrency) {
@@ -384,66 +368,64 @@
             };
 
             return (
-                <div class={`floating-input-group ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                    <input
-                        type={type}
-                        inputMode={inputMode}
-                        value={displayValue}
-                        onChange={handleChange}
-                        disabled={disabled}
-                        list={list}
-                        placeholder=" "
-                        class="floating-input pl-12"
-                        autoComplete="off"
-                    />
-                    <label class="floating-label pl-10">{label}</label>
-                    <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted icon-outlined">
-                        {icon}
-                    </span>
-                    {isCurrency && value && (
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-primary bg-primary-light px-2 py-1 rounded-md">
-                            IDR
-                        </span>
+                <div class={`md-filled-text-field ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+                    {icon && <span class="material-symbols-rounded md-input-icon icon-outlined">{icon}</span>}
+                    {multiline ? (
+                        <textarea
+                            value={displayValue}
+                            onChange={handleChange}
+                            disabled={disabled}
+                            placeholder=" "
+                            class={`md-input-element no-scrollbar ${icon ? 'has-icon' : ''}`}
+                        />
+                    ) : (
+                        <input
+                            type={type}
+                            inputMode={inputMode}
+                            value={displayValue}
+                            onChange={handleChange}
+                            disabled={disabled}
+                            list={list}
+                            placeholder=" "
+                            class={`md-input-element ${icon ? 'has-icon' : ''}`}
+                            autoComplete="off"
+                        />
                     )}
+                    <label class={`md-label ${icon ? 'ml-10' : ''}`}>{label}</label>
                 </div>
             );
         };
 
-        // 3. Bottom Sheet Modal
-        const BottomSheet = ({ isOpen, onClose, title, children }) => {
+        // Material 3 Full Screen Dialog / Bottom Sheet
+        const FullScreenDialog = ({ isOpen, onClose, title, children, action }) => {
             if (!isOpen) return null;
             return (
-                <div class="fixed inset-0 z-50 max-w-xl mx-auto flex flex-col justify-end">
-                    <div class={`absolute inset-0 bottom-sheet-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}></div>
-                    <div class={`relative w-full bg-surface rounded-t-[2.5rem] shadow-2xl bottom-sheet flex flex-col max-h-[90dvh] ${isOpen ? 'active' : ''}`}>
-                        {/* Drag Handle */}
-                        <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onClick={onClose}>
-                            <div class="w-16 h-1.5 bg-border rounded-full"></div>
-                        </div>
-                        
-                        <div class="px-6 pb-4 flex justify-between items-center border-b border-border">
-                            <h2 class="text-xl font-bold text-text">{title}</h2>
-                            <button onClick={onClose} class="p-2 bg-surface-alt rounded-full text-text-muted hover:text-text transition-colors">
-                                <span class="material-symbols-rounded">close</span>
+                <div class="absolute inset-0 z-50 flex flex-col animate-slide-up" style={{ backgroundColor: 'var(--md-sys-color-surface)' }}>
+                    {/* Top App Bar inside Dialog */}
+                    <header class="h-16 flex items-center px-4 shrink-0" style={{ backgroundColor: 'var(--md-sys-color-surface)' }}>
+                        <button onClick={onClose} class="w-12 h-12 rounded-full ripple flex items-center justify-center mr-2" style={{ color: 'var(--md-sys-color-on-surface)' }}>
+                            <span class="material-symbols-rounded">close</span>
+                        </button>
+                        <h2 class="text-[22px] font-normal flex-1" style={{ color: 'var(--md-sys-color-on-surface)' }}>{title}</h2>
+                        {action && (
+                            <button onClick={action.onClick} class="px-4 py-2 font-medium ripple rounded-full" style={{ color: 'var(--md-sys-color-primary)' }}>
+                                {action.label}
                             </button>
-                        </div>
-                        
-                        <div class="p-6 overflow-y-auto no-scrollbar flex-1">
-                            {children}
-                        </div>
+                        )}
+                    </header>
+                    <div class="flex-1 overflow-y-auto p-4 no-scrollbar">
+                        {children}
                     </div>
                 </div>
             );
         };
 
-
         // --- MAIN APP COMPONENT ---
         const App = () => {
-            // State
             const [transactions, setTransactions] = useState([]);
             const [activeTab, setActiveTab] = useState('dash');
             const [isLoaded, setIsLoaded] = useState(false);
-            const [toast, setToast] = useState(null);
+            const [snackbar, setSnackbar] = useState(null);
             
             // UI States
             const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -453,81 +435,71 @@
             const [settings, setSettings] = useState({
                 isDark: false,
                 themeColor: 'blue',
-                chartType: 'bar',
-                userName: 'Juragan',
                 isFullscreen: false
             });
 
-            // Initialize Data
+            // Init Data
             useEffect(() => {
-                const loadData = () => {
-                    try {
-                        const savedDb = localStorage.getItem('zp_ultra_db');
-                        if (savedDb) setTransactions(JSON.parse(savedDb));
-                        
-                        const savedSettings = localStorage.getItem('zp_ultra_settings');
-                        if (savedSettings) {
-                            setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
-                        }
-                    } catch (e) {
-                        console.error("Failed to load data", e);
+                try {
+                    const savedDb = localStorage.getItem('zp_m3_db');
+                    if (savedDb) setTransactions(JSON.parse(savedDb));
+                    
+                    const savedSettings = localStorage.getItem('zp_m3_settings');
+                    if (savedSettings) {
+                        setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
                     }
-                    setIsLoaded(true);
-                };
-                loadData();
+                } catch (e) {
+                    console.error("Gagal memuat data", e);
+                }
+                setIsLoaded(true);
             }, []);
 
-            // Save Data
-            useEffect(() => {
-                if (isLoaded) {
-                    localStorage.setItem('zp_ultra_db', JSON.stringify(transactions));
-                }
-            }, [transactions, isLoaded]);
-
-            // Save Settings & Apply Theme
+            // Save Data & Settings
             useEffect(() => {
                 if (!isLoaded) return;
-                localStorage.setItem('zp_ultra_settings', JSON.stringify(settings));
+                localStorage.setItem('zp_m3_db', JSON.stringify(transactions));
+                localStorage.setItem('zp_m3_settings', JSON.stringify(settings));
                 
+                // Apply Theme
                 const root = document.documentElement;
-                // Apply Dark Mode
-                if (settings.isDark) {
-                    root.classList.add('dark');
-                    document.getElementById('meta-theme-color').content = '#0f172a';
-                } else {
-                    root.classList.remove('dark');
-                    document.getElementById('meta-theme-color').content = '#f8fafc';
-                }
+                if (settings.isDark) root.classList.add('dark-theme');
+                else root.classList.remove('dark-theme');
                 
-                // Apply Theme Color
                 root.className = root.className.replace(/theme-\w+/g, '').trim();
-                if (settings.themeColor !== 'blue') {
-                    root.classList.add(`theme-${settings.themeColor}`);
-                }
-            }, [settings, isLoaded]);
+                if (settings.themeColor !== 'blue') root.classList.add(`theme-${settings.themeColor}`);
 
-            const showToast = (msg, type='success') => setToast({ message: msg, type });
+                // Update meta theme color based on surface
+                const surfaceColor = getComputedStyle(document.body).getPropertyValue('--md-sys-color-surface').trim();
+                document.getElementById('meta-theme-color').content = surfaceColor;
+
+            }, [transactions, settings, isLoaded]);
+
+            const showSnackbar = (msg) => setSnackbar(msg);
 
             const handleSaveTransaction = (data) => {
-                setTransactions([data, ...transactions]); // Prepend new data
+                setTransactions([data, ...transactions]);
                 setIsAddModalOpen(false);
-                showToast('Catatan berhasil ditambahkan!');
+                showSnackbar('Transaksi berhasil dicatat');
                 if(activeTab !== 'dash') setActiveTab('history');
+            };
+
+            const handleUpdateStatus = (id, newStatus) => {
+                setTransactions(transactions.map(t => t.id === id ? { ...t, status: newStatus } : t));
+                setSelectedItem(prev => ({...prev, status: newStatus}));
+                showSnackbar(`Status diubah menjadi ${newStatus}`);
             };
 
             const handleDelete = (id) => {
                 if (confirm('Yakin ingin menghapus catatan ini secara permanen?')) {
                     setTransactions(transactions.filter(t => t.id !== id));
                     setSelectedItem(null);
-                    showToast('Catatan dihapus', 'info');
+                    showSnackbar('Catatan dihapus');
                 }
             };
 
             const toggleFullscreen = () => {
                 if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch((err) => {
-                        showToast('Layar penuh tidak didukung di perangkat ini', 'error');
-                    });
+                    document.documentElement.requestFullscreen().catch(() => showSnackbar('Fullscreen tidak didukung'));
                     setSettings(s => ({...s, isFullscreen: true}));
                 } else {
                     if (document.exitFullscreen) {
@@ -537,37 +509,22 @@
                 }
             };
 
-            if (!isLoaded) return (
-                <div class="h-full flex items-center justify-center bg-background">
-                    <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                </div>
-            );
+            if (!isLoaded) return null;
 
             return (
                 <>
-                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-                    
-                    {/* Header */}
-                    <header class="pt-10 pb-4 px-6 bg-surface z-10 rounded-b-3xl shadow-sm border-b border-border flex justify-between items-center relative">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-xl shadow-inner">
-                                {settings.userName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-text-muted uppercase tracking-wider">{getGreeting()},</p>
-                                <h1 class="text-xl font-extrabold text-text leading-tight">{settings.userName}</h1>
-                            </div>
+                    {/* Top App Bar (M3 Standard) */}
+                    <header class="h-16 px-4 flex items-center shrink-0 shadow-sm z-10" style={{ backgroundColor: 'var(--md-sys-color-surface)', color: 'var(--md-sys-color-on-surface)' }}>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+                            <span class="material-symbols-rounded">storefront</span>
                         </div>
-                        <div class="flex gap-2">
-                            <button onClick={() => setSettings(s => ({...s, isDark: !s.isDark}))} class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center text-text ripple-btn transition-transform active:scale-95">
-                                <span class="material-symbols-rounded">{settings.isDark ? 'light_mode' : 'dark_mode'}</span>
-                            </button>
-                        </div>
+                        <h1 class="text-[22px] font-medium tracking-tight">Zona Poncell</h1>
                     </header>
 
                     {/* Main Content Area */}
-                    <main class="flex-1 overflow-y-auto no-scrollbar relative bg-background" key={activeTab}>
-                        {activeTab === 'dash' && <Dashboard data={transactions} chartType={settings.chartType} />}
+                    <main class="flex-1 overflow-y-auto no-scrollbar relative animate-fade-in" key={activeTab}>
+                        {activeTab === 'dash' && <Dashboard data={transactions} />}
+                        {activeTab === 'analytics' && <Analytics data={transactions} />}
                         {activeTab === 'history' && <History data={transactions} onItemClick={setSelectedItem} />}
                         {activeTab === 'settings' && <Settings 
                             data={transactions} 
@@ -575,256 +532,208 @@
                             settings={settings} 
                             setSettings={setSettings}
                             toggleFullscreen={toggleFullscreen}
-                            showToast={showToast}
+                            showSnackbar={showSnackbar}
                         />}
-                        <div class="h-28"></div> {/* Padding for FAB & Nav */}
+                        <div class="h-24"></div> {/* Padding for Bottom Nav */}
                     </main>
 
-                    {/* Fancy Floating Navigation */}
-                    <div class="absolute bottom-6 left-6 right-6 z-20">
-                        <nav class="glass-panel rounded-[2rem] px-2 py-2 flex justify-between items-center shadow-floating relative">
-                            
-                            {/* Nav Items (Left) */}
-                            <div class="flex flex-1 justify-around">
-                                <NavBtn icon="space_dashboard" label="Beranda" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
-                                <NavBtn icon="receipt_long" label="Riwayat" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
-                            </div>
-
-                            {/* Center FAB Space */}
-                            <div class="w-20"></div>
-
-                            {/* Nav Items (Right) */}
-                            <div class="flex flex-1 justify-around">
-                                <NavBtn icon="analytics" label="Analisa" active={activeTab === 'analytics'} onClick={() => {
-                                    showToast('Fitur Analisa Mendalam segera hadir!', 'info');
-                                }} />
-                                <NavBtn icon="tune" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
-                            </div>
-
-                            {/* The Prominent FAB */}
+                    {/* Extended FAB (Positioned above nav bar) */}
+                    {activeTab !== 'settings' && (
+                        <div class="absolute bottom-24 right-4 z-20">
                             <button 
                                 onClick={() => setIsAddModalOpen(true)}
-                                class="absolute left-1/2 -translate-x-1/2 -top-6 w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-glow transition-transform hover:scale-105 active:scale-95 z-30 group"
+                                class="md-fab flex items-center justify-center gap-2 h-14 px-5 rounded-2xl ripple"
                             >
-                                <span class="material-symbols-rounded text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
+                                <span class="material-symbols-rounded">edit</span>
+                                <span class="font-medium text-[14px]">Catat</span>
                             </button>
-                        </nav>
-                    </div>
+                        </div>
+                    )}
 
-                    {/* Add Transaction Modal */}
-                    <BottomSheet isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Catat Transaksi">
+                    {/* Navigation Bar (M3 Standard) */}
+                    <nav class="h-20 flex justify-around items-center shrink-0 z-30 pb-safe shadow-[0_-1px_3px_rgba(0,0,0,0.05)]" style={{ backgroundColor: 'var(--md-sys-color-surface-container)' }}>
+                        <NavBtn icon="home" label="Beranda" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
+                        <NavBtn icon="receipt_long" label="Riwayat" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+                        <NavBtn icon="analytics" label="Analisis" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+                        <NavBtn icon="settings" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
+                    </nav>
+
+                    {/* Modals & Snakbars */}
+                    <FullScreenDialog isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Catat Transaksi">
                         <InputForm onSave={handleSaveTransaction} existingData={transactions} />
-                    </BottomSheet>
+                    </FullScreenDialog>
 
-                    {/* Item Details Modal */}
-                    <BottomSheet isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title="Detail Transaksi">
-                        {selectedItem && <ItemDetail item={selectedItem} onDelete={handleDelete} onClose={() => setSelectedItem(null)} />}
-                    </BottomSheet>
+                    <FullScreenDialog isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title="Detail Transaksi">
+                        {selectedItem && <ItemDetail item={selectedItem} onUpdateStatus={handleUpdateStatus} onDelete={handleDelete} />}
+                    </FullScreenDialog>
+
+                    {snackbar && <Snackbar message={snackbar} onClose={() => setSnackbar(null)} />}
                 </>
             );
         };
 
         // --- SUB VIEWS ---
 
-        const Dashboard = ({ data, chartType }) => {
-            const chartRef = useRef(null);
-            const chartInst = useRef(null);
-
-            const thisMonth = new Date().getMonth();
-            const thisYear = new Date().getFullYear();
+        const Dashboard = ({ data }) => {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
             
-            const currentMonthData = data.filter(d => {
+            const monthData = data.filter(d => {
                 const date = new Date(d.tanggal);
-                return date.getMonth() === thisMonth && date.getFullYear() === thisYear;
+                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
             });
 
-            const tOmset = currentMonthData.reduce((a, c) => a + c.jual, 0);
-            const tModal = currentMonthData.reduce((a, c) => a + c.modal, 0);
-            const tLaba = currentMonthData.reduce((a, c) => a + c.laba, 0);
-            const margin = tOmset > 0 ? ((tLaba / tOmset) * 100).toFixed(1) : 0;
-
-            const totalTransactions = currentMonthData.length;
-            const successTransactions = currentMonthData.filter(d => d.status === 'Selesai').length;
-
-            // Chart Rendering Logic
-            useEffect(() => {
-                if (chartInst.current) chartInst.current.destroy();
-                if (!chartRef.current) return;
-
-                const ctx = chartRef.current.getContext('2d');
-                const rootStyle = getComputedStyle(document.documentElement);
-                const primaryColor = rootStyle.getPropertyValue('--color-primary').trim() || '#2563eb';
-                const textColor = rootStyle.getPropertyValue('--color-text-muted').trim() || '#64748b';
-                const gridColor = rootStyle.getPropertyValue('--color-border').trim() || '#e2e8f0';
-
-                // Aggregate last 7 days
-                const last7Days = [...Array(7)].map((_, i) => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - (6 - i));
-                    return d.toISOString().split('T')[0];
-                });
-
-                const labaData = last7Days.map(date => 
-                    data.filter(d => d.tanggal.startsWith(date) && d.status === 'Selesai').reduce((s, i) => s + i.laba, 0)
-                );
-                const labels = last7Days.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
-
-                const config = {
-                    type: chartType === 'pie' ? 'doughnut' : chartType,
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Laba Bersih',
-                            data: labaData,
-                            backgroundColor: chartType === 'line' ? 'transparent' : primaryColor,
-                            borderColor: primaryColor,
-                            borderWidth: 2,
-                            borderRadius: chartType === 'bar' ? 6 : 0,
-                            pointBackgroundColor: '#fff',
-                            pointRadius: 4,
-                            fill: true,
-                            tension: 0.4 // curvy lines
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { 
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: rootStyle.getPropertyValue('--color-surface').trim(),
-                                titleColor: rootStyle.getPropertyValue('--color-text').trim(),
-                                bodyColor: rootStyle.getPropertyValue('--color-text').trim(),
-                                borderColor: gridColor,
-                                borderWidth: 1,
-                                padding: 12,
-                                displayColors: false,
-                                callbacks: {
-                                    label: (context) => `Rp ${formatRupiah(context.raw)}`
-                                }
-                            }
-                        },
-                        scales: chartType === 'pie' || chartType === 'doughnut' ? {} : { 
-                            y: { 
-                                display: false, // hide y axis for cleaner look
-                                beginAtZero: true 
-                            },
-                            x: { 
-                                grid: { display: false }, 
-                                ticks: { color: textColor, font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } },
-                                border: { display: false }
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index',
-                        },
-                    }
-                };
-
-                // Add gradient for line chart
-                if (chartType === 'line') {
-                    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradient.addColorStop(0, rootStyle.getPropertyValue('--color-primary-glow').trim());
-                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
-                    config.data.datasets[0].backgroundColor = gradient;
-                    config.data.datasets[0].fill = true;
-                }
-
-                chartInst.current = new Chart(ctx, config);
-                
-                return () => { if (chartInst.current) chartInst.current.destroy(); }
-            }, [data, chartType, document.documentElement.className]);
+            const tLaba = monthData.filter(d => d.status === 'Selesai').reduce((a, c) => a + c.laba, 0);
+            const activeJobs = monthData.filter(d => d.status === 'Proses').length;
 
             return (
-                <div class="p-6 space-y-6 animate-fade-in">
+                <div class="p-4 space-y-4">
+                    {/* Hero Summary Card */}
+                    <div class="p-5 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
+                        <p class="text-[14px] font-medium opacity-90 mb-1">Laba Bersih Bulan Ini</p>
+                        <h2 class="text-3xl font-normal tracking-tight">Rp {formatRupiah(tLaba)}</h2>
+                        <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-lg" style={{ backgroundColor: 'var(--md-sys-color-on-primary)', color: 'var(--md-sys-color-primary)' }}>
+                            <span class="material-symbols-rounded text-[18px]">build_circle</span>
+                            <span class="text-sm font-medium">{activeJobs} Pekerjaan Aktif</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-medium px-1 mt-6" style={{ color: 'var(--md-sys-color-on-surface)' }}>Aktivitas Terakhir</h3>
                     
-                    {/* Big Hero Card */}
-                    <div class="relative overflow-hidden bg-primary p-6 rounded-[2rem] shadow-floating text-white group">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
-                        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-black opacity-10 rounded-full blur-xl"></div>
-                        
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-center mb-2">
-                                <p class="text-sm font-medium text-white/80">Laba Bersih Bulan Ini</p>
-                                <span class="material-symbols-rounded bg-white/20 p-1.5 rounded-full text-sm">trending_up</span>
+                    <div class="space-y-2">
+                        {data.slice(0, 5).map(item => (
+                            <ActivityCard key={item.id} item={item} />
+                        ))}
+                        {data.length === 0 && (
+                            <div class="p-8 text-center rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container)' }}>
+                                <span class="material-symbols-rounded text-4xl mb-2" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>inventory_2</span>
+                                <p style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Belum ada transaksi bulan ini.</p>
                             </div>
-                            <h2 class="text-4xl font-extrabold tracking-tight mb-4">Rp {formatRupiah(tLaba)}</h2>
-                            
-                            <div class="flex gap-4 pt-4 border-t border-white/20">
-                                <div>
-                                    <p class="text-[10px] uppercase tracking-wider text-white/60 mb-0.5">Total Omset</p>
-                                    <p class="font-semibold">Rp {formatRupiah(tOmset)}</p>
-                                </div>
-                                <div class="w-[1px] bg-white/20"></div>
-                                <div>
-                                    <p class="text-[10px] uppercase tracking-wider text-white/60 mb-0.5">Margin</p>
-                                    <p class="font-semibold">{margin}%</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Secondary Stats Grid */}
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-surface p-4 rounded-3xl shadow-sm border border-border flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-warning/10 text-warning flex items-center justify-center">
-                                <span class="material-symbols-rounded">build</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-text-muted font-medium">Servis</p>
-                                <p class="text-lg font-bold text-text">{currentMonthData.filter(d=>d.jenis === 'Servis').length}</p>
-                            </div>
-                        </div>
-                        <div class="bg-surface p-4 rounded-3xl shadow-sm border border-border flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-success/10 text-success flex items-center justify-center">
-                                <span class="material-symbols-rounded">check_circle</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-text-muted font-medium">Selesai</p>
-                                <p class="text-lg font-bold text-text">{successTransactions}/{totalTransactions}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Chart Section */}
-                    <div class="bg-surface border border-border p-5 rounded-[2rem] shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-base font-bold text-text">Grafik 7 Hari Terakhir</h3>
-                            <div class="px-3 py-1 bg-primary-light text-primary text-xs font-bold rounded-full">
-                                {chartType.toUpperCase()}
-                            </div>
-                        </div>
-                        <div class="h-56 w-full relative">
-                            {data.length === 0 ? 
-                                <div class="absolute inset-0 flex flex-col items-center justify-center text-text-muted">
-                                    <span class="material-symbols-rounded text-4xl mb-2 opacity-50">bar_chart</span>
-                                    <p class="text-sm font-medium">Belum ada data</p>
-                                </div> : 
-                                <canvas ref={chartRef}></canvas>
-                            }
-                        </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div>
-                        <h3 class="text-base font-bold text-text mb-4 px-2">Aktivitas Terakhir</h3>
-                        <div class="space-y-3">
-                            {data.slice(0, 3).map(item => (
-                                <ActivityItem key={item.id} item={item} />
-                            ))}
-                            {data.length === 0 && (
-                                <div class="text-center py-6 text-text-muted bg-surface rounded-3xl border border-border">
-                                    <span class="material-symbols-rounded text-3xl opacity-50 mb-2">inbox</span>
-                                    <p class="text-sm font-medium">Belum ada aktivitas</p>
-                                </div>
-                            )}
-                        </div>
+                        )}
                     </div>
                 </div>
             );
         };
 
+        const Analytics = ({ data }) => {
+            const lineChartRef = useRef(null);
+            const lineChartInst = useRef(null);
+            const pieChartRef = useRef(null);
+            const pieChartInst = useRef(null);
+
+            const rootStyle = getComputedStyle(document.body);
+            
+            useEffect(() => {
+                if (!data || data.length === 0) return;
+
+                // Cleanup existing charts
+                if (lineChartInst.current) lineChartInst.current.destroy();
+                if (pieChartInst.current) pieChartInst.current.destroy();
+
+                const primaryColor = rootStyle.getPropertyValue('--md-sys-color-primary').trim();
+                const tertiaryColor = rootStyle.getPropertyValue('--md-sys-color-tertiary').trim();
+                const errorColor = rootStyle.getPropertyValue('--md-sys-color-error').trim();
+                const gridColor = rootStyle.getPropertyValue('--md-sys-color-outline-variant').trim();
+                const textColor = rootStyle.getPropertyValue('--md-sys-color-on-surface-variant').trim();
+
+                // 1. Line Chart: Omset vs Laba (7 Hari Terakhir)
+                const last7Days = [...Array(7)].map((_, i) => {
+                    const d = new Date(); d.setDate(d.getDate() - (6 - i));
+                    return d.toISOString().split('T')[0];
+                });
+
+                const omsetHarian = last7Days.map(date => 
+                    data.filter(d => d.tanggal.startsWith(date) && d.status === 'Selesai').reduce((s, i) => s + i.jual, 0)
+                );
+                const labaHarian = last7Days.map(date => 
+                    data.filter(d => d.tanggal.startsWith(date) && d.status === 'Selesai').reduce((s, i) => s + i.laba, 0)
+                );
+                const labels = last7Days.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+
+                const ctxLine = lineChartRef.current.getContext('2d');
+                lineChartInst.current = new Chart(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Omset',
+                                data: omsetHarian,
+                                borderColor: tertiaryColor,
+                                backgroundColor: tertiaryColor,
+                                tension: 0.4,
+                                borderDash: [5, 5]
+                            },
+                            {
+                                label: 'Laba Bersih',
+                                data: labaHarian,
+                                borderColor: primaryColor,
+                                backgroundColor: primaryColor,
+                                tension: 0.4,
+                                fill: true,
+                                backgroundColor: `${primaryColor}20` // Add opacity
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Readex Pro' } } }
+                        },
+                        scales: {
+                            y: { grid: { color: gridColor }, ticks: { color: textColor, callback: v => `Rp${v/1000}k` } },
+                            x: { grid: { display: false }, ticks: { color: textColor } }
+                        }
+                    }
+                });
+
+                // 2. Pie Chart: Komposisi Jenis
+                const jenisData = ['Servis', 'Sparepart', 'Aksesoris'].map(j => 
+                    data.filter(d => d.jenis === j && d.status === 'Selesai').length
+                );
+                
+                const ctxPie = pieChartRef.current.getContext('2d');
+                pieChartInst.current = new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Servis', 'Sparepart', 'Aksesoris'],
+                        datasets: [{
+                            data: jenisData,
+                            backgroundColor: [primaryColor, tertiaryColor, errorColor],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { position: 'right', labels: { color: textColor, font: { family: 'Readex Pro' } } } }
+                    }
+                });
+
+                return () => {
+                    if (lineChartInst.current) lineChartInst.current.destroy();
+                    if (pieChartInst.current) pieChartInst.current.destroy();
+                }
+            }, [data, document.body.className]); // re-render on theme change
+
+            return (
+                <div class="p-4 space-y-6">
+                    <div class="p-5 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container-low)' }}>
+                        <h3 class="text-base font-medium mb-4" style={{ color: 'var(--md-sys-color-on-surface)' }}>Tren 7 Hari Terakhir</h3>
+                        <div class="h-60 w-full relative">
+                             {data.length === 0 ? <p class="text-center pt-20" style={{color: 'var(--md-sys-color-on-surface-variant)'}}>Belum ada data</p> : <canvas ref={lineChartRef}></canvas>}
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container-low)' }}>
+                        <h3 class="text-base font-medium mb-4" style={{ color: 'var(--md-sys-color-on-surface)' }}>Komposisi Penjualan</h3>
+                        <div class="h-48 w-full relative">
+                            {data.length === 0 ? <p class="text-center pt-16" style={{color: 'var(--md-sys-color-on-surface-variant)'}}>Belum ada data</p> : <canvas ref={pieChartRef}></canvas>}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         const History = ({ data, onItemClick }) => {
             const [filter, setFilter] = useState('Semua');
@@ -839,29 +748,32 @@
                 }).sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
             }, [data, filter, search]);
 
-            const categories = ['Semua', 'Servis', 'Sparepart', 'Aksesoris'];
-
             return (
-                <div class="p-6 space-y-5 animate-fade-in flex flex-col h-full">
-                    {/* Search Bar */}
-                    <div class="relative">
+                <div class="p-4 flex flex-col h-full space-y-4">
+                    {/* Search Field */}
+                    <div class="relative flex items-center px-4 h-14 rounded-full" style={{ backgroundColor: 'var(--md-sys-color-surface-container-high)' }}>
+                        <span class="material-symbols-rounded mr-3" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>search</span>
                         <input 
                             type="text" 
                             placeholder="Cari garapan atau pelanggan..." 
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            class="w-full bg-surface-alt border border-border text-text rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface transition-all shadow-sm"
+                            class="bg-transparent border-none outline-none w-full text-[16px]"
+                            style={{ color: 'var(--md-sys-color-on-surface)' }}
                         />
-                        <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">search</span>
                     </div>
 
                     {/* Filter Chips */}
                     <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
-                        {categories.map(c => (
+                        {['Semua', 'Servis', 'Sparepart', 'Aksesoris'].map(c => (
                             <button 
-                                key={c}
-                                onClick={() => setFilter(c)}
-                                class={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all shadow-sm ${filter === c ? 'bg-primary text-white scale-105' : 'bg-surface border border-border text-text-muted hover:bg-surface-alt'}`}
+                                key={c} onClick={() => setFilter(c)}
+                                class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border"
+                                style={{ 
+                                    backgroundColor: filter === c ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+                                    color: filter === c ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface-variant)',
+                                    borderColor: filter === c ? 'transparent' : 'var(--md-sys-color-outline)'
+                                }}
                             >
                                 {c}
                             </button>
@@ -869,16 +781,16 @@
                     </div>
 
                     {/* List */}
-                    <div class="flex-1 space-y-3">
+                    <div class="flex-1 space-y-2 pb-10">
                         {filteredData.length === 0 ? (
-                            <div class="flex flex-col items-center justify-center h-48 text-text-muted">
-                                <span class="material-symbols-rounded text-5xl opacity-20 mb-3">search_off</span>
-                                <p class="font-medium">Tidak ada data ditemukan</p>
+                            <div class="text-center py-10" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
+                                <span class="material-symbols-rounded text-4xl mb-2">search_off</span>
+                                <p>Tidak ditemukan.</p>
                             </div>
                         ) : (
                             filteredData.map(item => (
-                                <div key={item.id} onClick={() => onItemClick(item)} class="cursor-pointer transition-transform active:scale-95">
-                                    <ActivityItem item={item} />
+                                <div key={item.id} onClick={() => onItemClick(item)} class="cursor-pointer ripple rounded-2xl">
+                                    <ActivityCard item={item} />
                                 </div>
                             ))
                         )}
@@ -902,19 +814,13 @@
 
             // Reset modal logic
             useEffect(() => {
-                if (jenis === 'Servis') {
-                    setModalVal('0');
-                } else if (modalVal === '0' || modalVal === 0) {
-                    setModalVal('');
-                }
+                if (jenis === 'Servis') setModalVal('0');
+                else if (modalVal === '0' || modalVal === 0) setModalVal('');
             }, [jenis]);
 
             const submit = (e) => {
                 e.preventDefault();
-                if (!nama.trim() || !jualVal) {
-                    alert("Mohon lengkapi Nama Barang dan Harga Jual!");
-                    return;
-                }
+                if (!nama.trim() || !jualVal) return alert("Mohon lengkapi Nama Barang dan Harga Jual!");
                 
                 const m = getRawNumber(modalVal);
                 const j = getRawNumber(jualVal);
@@ -931,72 +837,59 @@
                     status,
                     catatan: catatan.trim()
                 });
-                
-                // Reset form
-                setNama(''); setPelanggan(''); setModalVal(''); setJualVal(''); setCatatan('');
             };
 
             const laba = getRawNumber(jualVal) - getRawNumber(modalVal);
 
             return (
-                <form onSubmit={submit} class="space-y-4">
-                    {/* Category Selector */}
-                    <div class="flex p-1 bg-surface-alt rounded-2xl border border-border relative">
+                <form onSubmit={submit} class="space-y-4 pb-10">
+                    {/* M3 Segmented Button */}
+                    <div class="md-segmented-btn-container mb-6">
                         {['Servis', 'Sparepart', 'Aksesoris'].map((j) => (
                             <button 
                                 type="button" key={j} onClick={() => setJenis(j)}
-                                class={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 z-10 ${jenis === j ? 'text-primary shadow-sm bg-surface' : 'text-text-muted hover:text-text'}`}
+                                class={`md-segmented-btn ripple flex items-center justify-center gap-1 ${jenis === j ? 'active' : ''}`}
                             >
+                                {jenis === j && <span class="material-symbols-rounded text-[18px]">check</span>}
                                 {j}
                             </button>
                         ))}
                     </div>
 
+                    <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon="build" list="item-list" />
+                    <datalist id="item-list">{itemsDict.map((item, idx) => <option key={idx} value={item} />)}</datalist>
+                    
+                    <TextField label="Nama Pelanggan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                    
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon="build" list="item-list" />
-                            <datalist id="item-list">
-                                {itemsDict.map((item, idx) => <option key={idx} value={item} />)}
-                            </datalist>
-                        </div>
-                        <div class="col-span-2">
-                            <TextField label="Nama Pelanggan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="person" />
-                        </div>
-                        
-                        <TextField label="Harga Modal" value={modalVal} onChange={setModalVal} inputMode="numeric" isCurrency={true} icon="inventory_2" disabled={jenis === 'Servis'} />
-                        <TextField label="Harga Jual / Biaya" value={jualVal} onChange={setJualVal} inputMode="numeric" isCurrency={true} icon="payments" />
+                        <TextField label="Harga Modal" value={modalVal} onChange={setModalVal} inputMode="numeric" isCurrency={true} disabled={jenis === 'Servis'} />
+                        <TextField label="Harga Jual" value={jualVal} onChange={setJualVal} inputMode="numeric" isCurrency={true} />
                     </div>
                     
-                    {/* Status & Notes */}
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="floating-input-group !mb-0">
-                            <select 
-                                value={status} onChange={(e) => setStatus(e.target.value)}
-                                class="floating-input pl-12 h-[3.5rem] bg-surface-alt border-transparent focus:bg-surface focus:border-primary text-text font-bold"
-                            >
-                                <option value="Selesai">✅ Selesai</option>
-                                <option value="Proses">⏳ Proses</option>
-                                <option value="Batal">❌ Batal</option>
-                            </select>
-                            <label class="floating-label pl-10" style={{top: '0.5rem', transform: 'translateY(0)', fontSize: '0.75rem', color: 'var(--color-primary)'}}>Status</label>
-                            <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted icon-outlined">flag</span>
-                        </div>
-                        
-                        <TextField label="Catatan Tambahan" value={catatan} onChange={setCatatan} icon="edit_note" />
+                    {/* Status Dropdown - M3 Style Approach */}
+                    <div class="md-filled-text-field">
+                        <span class="material-symbols-rounded md-input-icon icon-outlined">flag</span>
+                        <select 
+                            value={status} onChange={(e) => setStatus(e.target.value)}
+                            class="md-input-element has-icon appearance-none" style={{ backgroundColor: 'transparent' }}
+                        >
+                            <option value="Selesai">Selesai</option>
+                            <option value="Proses">Proses</option>
+                            <option value="Batal">Batal</option>
+                        </select>
+                        <label class="md-label ml-10" style={{ transform: 'translateY(-10px) scale(0.75)', color: 'var(--md-sys-color-primary)' }}>Status Pekerjaan</label>
+                    </div>
+                    
+                    {/* Textarea for Catatan */}
+                    <TextField label="Catatan Tambahan" value={catatan} onChange={setCatatan} icon="notes" multiline={true} />
+
+                    {/* Live Profit */}
+                    <div class="p-4 rounded-2xl flex justify-between items-center mt-4" style={{ backgroundColor: 'var(--md-sys-color-tertiary-container)', color: 'var(--md-sys-color-on-tertiary-container)' }}>
+                        <span class="text-sm font-medium">Estimasi Laba</span>
+                        <span class="text-2xl font-normal">Rp {formatRupiah(laba)}</span>
                     </div>
 
-                    {/* Live Profit Preview */}
-                    <div class="bg-primary-light/50 border border-primary-light p-4 rounded-2xl flex justify-between items-center mt-2">
-                        <div>
-                            <p class="text-xs font-semibold text-primary-dark uppercase">Estimasi Laba</p>
-                            <p class="text-2xl font-extrabold text-primary">Rp {formatRupiah(laba)}</p>
-                        </div>
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
-                            <span class="material-symbols-rounded">trending_up</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-glow ripple-btn mt-4 flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full h-14 rounded-full font-medium text-[16px] ripple mt-6 flex items-center justify-center gap-2" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                         <span class="material-symbols-rounded">save</span>
                         Simpan Transaksi
                     </button>
@@ -1005,105 +898,74 @@
         };
 
 
-        const ItemDetail = ({ item, onDelete, onClose }) => {
+        const ItemDetail = ({ item, onUpdateStatus, onDelete }) => {
             const getStatusColor = (status) => {
-                if (status === 'Selesai') return 'text-success bg-success/10 border-success/20';
-                if (status === 'Proses') return 'text-warning bg-warning/10 border-warning/20';
-                return 'text-danger bg-danger/10 border-danger/20';
+                if (status === 'Selesai') return { bg: 'var(--md-sys-color-success-container)', text: 'var(--md-sys-color-on-success-container)' };
+                if (status === 'Proses') return { bg: 'var(--md-sys-color-secondary-container)', text: 'var(--md-sys-color-on-secondary-container)' };
+                return { bg: 'var(--md-sys-color-error-container)', text: 'var(--md-sys-color-on-error-container)' };
             };
+            const sColor = getStatusColor(item.status);
 
             return (
-                <div class="space-y-6">
-                    {/* Header Item */}
-                    <div class="flex items-center gap-4">
-                        <div class={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${item.jenis === 'Servis' ? 'bg-warning/10 text-warning' : item.jenis === 'Sparepart' ? 'bg-primary-light text-primary' : 'bg-amethyst/10 text-amethyst'}`}>
-                            <span class="material-symbols-rounded">
-                                {item.jenis === 'Servis' ? 'home_repair_service' : item.jenis === 'Sparepart' ? 'memory' : 'headphones'}
-                            </span>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-text">{item.nama}</h3>
-                            <p class="text-sm font-medium text-text-muted">{formatDate(item.tanggal)}</p>
-                        </div>
-                    </div>
-
-                    {/* Grid Details */}
-                    <div class="bg-surface-alt p-5 rounded-3xl grid grid-cols-2 gap-y-4 gap-x-2 border border-border">
-                        <div>
-                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Kategori</p>
-                            <p class="font-bold text-text">{item.jenis}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Pelanggan</p>
-                            <p class="font-bold text-text">{item.pelanggan || '-'}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Harga Modal</p>
-                            <p class="font-bold text-danger">Rp {formatRupiah(item.modal)}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Harga Jual</p>
-                            <p class="font-bold text-success">Rp {formatRupiah(item.jual)}</p>
-                        </div>
-                        <div class="col-span-2 pt-2 border-t border-border mt-2">
-                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Laba Bersih</p>
-                            <p class="text-2xl font-extrabold text-primary">Rp {formatRupiah(item.laba)}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center">
-                        <div class={`px-4 py-1.5 rounded-full border font-bold text-sm flex items-center gap-2 ${getStatusColor(item.status)}`}>
-                            <span class="material-symbols-rounded text-[18px]">
-                                {item.status === 'Selesai' ? 'check_circle' : item.status === 'Proses' ? 'pending' : 'cancel'}
-                            </span>
-                            {item.status}
-                        </div>
+                <div class="space-y-6 pb-10">
+                    <div class="p-6 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container-low)' }}>
+                        <h3 class="text-2xl font-normal mb-1" style={{ color: 'var(--md-sys-color-on-surface)' }}>{item.nama}</h3>
+                        <p class="text-sm mb-4" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>{formatDate(item.tanggal)} • {item.pelanggan}</p>
                         
-                        <button onClick={() => onDelete(item.id)} class="flex items-center gap-2 px-4 py-2 text-danger bg-danger/10 hover:bg-danger/20 rounded-full font-bold transition-colors">
-                            <span class="material-symbols-rounded text-[18px]">delete</span>
-                            Hapus
-                        </button>
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <div>
+                                <p class="text-xs font-medium" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Harga Modal</p>
+                                <p class="font-medium text-lg" style={{ color: 'var(--md-sys-color-error)' }}>Rp {formatRupiah(item.modal)}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Harga Jual</p>
+                                <p class="font-medium text-lg" style={{ color: 'var(--md-sys-color-success)' }}>Rp {formatRupiah(item.jual)}</p>
+                            </div>
+                            <div class="col-span-2 pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
+                                <p class="text-xs font-medium" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Laba Bersih</p>
+                                <p class="text-3xl font-normal" style={{ color: 'var(--md-sys-color-primary)' }}>Rp {formatRupiah(item.laba)}</p>
+                            </div>
+                        </div>
                     </div>
-                    
+
+                    {/* Edit Status Box */}
+                    <div class="p-5 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container-high)' }}>
+                        <p class="text-sm font-medium mb-3" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Update Progres / Status</p>
+                        <div class="flex gap-2">
+                            {['Proses', 'Selesai', 'Batal'].map(s => (
+                                <button 
+                                    key={s}
+                                    onClick={() => onUpdateStatus(item.id, s)}
+                                    class="flex-1 py-2 rounded-lg text-sm font-medium transition-colors border"
+                                    style={{ 
+                                        backgroundColor: item.status === s ? getStatusColor(s).bg : 'transparent',
+                                        color: item.status === s ? getStatusColor(s).text : 'var(--md-sys-color-on-surface)',
+                                        borderColor: item.status === s ? 'transparent' : 'var(--md-sys-color-outline)'
+                                    }}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {item.catatan && (
-                        <div class="bg-surface p-4 rounded-2xl border border-border border-l-4 border-l-primary">
-                            <p class="text-xs text-text-muted font-medium mb-1">Catatan Tambahan:</p>
-                            <p class="text-sm font-medium text-text">{item.catatan}</p>
+                        <div class="p-4 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-surface-variant)', color: 'var(--md-sys-color-on-surface-variant)' }}>
+                            <p class="text-xs font-medium mb-1">Catatan Tambahan:</p>
+                            <p class="text-sm">{item.catatan}</p>
                         </div>
                     )}
+                    
+                    <button onClick={() => onDelete(item.id)} class="w-full h-12 rounded-full font-medium flex items-center justify-center gap-2 ripple" style={{ color: 'var(--md-sys-color-error)' }}>
+                        <span class="material-symbols-rounded">delete</span>
+                        Hapus Transaksi
+                    </button>
                 </div>
             );
         };
 
 
-        const Settings = ({ data, setTransactions, settings, setSettings, toggleFullscreen, showToast }) => {
-            const exportData = (type) => {
-                if (data.length === 0) return showToast('Data masih kosong!', 'error');
-                
-                let content, filename, mimeType;
-                
-                if (type === 'json') {
-                    content = JSON.stringify(data, null, 2);
-                    filename = `ZonCell_Backup_${new Date().toISOString().split('T')[0]}.json`;
-                    mimeType = 'application/json';
-                } else if (type === 'csv') {
-                    const headers = ['ID', 'Tanggal', 'Jenis', 'Nama', 'Pelanggan', 'Modal', 'Jual', 'Laba', 'Status', 'Catatan'];
-                    const rows = data.map(r => [
-                        r.id, r.tanggal, r.jenis, `"${r.nama}"`, `"${r.pelanggan}"`, r.modal, r.jual, r.laba, r.status, `"${r.catatan}"`
-                    ]);
-                    content = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-                    filename = `ZonCell_Report_${new Date().toISOString().split('T')[0]}.csv`;
-                    mimeType = 'text/csv';
-                }
-
-                const blob = new Blob([content], { type: mimeType });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                a.click();
-                showToast(`Berhasil export ke ${type.toUpperCase()}`);
-            };
-
+        const Settings = ({ data, setTransactions, settings, setSettings, toggleFullscreen, showSnackbar }) => {
             const handleRestore = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1111,203 +973,143 @@
                 r.onload = (ev) => {
                     try {
                         const parsed = JSON.parse(ev.target.result);
-                        if (Array.isArray(parsed)) { 
-                            if(confirm(`Pulihkan ${parsed.length} data? Data lama akan tertimpa.`)) {
-                                setTransactions(parsed); 
-                                showToast("Data berhasil dipulihkan."); 
-                            }
-                        } else throw new Error();
-                    } catch(err) { 
-                        showToast("Format file tidak valid/rusak.", "error"); 
-                    }
+                        if (Array.isArray(parsed) && confirm(`Timpa data saat ini dengan ${parsed.length} data baru?`)) {
+                            setTransactions(parsed); 
+                            showSnackbar("Data berhasil dipulihkan."); 
+                        }
+                    } catch(err) { showSnackbar("Format file tidak valid."); }
                 };
                 r.readAsText(file);
-                e.target.value = null; // reset input
+                e.target.value = null; 
             };
 
-            const handleClear = () => {
-                const conf = prompt('Ketik "HAPUS" untuk menghapus semua data transaksi secara permanen:');
-                if (conf === 'HAPUS') {
-                    setTransactions([]);
-                    showToast('Semua data berhasil dihapus.', 'info');
-                } else if (conf !== null) {
-                    showToast('Gagal memverifikasi penghapusan.', 'error');
-                }
+            const handleBackup = () => {
+                const content = JSON.stringify(data, null, 2);
+                const blob = new Blob([content], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `ZonaPoncell_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                showSnackbar('Backup berhasil diunduh');
             };
 
             const themes = [
-                { id: 'blue', color: '#2563eb', name: 'Ocean' },
-                { id: 'emerald', color: '#10b981', name: 'Emerald' },
-                { id: 'amethyst', color: '#8b5cf6', name: 'Amethyst' },
-                { id: 'rose', color: '#f43f5e', name: 'Rose' },
-                { id: 'sunset', color: '#f97316', name: 'Sunset' },
+                { id: 'blue', color: '#0061a4', name: 'Standard' },
+                { id: 'green', color: '#146c2e', name: 'Green' },
+                { id: 'orange', color: '#8f4c00', name: 'Orange' },
             ];
 
             return (
-                <div class="p-6 pb-32 space-y-8 animate-fade-in">
+                <div class="p-4 space-y-6">
+                    <h2 class="text-xl font-normal px-2 mb-4" style={{ color: 'var(--md-sys-color-on-surface)' }}>Pengaturan Aplikasi</h2>
                     
-                    {/* Profile Section */}
-                    <div class="flex items-center gap-4 bg-surface p-5 rounded-3xl border border-border shadow-sm">
-                        <div class="w-16 h-16 rounded-full bg-primary-light text-primary flex items-center justify-center text-3xl font-bold shadow-inner">
-                            {settings.userName.charAt(0)}
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-text-muted font-bold uppercase">Profil Toko</p>
-                            <input 
-                                type="text" 
-                                value={settings.userName} 
-                                onChange={(e) => setSettings({...settings, userName: e.target.value || 'Juragan'})}
-                                class="bg-transparent text-xl font-extrabold text-text w-full outline-none border-b-2 border-transparent focus:border-primary transition-colors py-1"
-                            />
-                        </div>
-                        <span class="material-symbols-rounded text-text-muted">edit</span>
-                    </div>
-
                     {/* Tampilan */}
-                    <div class="space-y-4">
-                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Tampilan & Gaya</h3>
+                    <div class="p-4 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container)' }}>
+                        <p class="text-sm font-medium mb-4" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Tampilan</p>
                         
-                        <div class="bg-surface rounded-3xl border border-border shadow-sm overflow-hidden">
-                            <div class="p-4 flex items-center justify-between border-b border-border">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-rounded text-text-muted">dark_mode</span>
-                                    <span class="font-bold text-text">Mode Gelap</span>
+                        <div class="flex items-center justify-between py-2">
+                            <span style={{ color: 'var(--md-sys-color-on-surface)' }}>Mode Gelap</span>
+                            <button 
+                                onClick={() => setSettings(s => ({...s, isDark: !s.isDark}))}
+                                class="w-14 h-8 rounded-full flex items-center p-1 transition-colors relative"
+                                style={{ backgroundColor: settings.isDark ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-surface-variant)' }}
+                            >
+                                <div class="w-6 h-6 rounded-full bg-white transition-transform shadow-sm flex items-center justify-center absolute"
+                                     style={{ transform: settings.isDark ? 'translateX(24px)' : 'translateX(0)', color: settings.isDark ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-on-surface-variant)' }}>
+                                    <span class="material-symbols-rounded text-[16px]">{settings.isDark ? 'check' : 'close'}</span>
                                 </div>
-                                <button 
-                                    onClick={() => setSettings(s => ({...s, isDark: !s.isDark}))}
-                                    class={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out ${settings.isDark ? 'bg-primary' : 'bg-surface-alt border border-border'}`}
-                                >
-                                    <div class={`w-4 h-4 rounded-full bg-white shadow-md transition-transform duration-300 ${settings.isDark ? 'translate-x-6' : 'translate-x-0 bg-text-muted'}`}></div>
-                                </button>
-                            </div>
+                            </button>
+                        </div>
+                        
+                        <div class="h-[1px] my-3 w-full" style={{ backgroundColor: 'var(--md-sys-color-outline-variant)' }}></div>
 
-                            <div class="p-4">
-                                <p class="text-sm font-bold text-text mb-3">Warna Aksen</p>
-                                <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                                    {themes.map(t => (
-                                        <button 
-                                            key={t.id} onClick={() => setSettings({...settings, themeColor: t.id})}
-                                            class={`relative w-12 h-12 rounded-full flex-shrink-0 transition-all ${settings.themeColor === t.id ? 'scale-110 shadow-lg ring-4 ring-offset-2 ring-offset-surface' : 'hover:scale-105 opacity-80'}`}
-                                            style={{ backgroundColor: t.color, ringColor: t.color }}
-                                        >
-                                            {settings.themeColor === t.id && <span class="material-symbols-rounded absolute inset-0 flex items-center justify-center text-white drop-shadow-md">check</span>}
-                                        </button>
-                                    ))}
-                                </div>
+                        <div class="py-2">
+                            <span class="block mb-3" style={{ color: 'var(--md-sys-color-on-surface)' }}>Warna Aksen</span>
+                            <div class="flex gap-4">
+                                {themes.map(t => (
+                                    <button 
+                                        key={t.id} onClick={() => setSettings({...settings, themeColor: t.id})}
+                                        class="w-12 h-12 rounded-full flex items-center justify-center transition-transform active:scale-95"
+                                        style={{ backgroundColor: t.color }}
+                                    >
+                                        {settings.themeColor === t.id && <span class="material-symbols-rounded text-white">check</span>}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Preferensi */}
-                    <div class="space-y-4">
-                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Preferensi Dasbor</h3>
-                        <div class="bg-surface rounded-3xl border border-border shadow-sm overflow-hidden divide-y divide-border">
-                            
-                            <div class="p-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-rounded text-text-muted">monitoring</span>
-                                    <span class="font-bold text-text">Tipe Grafik Default</span>
-                                </div>
-                                <select 
-                                    value={settings.chartType} 
-                                    onChange={(e) => setSettings({...settings, chartType: e.target.value})}
-                                    class="bg-surface-alt text-text font-bold text-sm py-2 px-4 rounded-xl outline-none border border-transparent focus:border-primary pr-8"
-                                >
-                                    <option value="bar">Bar Chart</option>
-                                    <option value="line">Line Chart</option>
-                                    <option value="pie">Donut Chart</option>
-                                </select>
-                            </div>
-                            
-                            <div class="p-4 flex items-center justify-between cursor-pointer active:bg-surface-alt transition-colors" onClick={toggleFullscreen}>
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-rounded text-text-muted">{settings.isFullscreen ? 'fullscreen_exit' : 'fullscreen'}</span>
-                                    <div>
-                                        <span class="font-bold text-text block">Layar Penuh (Fullscreen)</span>
-                                        <span class="text-xs text-text-muted">Gunakan mode aplikasi penuh</span>
-                                    </div>
-                                </div>
-                                <span class="material-symbols-rounded text-text-muted">chevron_right</span>
-                            </div>
+                        <div class="h-[1px] my-3 w-full" style={{ backgroundColor: 'var(--md-sys-color-outline-variant)' }}></div>
+
+                        <div class="flex items-center justify-between py-2 cursor-pointer ripple" onClick={toggleFullscreen}>
+                            <span style={{ color: 'var(--md-sys-color-on-surface)' }}>Mode Layar Penuh</span>
+                            <span class="material-symbols-rounded" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>
+                                {settings.isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+                            </span>
                         </div>
                     </div>
 
                     {/* Data Manajemen */}
-                    <div class="space-y-4">
-                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Manajemen Data</h3>
+                    <div class="p-4 rounded-3xl" style={{ backgroundColor: 'var(--md-sys-color-surface-container)' }}>
+                        <p class="text-sm font-medium mb-4" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>Manajemen Data</p>
                         
-                        <div class="grid grid-cols-2 gap-3">
-                            <button onClick={() => exportData('json')} class="bg-surface p-4 rounded-3xl border border-border flex flex-col items-center justify-center gap-2 active:bg-primary-light/30 transition-colors">
-                                <span class="material-symbols-rounded text-3xl text-primary">data_object</span>
-                                <span class="font-bold text-sm text-text">Backup JSON</span>
+                        <div class="flex flex-col gap-2">
+                            <button onClick={handleBackup} class="flex items-center gap-4 p-4 rounded-xl ripple" style={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', color: 'var(--md-sys-color-on-surface)' }}>
+                                <span class="material-symbols-rounded" style={{ color: 'var(--md-sys-color-primary)' }}>download</span>
+                                <span>Backup Data (JSON)</span>
                             </button>
                             
-                            <label class="bg-surface p-4 rounded-3xl border border-border flex flex-col items-center justify-center gap-2 active:bg-primary-light/30 transition-colors cursor-pointer">
-                                <span class="material-symbols-rounded text-3xl text-primary">restore_page</span>
-                                <span class="font-bold text-sm text-text">Restore Data</span>
+                            <label class="flex items-center gap-4 p-4 rounded-xl ripple cursor-pointer" style={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', color: 'var(--md-sys-color-on-surface)' }}>
+                                <span class="material-symbols-rounded" style={{ color: 'var(--md-sys-color-tertiary)' }}>upload</span>
+                                <span>Restore Data</span>
                                 <input type="file" accept=".json" class="hidden" onChange={handleRestore} />
                             </label>
-
-                            <button onClick={() => exportData('csv')} class="col-span-2 bg-surface p-4 rounded-3xl border border-border flex items-center justify-center gap-3 active:bg-primary-light/30 transition-colors">
-                                <span class="material-symbols-rounded text-success">table_view</span>
-                                <span class="font-bold text-text">Export Laporan CSV (Excel)</span>
-                            </button>
                         </div>
-                        
-                        <button onClick={handleClear} class="w-full mt-4 p-4 rounded-2xl border border-danger/30 bg-danger/5 text-danger font-bold flex items-center justify-center gap-2 active:bg-danger/20 transition-colors">
-                            <span class="material-symbols-rounded">delete_forever</span>
-                            Hapus Semua Data
-                        </button>
                     </div>
-
-                    <div class="text-center pt-4 pb-8 opacity-50">
-                        <p class="text-xs font-bold">Zona Poncell Ultimate v3.5</p>
-                        <p class="text-[10px]">Dibuat dengan 🔥 oleh AI</p>
-                    </div>
-
                 </div>
             );
         };
 
-        // Helper Component for List Items
-        const ActivityItem = ({ item }) => {
-            const getIcon = (j) => j === 'Servis' ? 'home_repair_service' : j === 'Sparepart' ? 'memory' : 'headphones';
-            const getColor = (j) => j === 'Servis' ? 'bg-warning/10 text-warning' : j === 'Sparepart' ? 'bg-primary-light text-primary' : 'bg-amethyst/10 text-amethyst';
-            const getStatusColor = (s) => s === 'Selesai' ? 'text-success' : s === 'Proses' ? 'text-warning' : 'text-danger';
+        // Helper Component
+        const ActivityCard = ({ item }) => {
+            const getIcon = (j) => j === 'Servis' ? 'build' : j === 'Sparepart' ? 'memory' : 'headphones';
+            
+            let statusBadgeStyle = {};
+            if (item.status === 'Selesai') statusBadgeStyle = { bg: 'var(--md-sys-color-success-container)', text: 'var(--md-sys-color-on-success-container)' };
+            else if (item.status === 'Proses') statusBadgeStyle = { bg: 'var(--md-sys-color-secondary-container)', text: 'var(--md-sys-color-on-secondary-container)' };
+            else statusBadgeStyle = { bg: 'var(--md-sys-color-error-container)', text: 'var(--md-sys-color-on-error-container)' };
 
             return (
-                <div class="bg-surface p-4 rounded-[1.5rem] border border-border shadow-sm flex items-center gap-4 group hover:border-primary/50 transition-colors">
-                    <div class={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${getColor(item.jenis)}`}>
+                <div class="p-4 rounded-2xl flex items-center gap-4" style={{ backgroundColor: 'var(--md-sys-color-surface-container-low)' }}>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
                         <span class="material-symbols-rounded">{getIcon(item.jenis)}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-bold text-text truncate text-[15px]">{item.nama}</h4>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <span class={`text-[10px] font-bold px-2 py-0.5 rounded-md bg-surface-alt ${getStatusColor(item.status)}`}>
-                                {item.status}
-                            </span>
-                            <span class="text-xs text-text-muted font-medium truncate">{item.pelanggan || item.jenis}</span>
-                        </div>
+                        <h4 class="font-medium truncate text-[16px]" style={{ color: 'var(--md-sys-color-on-surface)' }}>{item.nama}</h4>
+                        <p class="text-xs mt-0.5 truncate" style={{ color: 'var(--md-sys-color-on-surface-variant)' }}>{item.pelanggan || item.jenis}</p>
                     </div>
-                    <div class="text-right">
-                        <p class="font-extrabold text-text text-[15px]">+Rp{formatRupiah(item.laba)}</p>
-                        <p class="text-[10px] font-semibold text-text-muted mt-1">{new Date(item.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</p>
+                    <div class="text-right flex flex-col items-end">
+                        <span class="text-xs px-2 py-0.5 rounded font-medium mb-1" style={{ backgroundColor: statusBadgeStyle.bg, color: statusBadgeStyle.text }}>
+                            {item.status}
+                        </span>
+                        <p class="font-medium text-[14px]" style={{ color: 'var(--md-sys-color-primary)' }}>Rp{formatRupiah(item.laba)}</p>
                     </div>
                 </div>
             );
         };
 
-
+        // Navigation Button Component
         const NavBtn = ({ icon, label, active, onClick }) => (
-            <button 
-                onClick={onClick} 
-                class={`flex flex-col items-center justify-center w-16 h-14 rounded-2xl transition-all duration-300 ${active ? 'text-primary scale-110' : 'text-text-muted hover:text-text'}`}
-            >
-                <div class={`relative px-4 py-1 rounded-full mb-1 transition-all duration-300 ${active ? 'bg-primary-light/50' : 'bg-transparent'}`}>
-                    <span class={`material-symbols-rounded transition-all duration-300 ${active ? 'icon-filled drop-shadow-md' : 'icon-outlined'}`}>{icon}</span>
-                    {active && <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>}
+            <button onClick={onClick} class="flex flex-col items-center justify-center w-16 h-full ripple relative group">
+                <div class="px-5 py-1 rounded-full mb-1 transition-colors" 
+                     style={{ 
+                         backgroundColor: active ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+                         color: active ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface-variant)'
+                     }}>
+                    <span class={`material-symbols-rounded ${active ? '' : 'icon-outlined'}`}>{icon}</span>
                 </div>
-                <span class={`text-[10px] tracking-wide transition-all duration-300 ${active ? 'font-extrabold' : 'font-medium opacity-70'}`}>{label}</span>
+                <span class="text-[12px] font-medium transition-colors" style={{ color: active ? 'var(--md-sys-color-on-surface)' : 'var(--md-sys-color-on-surface-variant)' }}>
+                    {label}
+                </span>
             </button>
         );
 

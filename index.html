@@ -259,6 +259,21 @@
         .m3-slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: var(--md-sys-color-surface-variant); outline: none; }
         .m3-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--md-sys-color-primary); cursor: pointer; box-shadow: 0 0 0 6px var(--md-sys-color-surface); transition: 0.2s; }
         .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 12px rgba(0, 0, 0, 0.2); }
+
+        /* ==========================================================================
+           ANIMATED AMOUNT (ODOMETER ROLL EFFECT PER KARAKTER)
+           ========================================================================== */
+        .aa-char-slot { display: inline-block; position: relative; overflow: hidden; height: 1.15em; vertical-align: top; }
+        .aa-char-face { display: block; }
+        .aa-char-anim { animation-duration: var(--aa-duration, 380ms); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
+        .aa-char-out-up   { animation-name: aaOutUp; }
+        .aa-char-in-up    { animation-name: aaInUp; }
+        .aa-char-out-down { animation-name: aaOutDown; }
+        .aa-char-in-down  { animation-name: aaInDown; }
+        @keyframes aaOutUp   { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
+        @keyframes aaInUp    { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes aaOutDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
+        @keyframes aaInDown  { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body class="theme-blue">
@@ -310,6 +325,86 @@
                 const valStr = formatRupiah(Math.abs(angka || 0));
                 return angka < 0 ? `Rp-${valStr}` : `Rp${valStr}`;
             }
+        };
+
+        // ==========================================================================
+        // KOMPONEN: ANIMATED AMOUNT (EFEK ROLL NOMINAL / ODOMETER)
+        // ==========================================================================
+        // Tiap karakter nominal punya "slot" sendiri. Kalau karakter di posisi itu
+        // berubah, karakter lama digeser keluar & karakter baru digeser masuk
+        // (naik kalau nilainya nambah, turun kalau nilainya berkurang) -- persis
+        // efek odometer / roll counter.
+        const AnimatedChar = ({ char, prevChar, dir, animId, changed, duration }) => {
+            const [playing, setPlaying] = useState(false);
+            const lastAnimId = useRef(0);
+
+            useEffect(() => {
+                if (changed && animId !== lastAnimId.current) {
+                    lastAnimId.current = animId;
+                    setPlaying(true);
+                    const t = setTimeout(() => setPlaying(false), duration + 20);
+                    return () => clearTimeout(t);
+                }
+            }, [animId, changed, duration]);
+
+            const display = char === '\u0000' ? '\u00A0' : char;
+
+            if (!playing) {
+                return <span className="aa-char-face inline-block">{display}</span>;
+            }
+
+            const prevDisplay = prevChar === '\u0000' || prevChar == null ? '\u00A0' : prevChar;
+            const outClass = dir === 'up' ? 'aa-char-out-up' : 'aa-char-out-down';
+            const inClass = dir === 'up' ? 'aa-char-in-up' : 'aa-char-in-down';
+
+            return (
+                <span className="aa-char-slot" style={{ '--aa-duration': `${duration}ms` }}>
+                    <span className={`aa-char-face aa-char-anim ${outClass}`} style={{ position: 'absolute', inset: 0 }}>{prevDisplay}</span>
+                    <span className={`aa-char-face aa-char-anim ${inClass}`}>{display}</span>
+                </span>
+            );
+        };
+
+        /**
+         * AnimatedAmount
+         * props:
+         *  - value: number mentah (dipakai buat nentuin arah naik/turun & sebagai trigger perubahan)
+         *  - formatter: (value) => string, buat format tampilan (Rp, ribuan, mode "gwBanget", dll)
+         *  - duration: durasi animasi tiap karakter (ms)
+         *  - className: class buat wrapper (font size, warna, dsb ikut dari sini)
+         */
+        const AnimatedAmount = ({ value, formatter, duration = 380, className = '' }) => {
+            const formatted = formatter(value);
+            const prevValueRef = useRef(value);
+            const prevFormattedRef = useRef(formatted);
+            const animIdRef = useRef(0);
+            const [chars, setChars] = useState(() => formatted.split('').map(c => ({ char: c, prevChar: null, dir: 'up', animId: 0, changed: false })));
+
+            useEffect(() => {
+                const oldFormatted = prevFormattedRef.current;
+                if (formatted === oldFormatted) return;
+
+                const dir = value >= prevValueRef.current ? 'up' : 'down';
+                const maxLen = Math.max(formatted.length, oldFormatted.length);
+                const newArr = formatted.padStart(maxLen, '\u0000').split('');
+                const oldArr = oldFormatted.padStart(maxLen, '\u0000').split('');
+
+                animIdRef.current += 1;
+                const id = animIdRef.current;
+
+                setChars(newArr.map((c, i) => ({
+                    char: c, prevChar: oldArr[i], dir, animId: id, changed: oldArr[i] !== c
+                })));
+
+                prevValueRef.current = value;
+                prevFormattedRef.current = formatted;
+            }, [formatted, value]);
+
+            return (
+                <span className={`inline-flex ${className}`} style={{ whiteSpace: 'pre' }}>
+                    {chars.map((c, i) => <AnimatedChar key={i} {...c} duration={duration} />)}
+                </span>
+            );
         };
 
         const filterByPeriod = (data, format, offset) => {
@@ -735,7 +830,9 @@
                                         </div>
                                         
                                         <div className="flex items-end gap-3 mb-6 md:mb-10 mt-2">
-                                            <h2 className="text-[40px] md:text-[56px] font-extrabold tracking-tighter leading-none">{formatModeUang(laba, settings.gwBanget, 'cuan')}</h2>
+                                            <h2 className="text-[40px] md:text-[56px] font-extrabold tracking-tighter leading-none">
+                                                <AnimatedAmount value={laba} formatter={(v) => formatModeUang(v, settings.gwBanget, 'cuan')} />
+                                            </h2>
                                         </div>
                                         
                                         <div className="flex gap-3 md:gap-6">
@@ -1010,7 +1107,9 @@
                                             <span className="text-sm md:text-base font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
                                             <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikali jumlah</span>
                                         </div>
-                                        <span className="text-3xl md:text-5xl font-extrabold md:mt-6">Rp{formatRupiah(laba)}</span>
+                                        <span className="text-3xl md:text-5xl font-extrabold md:mt-6">
+                                            <AnimatedAmount value={laba} formatter={(v) => `Rp${formatRupiah(v)}`} duration={280} />
+                                        </span>
                                     </div>
 
                                     <Button onClick={handleSave} icon="local_atm" fullWidth className="h-16 md:h-20 text-lg md:text-xl shadow-[var(--md-elevation-3)]">Sikat Bos! Catet</Button>
@@ -1741,4 +1840,3 @@
     </script>
 </body>
 </html>
-

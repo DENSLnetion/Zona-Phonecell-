@@ -308,30 +308,6 @@
 
         const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
-        const generateDummyData = () => {
-            const data = [];
-            const types = ['Servis', 'Sparepart', 'Aksesoris'];
-            const statuses = ['Beres', 'Beres', 'Beres', 'Jalan', 'Gagal'];
-            const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power', 'Kabel Data Type-C'];
-            
-            for(let i=0; i<80; i++) {
-                const date = new Date(); date.setDate(date.getDate() - Math.floor(Math.random() * 150)); 
-                const type = types[Math.floor(Math.random() * types.length)];
-                const modal = Math.floor(Math.random() * 10) * 15000;
-                const jual = modal + (Math.floor(Math.random() * 5 + 1) * 20000);
-                const jumlah = type === 'Servis' ? 1 : Math.floor(Math.random() * 4) + 1;
-                
-                data.push({
-                    id: generateId() + i, tanggal: date.toISOString(), jenis: type,
-                    nama: names[Math.floor(Math.random() * names.length)], pelanggan: `Klien ${Math.floor(Math.random() * 100)}`,
-                    modal: type === 'Servis' ? (Math.random() > 0.5 ? modal : 0) : modal, jual: jual, jumlah: jumlah,
-                    laba: type === 'Servis' ? (jual - (Math.random() > 0.5 ? modal : 0)) * jumlah : (jual - modal) * jumlah,
-                    status: statuses[Math.floor(Math.random() * statuses.length)]
-                });
-            }
-            return data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
-        };
-
         // Filter Logic based on Hari/Minggu/Bulan Format
         const filterByPeriod = (data, format, offset) => {
              const target = new Date();
@@ -393,8 +369,9 @@
                     const parsed = JSON.parse(savedDb).map(item => ({...item, jumlah: item.jumlah || 1}));
                     setTransactions(parsed);
                 } else {
-                    const dummy = generateDummyData(); setTransactions(dummy);
-                    localStorage.setItem('zp_m3_data', JSON.stringify(dummy));
+                    // Start clean, no dummy BS
+                    setTransactions([]);
+                    localStorage.setItem('zp_m3_data', '[]');
                 }
 
                 const savedSettings = localStorage.getItem('zp_m3_config');
@@ -403,7 +380,7 @@
 
             // Save Data
             useEffect(() => {
-                if(transactions.length > 0) localStorage.setItem('zp_m3_data', JSON.stringify(transactions));
+                localStorage.setItem('zp_m3_data', JSON.stringify(transactions));
             }, [transactions]);
 
             // Apply Theme
@@ -500,7 +477,6 @@
             useEffect(() => {
                 const tabs = document.querySelectorAll('.tab-content-area');
                 if (isOpen) {
-                    // Kunci scroll layar belakang tanpa blur
                     tabs.forEach(t => t.style.overflow = 'hidden');
                     window.history.pushState({ modal: title }, '');
                 } else {
@@ -537,7 +513,6 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-                    {/* Hapus background blur, pakai opacity hitam biasa */}
                     <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} onClick={handleUIClose} />
                     <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
                          style={{ paddingBottom: 'var(--sa-bottom)', maxHeight: '90vh' }}>
@@ -597,8 +572,9 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, settings, setSelectedItem, setActiveTab } = useContext(AppContext);
+            const { transactions, settings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0); // 0 = Current, -1 = Prev, etc
+            const [showProgres, setShowProgres] = useState(false);
 
             // Reset offset kalau ganti format di setting
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
@@ -612,10 +588,15 @@
             const labaPrev = prevPeriodData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
             const growth = labaPrev === 0 ? 100 : Math.round(((laba - labaPrev) / labaPrev) * 100);
             
-            const activeJobs = periodData.filter(d => d.status === 'Jalan').length;
+            const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             
             const handlePrevPeriod = () => setPeriodOffset(prev => prev - 1);
             const handleNextPeriod = () => { if(periodOffset < 0) setPeriodOffset(prev => prev + 1); };
+
+            const markAsDone = (id) => {
+                setTransactions(prev => prev.map(t => t.id === id ? {...t, status: 'Beres'} : t));
+                showSnackbar('Cakep! Kerjaan kelar bos');
+            };
 
             return (
                 <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
@@ -626,12 +607,12 @@
                     </div>
 
                     <div className="p-6 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
-                        {/* Motif dompet transparan material you di background */}
-                        <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] text-[130px] opacity-10 -rotate-12 pointer-events-none">payments</span>
+                        {/* Motif dompet transparan material you di background, lebih nonjol sedikit */}
+                        <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] text-[130px] opacity-[0.25] -rotate-12 pointer-events-none">payments</span>
                         
                         <div className="relative z-10">
                             <div className="flex justify-between items-center mb-1">
-                                <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni ({settings.periodFormat})</p>
+                                <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni</p>
                                 <div className="flex items-center gap-1 bg-black/10 rounded-full px-2 py-1">
                                     <Ripple className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10" onClick={handlePrevPeriod}>
                                         <span className="material-symbols-rounded text-lg">chevron_left</span>
@@ -657,8 +638,8 @@
                                     <span className="font-bold text-base">Rp{formatRupiah(omset)}</span>
                                 </div>
                                 <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
-                                    <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Belom Kelar</span>
-                                    <span className="font-bold text-base">{activeJobs} Kerjaan</span>
+                                    <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Total Garapan</span>
+                                    <span className="font-bold text-base">{periodData.length} Garapan</span>
                                 </div>
                             </div>
                         </div>
@@ -667,15 +648,15 @@
                     <div>
                         <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest mb-4 ml-2">Statistik Kilat</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
+                            <Ripple onClick={() => setShowProgres(true)} className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)] cursor-pointer">
                                 <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
-                                    <span className="material-symbols-rounded text-[24px]">build_circle</span>
+                                    <span className="material-symbols-rounded text-[24px]">pending_actions</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-extrabold text-base">Servis</h3>
-                                    <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis==='Servis' && d.status === 'Beres').length} Beres</p>
+                                    <h3 className="font-extrabold text-base">Progres</h3>
+                                    <p className="text-xs font-medium opacity-80">{pendingJobs.length} PR</p>
                                 </div>
-                            </div>
+                            </Ripple>
                             <div className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
                                 <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
                                     <span className="material-symbols-rounded text-[24px]">inventory_2</span>
@@ -687,7 +668,6 @@
                             </div>
                         </div>
 
-                        {/* Tombol Jalan Pintas ke Tab Catet */}
                         <Ripple onClick={() => setActiveTab('catet')} className="w-full mt-4 h-16 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] flex items-center justify-center font-extrabold text-[16px] shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)] transition-colors">
                             <span className="material-symbols-rounded mr-2 text-[24px]">add_circle</span>
                             Catet Transaksi Baru
@@ -703,10 +683,37 @@
                                 <ActivityItem key={item.id} item={item} onClick={() => setSelectedItem(item)} />
                             ))}
                             {transactions.length === 0 && (
-                                <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-8 font-bold bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)]">Belom dapet pelanggan nih bos</p>
+                                <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-8 font-bold bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)]">Belom dapet pelanggan nih bos</p>
                             )}
                         </div>
                     </div>
+                    
+                    {/* Bottom Sheet PR / Progres */}
+                    <BottomSheet isOpen={showProgres} onClose={() => setShowProgres(false)} title="Kerjaan Belom Kelar">
+                        <div className="space-y-3 pt-4">
+                            {pendingJobs.length === 0 ? (
+                                <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                    <span className="material-symbols-rounded text-6xl mb-2 opacity-50">task_alt</span>
+                                    <p className="font-bold text-lg">Mantap, ga ada PR bos!</p>
+                                </div>
+                            ) : (
+                                pendingJobs.map(job => (
+                                    <div key={job.id} className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center justify-between gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+                                            <span className="material-symbols-rounded text-[24px]">{job.jenis==='Servis'?'build':job.jenis==='Sparepart'?'memory':'headphones'}</span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{job.nama}</h4>
+                                            <p className="text-[13px] text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{job.pelanggan}</p>
+                                        </div>
+                                        <Ripple onClick={() => markAsDone(job.id)} className="shrink-0 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] px-4 py-2 rounded-full font-bold text-sm flex items-center shadow-sm">
+                                            <span className="material-symbols-rounded text-lg mr-1">check_circle</span> Kelar
+                                        </Ripple>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </BottomSheet>
                 </div>
             );
         };
@@ -744,8 +751,8 @@
 
             return (
                 <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
-                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root transition-all duration-200 border border-transparent hover:border-[var(--md-sys-color-outline-variant)] cursor-pointer
-                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)] scale-[0.98]' : 'bg-[var(--md-sys-color-surface-container-low)]'}`}>
+                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root transition-all duration-200 border border-[var(--md-sys-color-outline-variant)] cursor-pointer
+                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)]' : 'bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-on-surface)]'}`}>
                     
                     {selectable ? (
                         <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
@@ -933,12 +940,12 @@
                             {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2 p-1 bg-black/20 rounded-full" onClick={() => setSearch('')}>close</span>}
                         </div>
 
-                        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1">
                             {['Semua', 'Servis', 'Sparepart', 'Aksesoris'].map(f => (
                                 <button key={f} onClick={() => setFilterType(f)}
-                                    className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 transition-all shrink-0 ${
+                                    className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 transition-colors shrink-0 ${
                                         filterType === f 
-                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-md scale-105' 
+                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' 
                                         : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{f}</button>
                             ))}
@@ -1062,7 +1069,7 @@
             const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
 
-            // Generate monthly grouped data for detailed bottom sheet
+            // Generate monthly grouped data for detailed bottom sheet (Deep Analysis)
             const groupedByMonth = useMemo(() => {
                 const groups = {};
                 totalSelesai.forEach(t => {
@@ -1070,12 +1077,21 @@
                     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
                     const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
                     
-                    if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, count: 0, countServis: 0, countBarang: 0 };
+                    if (!groups[key]) groups[key] = { 
+                        label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, 
+                        count: 0, countServis: 0, countBarang: 0, itemsLaku: 0 
+                    };
                     
                     groups[key].totalOmset += (t.jual * t.jumlah);
                     groups[key].totalLaba += t.laba;
+                    groups[key].totalModal += (t.modal * t.jumlah);
                     groups[key].count += 1;
-                    if(t.jenis === 'Servis') groups[key].countServis += 1; else groups[key].countBarang += 1;
+                    if(t.jenis === 'Servis') {
+                        groups[key].countServis += 1;
+                    } else {
+                        groups[key].countBarang += 1;
+                        groups[key].itemsLaku += t.jumlah;
+                    }
                 });
                 return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); // Sort latest first
             }, [totalSelesai]);
@@ -1127,9 +1143,16 @@
                     <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
                         <div className="space-y-4 pt-4">
                             <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">
-                                {sheetInfo === 'margin' ? 'Berikut rincian margin untung bulanan berdasarkan modal & jual.' : 'Rekap jumlah garapan yang kelar ditarik per-bulannya bos.'}
+                                {sheetInfo === 'margin' ? 'Rincian detail perputaran duit & persentase margin laba per-bulan bos.' : 'Rekap mendalam hasil garapan per-bulannya bos.'}
                             </p>
                             
+                            {groupedByMonth.length === 0 && (
+                                <div className="py-8 text-center text-[var(--md-sys-color-on-surface-variant)]">
+                                    <span className="material-symbols-rounded text-6xl mb-2 opacity-50">inbox</span>
+                                    <p className="font-bold text-lg">Belom ada garapan kelar bos</p>
+                                </div>
+                            )}
+
                             {groupedByMonth.map((grp, idx) => {
                                 const mrg = grp.totalOmset > 0 ? ((grp.totalLaba / grp.totalOmset) * 100).toFixed(1) : 0;
                                 
@@ -1139,18 +1162,26 @@
                                         
                                         {sheetInfo === 'margin' ? (
                                             <>
-                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
-                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Cuan Murni</span><span className="font-extrabold text-base text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span></div>
-                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-1">
-                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Margin Untung</span><span className="text-xl font-extrabold text-[var(--md-sys-color-on-surface)]">{mrg}%</span>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Modal Dikeluarin</span><span className="font-bold text-[14px] text-[var(--md-sys-color-error)]">Rp{formatRupiah(grp.totalModal)}</span></div>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk (Kotor)</span><span className="font-bold text-[14px] text-[var(--md-sys-color-success)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Rata² Cuan per Nota</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(Math.round(grp.totalLaba/grp.count))}</span></div>
+                                                
+                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
+                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Margin Total</span>
+                                                    <div className="text-right">
+                                                        <span className="block text-xl font-extrabold text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span>
+                                                        <span className="block text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">{mrg}% dari Omset</span>
+                                                    </div>
                                                 </div>
                                             </>
                                         ) : (
                                             <>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Servis</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countServis} Nota</span></div>
-                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Nota</span></div>
-                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-1">
-                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Total Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Nota</span>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Jual Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Nota</span></div>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Total Pcs Barang Laku</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.itemsLaku} Pcs</span></div>
+                                                
+                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
+                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Total Nota Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Nota</span>
                                                 </div>
                                             </>
                                         )}

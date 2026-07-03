@@ -981,8 +981,8 @@
 
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                        <TextField label={isTopUp ? 'Nomor Tujuan / Ket' : 'Nama Kerjaan / Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
-                                        <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                                        <TextField label={isTopUp ? 'Nomor' : 'Tipe'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
+                                        <TextField label="Nama" value={pelanggan} onChange={setPelanggan} icon="person" />
                                     </div>
                                 </div>
 

@@ -295,7 +295,7 @@
                 let res = '';
                 let hasSlang = false;
 
-                const slangs = { 10000: 'Ceban', 50000: 'Goban', 100000: 'Cepe', 150000: 'Pego' };
+                const slangs = { 500: 'Gopek', 1000: 'Seceng', 5000: 'Goceng', 10000: 'Ceban', 50000: 'Gocap', 100000: 'Cepek', 150000: 'Pego', 500000000: 'Gotiao' };
                 if (slangs[abs]) { res = slangs[abs]; hasSlang = true; } 
                 else if (abs < 1000) { res = abs.toString(); } 
                 else if (abs < 1000000) { res = Math.round(abs / 1000) + 'k'; } 

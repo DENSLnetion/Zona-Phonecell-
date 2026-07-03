@@ -368,7 +368,6 @@
                     const parsed = JSON.parse(savedDb).map(item => ({...item, jumlah: item.jumlah || 1}));
                     setTransactions(parsed);
                 } else {
-                    // Database murni tanpa dummy
                     setTransactions([]);
                     localStorage.setItem('zp_m3_data', '[]');
                 }
@@ -468,28 +467,19 @@
             );
         };
 
+        // FIXED: BottomSheet dijamin anti-melayang, absolut nempel ke bawah.
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
 
             useEffect(() => {
-                const tabs = document.querySelectorAll('.tab-content-area');
                 if (isOpen) {
-                    tabs.forEach(t => t.style.overflow = 'hidden');
                     window.history.pushState({ modal: title }, '');
-                } else {
-                    tabs.forEach(t => t.style.overflow = 'auto');
                 }
-                
-                const handlePopState = (e) => {
-                    if (isOpen) executeClose();
-                };
+                const handlePopState = (e) => { if (isOpen) executeClose(); };
                 if (isOpen) window.addEventListener('popstate', handlePopState);
                 
                 return () => {
-                    if (isOpen) {
-                        window.removeEventListener('popstate', handlePopState);
-                        tabs.forEach(t => t.style.overflow = 'auto');
-                    }
+                    if (isOpen) window.removeEventListener('popstate', handlePopState);
                 };
             }, [isOpen]);
 
@@ -509,11 +499,12 @@
             if (!isOpen && !isClosing) return null;
 
             return (
-                <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-                    <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} onClick={handleUIClose} />
-                    {/* Fixed Height to 55vh */}
-                    <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
-                         style={{ paddingBottom: 'var(--sa-bottom)', height: '55vh' }}>
+                <div className="fixed top-0 left-0 right-0 bottom-0 z-[100] overflow-hidden" style={{ zIndex: 100 }}>
+                    <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
+                         onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
+                    {/* Fixed 70dvh dan absolut ke bottom 0 */}
+                    <div className={`absolute bottom-0 left-0 right-0 w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
+                         style={{ paddingBottom: 'var(--sa-bottom)', height: '70dvh' }}>
                         <div className="w-full flex justify-center pt-5 pb-3 shrink-0" onClick={handleUIClose}>
                             <div className="w-12 h-1.5 rounded-full bg-[var(--md-sys-color-outline)] opacity-50" />
                         </div>
@@ -523,8 +514,8 @@
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
-                        {/* Scrollable Content Inside */}
-                        <div className="px-6 pb-6 flex-1 overflow-y-auto no-scrollbar">{children}</div>
+                        {/* Area Konten Scroll */}
+                        <div className="px-6 pb-6 flex-1 overflow-y-auto no-scrollbar overscroll-contain">{children}</div>
                     </div>
                 </div>
             );
@@ -695,7 +686,7 @@
                             ) : (
                                 pendingJobs.map(job => (
                                     <div key={job.id} className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center justify-between gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shrink-0">
+                                        <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center shrink-0">
                                             <span className="material-symbols-rounded text-[24px]">{job.jenis==='Servis'?'build':job.jenis==='Sparepart'?'memory':job.jenis==='Top Up'?'account_balance_wallet':'headphones'}</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -720,9 +711,9 @@
             };
             const icon = iconMap[item.jenis] || 'build';
             
-            let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]';
-            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]';
-            if (item.status === 'Jalan') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
+            // Pewarnaan logis
+            let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; // Default (Jalan)
+            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
             if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
             const timerRef = useRef(null);
@@ -800,7 +791,7 @@
                 if(!nama.trim()) { showSnackbar('Woi, Keterangan / Tujuan isi dulu!'); return; }
                 
                 const m = getRawNumber(modalStr); 
-                const j = getRawNumber(jualStr) || 0; // Bebas harga jual 0 kalau buat kulakan/kasbon
+                const j = getRawNumber(jualStr) || 0; // Bebas harga jual 0
                 
                 let finalNama = nama.trim();
                 if(isTopUp) finalNama = `Top Up ${subTopUp} (${viaTopUp}) - ${finalNama}`;
@@ -819,7 +810,6 @@
             };
 
             const laba = ((getRawNumber(jualStr) || 0) - getRawNumber(modalStr)) * jumlah;
-
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'phone_iphone' };
 
             return (
@@ -1369,14 +1359,21 @@
                         <div>
                             <p className="text-[13px] font-extrabold tracking-widest uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-2">Status Kerjaan</p>
                             <div className="flex gap-2">
-                                {['Jalan', 'Beres', 'Gagal'].map(s => (
-                                    <button key={s} onClick={() => updateStatus(s)}
-                                        className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 transition-all duration-300 ${
-                                            currentItem.status === s 
-                                            ? `bg-[var(--md-sys-color-${s==='Beres'?'success':s==='Jalan'?'primary':'error'}-container)] text-[var(--md-sys-color-on-${s==='Beres'?'success':s==='Jalan'?'primary':'error'}-container)] border-transparent shadow-lg scale-[1.03]`
-                                            : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
-                                        }`}>{s}</button>
-                                ))}
+                                {['Jalan', 'Beres', 'Gagal'].map(s => {
+                                    let activeClass = '';
+                                    if (s === 'Beres') activeClass = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-transparent shadow-lg scale-[1.03]';
+                                    else if (s === 'Jalan') activeClass = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] border-transparent shadow-lg scale-[1.03]';
+                                    else if (s === 'Gagal') activeClass = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-transparent shadow-lg scale-[1.03]';
+                                    
+                                    const inactiveClass = 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]';
+
+                                    return (
+                                        <button key={s} onClick={() => updateStatus(s)}
+                                            className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 transition-all duration-300 ${currentItem.status === s ? activeClass : inactiveClass}`}>
+                                            {s}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 

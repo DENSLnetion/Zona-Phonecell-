@@ -257,19 +257,21 @@
         const { useState, useEffect, useMemo, useRef, useCallback, createContext, useContext } = React;
 
         // ==========================================================================
-        // UTILITIES & DATA
+        // UTILITIES & DATA (SAFEGUARDED)
         // ==========================================================================
         const formatRupiah = (angka) => {
             if (!angka && angka !== 0) return '0';
             return new Intl.NumberFormat('id-ID').format(angka);
         };
-        const getRawNumber = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
+        const getRawNumber = (str) => parseInt(str?.toString().replace(/[^0-9]/g, ''), 10) || 0;
         
         const formatDateLong = (isoString) => {
+            if (!isoString) return '-';
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Intl.DateTimeFormat('id-ID', options).format(new Date(isoString));
         };
         const formatDateShort = (isoString) => {
+            if (!isoString) return '-';
             return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', hour:'2-digit', minute:'2-digit' }).format(new Date(isoString));
         };
 
@@ -277,7 +279,7 @@
 
         const formatModeUang = (angka, isGwBanget, context) => {
             if (isGwBanget) {
-                const abs = Math.abs(angka);
+                const abs = Math.abs(angka || 0);
                 const isNeg = angka < 0;
                 let res = '';
                 let hasSlang = false;
@@ -294,7 +296,7 @@
                 if (context === 'cuan') return hasSlang ? res : `Rp${res}`;
                 return res; 
             } else {
-                const valStr = formatRupiah(Math.abs(angka));
+                const valStr = formatRupiah(Math.abs(angka || 0));
                 return angka < 0 ? `Rp-${valStr}` : `Rp${valStr}`;
             }
         };
@@ -304,18 +306,18 @@
              if (format === 'Hari') {
                  target.setDate(target.getDate() + offset);
                  const y = target.getFullYear(), m = target.getMonth(), d = target.getDate();
-                 return data.filter(item => { const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m && id.getDate() === d; });
+                 return data.filter(item => { if(!item?.tanggal) return false; const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m && id.getDate() === d; });
              } else if (format === 'Minggu') {
                  target.setDate(target.getDate() + (offset * 7));
                  const day = target.getDay();
                  const diff = target.getDate() - day + (day === 0 ? -6 : 1);
                  const monday = new Date(target.setDate(diff)); monday.setHours(0,0,0,0);
                  const sunday = new Date(monday); sunday.setDate(sunday.getDate() + 6); sunday.setHours(23,59,59,999);
-                 return data.filter(item => { const id = new Date(item.tanggal); return id >= monday && id <= sunday; });
+                 return data.filter(item => { if(!item?.tanggal) return false; const id = new Date(item.tanggal); return id >= monday && id <= sunday; });
              } else {
                  target.setMonth(target.getMonth() + offset);
                  const y = target.getFullYear(), m = target.getMonth();
-                 return data.filter(item => { const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m; });
+                 return data.filter(item => { if(!item?.tanggal) return false; const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m; });
              }
         };
 
@@ -345,7 +347,7 @@
             const headers = ['ID', 'Tanggal', 'Jenis', 'Nama / Keterangan', 'Pelanggan', 'Modal', 'Jual', 'Jumlah', 'Total Laba', 'Status'];
             let csvContent = headers.join(',') + '\r\n';
             items.forEach(item => {
-                const row = [`"${item.id}"`, `"${item.tanggal}"`, `"${item.jenis}"`, `"${item.nama.replace(/"/g, '""')}"`, `"${item.pelanggan.replace(/"/g, '""')}"`, item.modal, item.jual, item.jumlah, item.laba, `"${item.status}"`];
+                const row = [`"${item?.id || ''}"`, `"${item?.tanggal || ''}"`, `"${item?.jenis || ''}"`, `"${(item?.nama || '').replace(/"/g, '""')}"`, `"${(item?.pelanggan || '').replace(/"/g, '""')}"`, item?.modal || 0, item?.jual || 0, item?.jumlah || 1, item?.laba || 0, `"${item?.status || ''}"`];
                 csvContent += row.join(',') + '\r\n';
             });
             return csvContent;
@@ -366,18 +368,31 @@
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
 
+            // ANTI CRASH LOCALSTORAGE SAFEGUARD
             useEffect(() => {
-                const savedDb = localStorage.getItem('zp_m3_data');
-                if (savedDb) {
-                    const parsed = JSON.parse(savedDb).map(item => ({...item, jumlah: item.jumlah || 1}));
-                    setTransactions(parsed);
-                } else {
+                try {
+                    const savedDb = localStorage.getItem('zp_m3_data');
+                    if (savedDb) {
+                        const parsed = JSON.parse(savedDb);
+                        if (Array.isArray(parsed)) {
+                            setTransactions(parsed.map(item => ({...item, jumlah: item.jumlah || 1})));
+                        } else {
+                            setTransactions([]);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Data corrupted, reset to empty.', e);
                     setTransactions([]);
-                    localStorage.setItem('zp_m3_data', '[]');
                 }
 
-                const savedSettings = localStorage.getItem('zp_m3_config');
-                if (savedSettings) setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
+                try {
+                    const savedSettings = localStorage.getItem('zp_m3_config');
+                    if (savedSettings) {
+                        setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
+                    }
+                } catch (e) {
+                    console.error('Settings corrupted, using defaults.');
+                }
             }, []);
 
             useEffect(() => {
@@ -539,7 +554,7 @@
         };
 
         // ==========================================================================
-        // APP SCREENS (DIHAPUS ANIMATE-PAGE NYA BIAR GA BENTROK SAMA GESERAN JARI)
+        // APP SCREENS
         // ==========================================================================
 
         const SplashScreen = () => {
@@ -549,7 +564,7 @@
                 setSettings(s => ({...s, hasStarted: true}));
             };
             return (
-                <div className="h-[100dvh] w-full flex flex-col items-center justify-center bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] p-6 relative">
+                <div className="h-[100dvh] w-full flex flex-col items-center justify-center bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] p-6 relative z-[100]">
                     <div className="w-32 h-32 rounded-[40px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl spring-bounce active:scale-95">
                         <span className="material-symbols-rounded text-[64px]">smartphone</span>
                     </div>
@@ -573,8 +588,8 @@
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
             const periodData = filterByPeriod(transactions, settings.periodFormat, periodOffset);
-            const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
-            const omset = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.jual * i.jumlah), 0);
+            const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
+            const omset = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             
             const handlePrevPeriod = () => setPeriodOffset(prev => prev - 1);
@@ -645,7 +660,7 @@
                                 </div>
                                 <div>
                                     <h3 className="font-extrabold text-base">Barang</h3>
-                                    <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+i.jumlah,0)} Laku</p>
+                                    <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Laku</p>
                                 </div>
                             </div>
                         </div>
@@ -702,11 +717,11 @@
         const ActivityItem = ({ item, onClick, selectable, selected, onSelect }) => {
             const { settings } = useContext(AppContext);
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'headphones', 'Top Up': 'account_balance_wallet' };
-            const icon = iconMap[item.jenis] || 'build';
+            const icon = iconMap[item?.jenis] || 'build';
             
             let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; 
-            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; 
-            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; 
+            if (item?.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; 
+            if (item?.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; 
 
             const timerRef = useRef(null);
             const isDragging = useRef(false);
@@ -746,16 +761,16 @@
                     )}
                     
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{item.nama}</h4>
-                        <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{formatDateShort(item.tanggal)} • {item.pelanggan}</p>
+                        <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{item?.nama || 'Tanpa Nama'}</h4>
+                        <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{formatDateShort(item?.tanggal)} • {item?.pelanggan || 'Hamba Allah'}</p>
                     </div>
                     <div className="text-right shrink-0">
                         <p className="font-extrabold text-[var(--md-sys-color-primary)] text-[16px] mb-1">
-                            {formatModeUang(item.laba, settings.gwBanget, 'list')}
+                            {formatModeUang(item?.laba, settings.gwBanget, 'list')}
                         </p>
                         <div className="flex items-center justify-end gap-1.5">
-                            {item.jumlah > 1 && <span className="text-[11px] font-extrabold bg-[var(--md-sys-color-surface-variant)] px-2 py-0.5 rounded-full text-[var(--md-sys-color-on-surface-variant)]">x{item.jumlah}</span>}
-                            <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wide ${statusColor}`}>{item.status}</span>
+                            {(item?.jumlah || 1) > 1 && <span className="text-[11px] font-extrabold bg-[var(--md-sys-color-surface-variant)] px-2 py-0.5 rounded-full text-[var(--md-sys-color-on-surface-variant)]">x{item.jumlah}</span>}
+                            <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wide ${statusColor}`}>{item?.status || 'Jalan'}</span>
                         </div>
                     </div>
                 </div>
@@ -881,7 +896,9 @@
 
             const filteredData = useMemo(() => {
                 return transactions.filter(t => {
-                    const matchSearch = t.nama.toLowerCase().includes(search.toLowerCase()) || t.pelanggan.toLowerCase().includes(search.toLowerCase());
+                    // SAFEGUARD PENTING: || '' nahan crash kalo nama/pelanggan undefined dari cache lama
+                    const matchSearch = (t.nama || '').toLowerCase().includes(search.toLowerCase()) || 
+                                        (t.pelanggan || '').toLowerCase().includes(search.toLowerCase());
                     const matchFilter = filterType === 'Semua' || t.jenis === filterType;
                     return matchSearch && matchFilter;
                 });
@@ -990,43 +1007,59 @@
                     labels = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toLocaleDateString('id-ID', { weekday:'short'}); });
                     dataPoints = [...Array(7)].map((_, i) => {
                         const d = new Date(); d.setDate(d.getDate() - (6 - i)); const targetDate = d.toISOString().split('T')[0];
-                        return transactions.filter(t => t.tanggal.startsWith(targetDate) && t.status === 'Beres').reduce((s,i) => s + i.laba, 0);
+                        return transactions.filter(t => t?.tanggal?.startsWith(targetDate) && t.status === 'Beres').reduce((s,i) => s + (i.laba || 0), 0);
                     });
                 } else if (format === 'Minggu') {
-                    for (let i = 3; i >= 0; i--) { labels.push(`M-${i === 0 ? 'Ini' : i}`); const wData = filterByPeriod(transactions, 'Minggu', -i); dataPoints.push(wData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0)); }
+                    for (let i = 3; i >= 0; i--) { labels.push(`M-${i === 0 ? 'Ini' : i}`); const wData = filterByPeriod(transactions, 'Minggu', -i); dataPoints.push(wData.filter(t => t.status === 'Beres').reduce((s,x) => s + (x.laba || 0), 0)); }
                 } else {
-                    for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); labels.push(d.toLocaleDateString('id-ID', { month: 'short' })); const mData = filterByPeriod(transactions, 'Bulan', -i); dataPoints.push(mData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0)); }
+                    for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); labels.push(d.toLocaleDateString('id-ID', { month: 'short' })); const mData = filterByPeriod(transactions, 'Bulan', -i); dataPoints.push(mData.filter(t => t.status === 'Beres').reduce((s,x) => s + (x.laba || 0), 0)); }
                 }
                 return { labels, dataPoints };
             };
 
+            // SAFEGUARD CHART.JS: Cek apakah canvas siap
             useEffect(() => {
                 if (transactions.length === 0) return;
-                const c = getColors(); Object.values(inst.current).forEach(chart => chart && chart.destroy());
+                if (typeof Chart === 'undefined') return; // Jaga-jaga loading gagal
+                
+                const c = getColors(); 
+                Object.values(inst.current).forEach(chart => chart && chart.destroy());
+                
                 Chart.defaults.font.family = "'Readex Pro', sans-serif"; Chart.defaults.font.weight = 'bold'; Chart.defaults.color = c.text;
                 const { labels: lineLabels, dataPoints: lineData } = getChartData();
-                inst.current.line = new Chart(refLine.current.getContext('2d'), { type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } } });
+                
+                if (refLine.current) {
+                    inst.current.line = new Chart(refLine.current.getContext('2d'), { type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } } });
+                }
+
                 const counts = ['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Beres').length);
-                inst.current.pie = new Chart(refPie.current.getContext('2d'), { type: 'doughnut', data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } } });
-                const itemsMap = {}; transactions.filter(t=>t.status==='Beres' && (t.jenis==='Sparepart' || t.jenis==='Aksesoris')).forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; }); const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
-                if(topItems.length > 0 && refBar.current) { inst.current.bar = new Chart(refBar.current.getContext('2d'), { type: 'bar', data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 8 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false} } } } }); }
+                if (refPie.current) {
+                    inst.current.pie = new Chart(refPie.current.getContext('2d'), { type: 'doughnut', data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } } });
+                }
+
+                const itemsMap = {}; transactions.filter(t=>t.status==='Beres' && (t.jenis==='Sparepart' || t.jenis==='Aksesoris')).forEach(t => { itemsMap[t.nama || 'Tanpa Nama'] = (itemsMap[t.nama || 'Tanpa Nama'] || 0) + (t.jumlah || 1); }); const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
+                if(topItems.length > 0 && refBar.current) { 
+                    inst.current.bar = new Chart(refBar.current.getContext('2d'), { type: 'bar', data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 8 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false} } } } }); 
+                }
+                
                 return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
             }, [transactions, settings.theme, settings.periodFormat, getColors]);
 
             const totalSelesai = transactions.filter(t => t.status === 'Beres');
-            const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
-            const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
+            const totalOmset = totalSelesai.reduce((s,i) => s + ((i.jual||0) * (i.jumlah||1)), 0);
+            const totalLaba = totalSelesai.reduce((s,i) => s + (i.laba||0), 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
             
             const groupedByMonth = useMemo(() => {
                 const groups = {};
                 totalSelesai.forEach(t => {
+                    if(!t.tanggal) return;
                     const d = new Date(t.tanggal);
                     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
                     const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
                     if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, count: 0, countServis: 0, countBarang: 0, countTopUp: 0, itemsLaku: 0 };
-                    groups[key].totalOmset += (t.jual * t.jumlah); groups[key].totalLaba += t.laba; groups[key].totalModal += (t.modal * t.jumlah); groups[key].count += 1;
-                    if(t.jenis === 'Servis') { groups[key].countServis += 1; } else if (t.jenis === 'Top Up') { groups[key].countTopUp += 1; } else { groups[key].countBarang += 1; groups[key].itemsLaku += t.jumlah; }
+                    groups[key].totalOmset += ((t.jual||0) * (t.jumlah||1)); groups[key].totalLaba += (t.laba||0); groups[key].totalModal += ((t.modal||0) * (t.jumlah||1)); groups[key].count += 1;
+                    if(t.jenis === 'Servis') { groups[key].countServis += 1; } else if (t.jenis === 'Top Up') { groups[key].countTopUp += 1; } else { groups[key].countBarang += 1; groups[key].itemsLaku += (t.jumlah||1); }
                 });
                 return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); 
             }, [totalSelesai]);
@@ -1247,17 +1280,17 @@
                 <BottomSheet isOpen={!!item} onClose={onClose} title="Detailnya Nih">
                     <div className="space-y-5 pt-4">
                         <div className="text-center bg-[var(--md-sys-color-surface)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10"><span className="material-symbols-rounded text-[100px]">{iconMap[currentItem.jenis]}</span></div>
-                            <h2 className="text-2xl font-extrabold text-[var(--md-sys-color-on-surface)] mb-2 leading-tight relative z-10">{currentItem.nama}</h2>
-                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm font-medium mb-4 relative z-10">{formatDateLong(currentItem.tanggal)}</p>
-                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">person</span> {currentItem.pelanggan}</div>
+                            <div className="absolute top-0 right-0 p-4 opacity-10"><span className="material-symbols-rounded text-[100px]">{iconMap[currentItem?.jenis] || 'build'}</span></div>
+                            <h2 className="text-2xl font-extrabold text-[var(--md-sys-color-on-surface)] mb-2 leading-tight relative z-10">{currentItem?.nama || ''}</h2>
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm font-medium mb-4 relative z-10">{formatDateLong(currentItem?.tanggal)}</p>
+                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">person</span> {currentItem?.pelanggan || ''}</div>
                         </div>
 
                         <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-3xl)] p-6 shadow-md border border-[var(--md-sys-color-outline-variant)]">
-                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span><span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem.jumlah}x</span></div>
-                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem.modal)}</span></div>
-                            <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem.jual)}</span></div>
-                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center"><div><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span></div><span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem.laba)}</span></div>
+                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span><span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem?.jumlah || 1}x</span></div>
+                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem?.modal || 0)}</span></div>
+                            <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem?.jual || 0)}</span></div>
+                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center"><div><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span></div><span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem?.laba || 0)}</span></div>
                         </div>
 
                         <div>
@@ -1269,7 +1302,7 @@
                                     else if (s === 'Jalan') activeClass = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] border-transparent shadow-lg scale-[1.03]';
                                     else if (s === 'Gagal') activeClass = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-transparent shadow-lg scale-[1.03]';
                                     const inactiveClass = 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)] active:scale-95';
-                                    return (<button key={s} onClick={() => updateStatus(s)} className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 spring-bounce ${currentItem.status === s ? activeClass : inactiveClass}`}>{s}</button>);
+                                    return (<button key={s} onClick={() => updateStatus(s)} className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 spring-bounce ${currentItem?.status === s ? activeClass : inactiveClass}`}>{s}</button>);
                                 })}
                             </div>
                         </div>
@@ -1299,24 +1332,20 @@
 
             const activeIndex = TABS_ORDER.indexOf(activeTab);
 
-            // Set posisi otomatis berdasarkan activeTab dari Context
             useEffect(() => {
                 tabsRef.current.forEach((el, i) => {
                     if (!el) return;
                     el.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease';
 
                     if (i < activeIndex) {
-                        // Layar Lama (Di Belakang)
                         el.style.transform = 'translate3d(-25%, 0, 0) scale(0.95)';
                         el.style.opacity = '0';
                         el.style.pointerEvents = 'none';
                     } else if (i === activeIndex) {
-                        // Layar Aktif (Tengah)
                         el.style.transform = 'translate3d(0, 0, 0) scale(1)';
                         el.style.opacity = '1';
                         el.style.pointerEvents = 'auto';
                     } else {
-                        // Layar Baru (Di Depan / Kanan)
                         el.style.transform = 'translate3d(100%, 0, 0) scale(1)';
                         el.style.opacity = '1';
                         el.style.pointerEvents = 'none';
@@ -1324,14 +1353,14 @@
                 });
             }, [activeIndex]);
 
-            // Fisika geseran jari murni (Tanpa Library)
+            // Fisika geseran jari murni
             useEffect(() => {
                 const container = containerRef.current;
                 if (!container) return;
 
                 let startX = 0, startY = 0, startTime = 0;
                 let isDragging = false;
-                let isScrolling = null; // null = belum tau, true = vertikal, false = horizontal
+                let isScrolling = null; 
 
                 const onStart = (e) => {
                     if (e.touches.length > 1) return;
@@ -1341,7 +1370,6 @@
                     isDragging = true;
                     isScrolling = null;
 
-                    // Matiin animasi biar jari nempel sempurna
                     tabsRef.current.forEach(el => { if (el) el.style.transition = 'none'; });
                 };
 
@@ -1352,7 +1380,6 @@
                     const deltaX = x - startX;
                     const deltaY = y - startY;
 
-                    // Sensor ngecek dia mau scroll kebawah atau geser tab ke samping
                     if (isScrolling === null) {
                         if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 5) {
                             isScrolling = true;
@@ -1361,40 +1388,34 @@
                         }
                     }
 
-                    if (isScrolling) return; // Kalau scroll vertikal, batalin physics tab
-
-                    // Cegah browser nge-scroll vertikal/back pas lagi asik geser tab
-                    if (isScrolling === false && e.cancelable) {
-                        e.preventDefault(); 
-                    }
+                    if (isScrolling) return; 
+                    if (isScrolling === false && e.cancelable) e.preventDefault(); 
 
                     const sw = window.innerWidth;
                     const currentTab = tabsRef.current[activeIndex];
                     const nextTab = tabsRef.current[activeIndex + 1];
                     const prevTab = tabsRef.current[activeIndex - 1];
 
-                    // Swipe Kiri (Narik layar baru dari kanan menimpa ke tengah)
+                    // Swipe Kiri (Narik layer baru)
                     if (deltaX < 0) {
                         if (nextTab) {
                             nextTab.style.transform = `translate3d(${sw + deltaX}px, 0, 0)`;
-                            // Efek Parallax tab bawahnya
                             const progress = Math.min(Math.abs(deltaX) / sw, 1);
                             currentTab.style.transform = `translate3d(${deltaX * 0.25}px, 0, 0) scale(${1 - progress * 0.05})`;
                             currentTab.style.opacity = 1 - progress;
                         } else {
-                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok (Rubber band)
+                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok
                         }
                     }
-                    // Swipe Kanan (Mbuang layar sekarang ke kanan, nampilin layar lama dari kiri)
+                    // Swipe Kanan (Mbuang layer sekarang)
                     else if (deltaX > 0) {
                         if (prevTab) {
                             currentTab.style.transform = `translate3d(${deltaX}px, 0, 0)`;
-                            // Efek Parallax tab lama maju membesar
                             const progress = Math.min(deltaX / sw, 1);
                             prevTab.style.transform = `translate3d(${-sw * 0.25 * (1 - progress)}px, 0, 0) scale(${0.95 + progress * 0.05})`;
                             prevTab.style.opacity = progress;
                         } else {
-                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok (Rubber band)
+                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok
                         }
                     }
                 };
@@ -1402,18 +1423,13 @@
                 const onEnd = (e) => {
                     if (!isDragging) return;
                     isDragging = false;
-                    
-                    if (isScrolling) {
-                        triggerReset();
-                        return;
-                    }
+                    if (isScrolling) { triggerReset(); return; }
 
                     const x = e.changedTouches[0].clientX;
                     const deltaX = x - startX;
                     const sw = window.innerWidth;
                     const velocity = Math.abs(deltaX) / (Date.now() - startTime);
 
-                    // Pindah kalau geser lewat 30% layar, atau di-flick (geser cepet)
                     const crossedThreshold = Math.abs(deltaX) > sw * 0.3 || velocity > 0.6;
 
                     if (crossedThreshold) {
@@ -1425,7 +1441,7 @@
                             triggerReset();
                         }
                     } else {
-                        triggerReset(); // Balik ke posisi semula
+                        triggerReset();
                     }
                 };
 
@@ -1451,10 +1467,9 @@
             }, [activeIndex, setActiveTab]);
 
             return (
-                <div className="h-[100dvh] w-full max-w-lg mx-auto flex flex-col relative bg-[var(--md-sys-color-background)] overflow-hidden sm:border-x sm:border-[var(--md-sys-color-outline-variant)] sm:shadow-2xl">
+                <div className="h-[100dvh] w-full max-w-lg mx-auto flex flex-col relative bg-black overflow-hidden sm:border-x sm:border-[var(--md-sys-color-outline-variant)] sm:shadow-2xl">
                     
-                    {/* CONTAINER UTAMA (RENDER SEMUA TAB JADI TUMPUKAN) */}
-                    <main ref={containerRef} className="flex-1 relative overflow-hidden bg-black">
+                    <main ref={containerRef} className="flex-1 relative overflow-hidden bg-black touch-none">
                         {TABS_ORDER.map((tabId, index) => (
                             <div 
                                 key={tabId}

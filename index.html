@@ -497,6 +497,9 @@
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
             const [mounted, setMounted] = useState(false);
+            const [dragClosing, setDragClosing] = useState(false);
+            const sheetRef = useRef(null);
+            const contentRef = useRef(null);
 
             useEffect(() => { setMounted(true); }, []);
 
@@ -508,9 +511,18 @@
                 return () => { if (isOpen) window.removeEventListener('popstate', handlePopState); };
             }, [isOpen, title]);
 
+            // Reset drag/transform state setiap kali sheet dibuka ulang
+            useEffect(() => {
+                if (isOpen && sheetRef.current) {
+                    sheetRef.current.style.transition = '';
+                    sheetRef.current.style.transform = '';
+                    setDragClosing(false);
+                }
+            }, [isOpen]);
+
             const executeClose = () => {
                 setIsClosing(true);
-                setTimeout(() => { onClose(); setIsClosing(false); }, 350); 
+                setTimeout(() => { onClose(); setIsClosing(false); setDragClosing(false); }, 350); 
             };
 
             const handleUIClose = () => {
@@ -521,6 +533,87 @@
                 }
             };
 
+            // --- SWIPE FISIK UNTUK NUTUP SHEET (GAK BENTROK SAMA SCROLL KONTEN) ---
+            useEffect(() => {
+                const sheetEl = sheetRef.current;
+                const contentEl = contentRef.current;
+                if (!sheetEl || !isOpen) return;
+
+                let startY = 0;
+                let startTime = 0;
+                let dragging = false;
+                let verticalIntent = null; // null = belum ketauan, true = geser sheet, false = scroll konten
+                let startedInContent = false;
+
+                const onStart = (e) => {
+                    startY = e.touches[0].clientY;
+                    startTime = Date.now();
+                    dragging = true;
+                    verticalIntent = null;
+                    startedInContent = !!(contentEl && contentEl.contains(e.target));
+                    sheetEl.style.transition = 'none';
+                };
+
+                const onMove = (e) => {
+                    if (!dragging) return;
+                    const y = e.touches[0].clientY;
+                    const deltaY = y - startY;
+
+                    if (verticalIntent === null) {
+                        if (Math.abs(deltaY) > 6) {
+                            if (startedInContent) {
+                                // Kalo mulai dari dalem konten yg scrollable, cuma boleh nge-drag sheet
+                                // kalo konten udah di paling atas & jarinya narik ke bawah
+                                const atTop = contentEl.scrollTop <= 0;
+                                verticalIntent = deltaY > 0 && atTop;
+                            } else {
+                                // Mulai dari handle/header, bebas geser ke bawah buat nutup
+                                verticalIntent = deltaY > 0;
+                            }
+                        }
+                    }
+
+                    if (!verticalIntent) return; // biarin scroll konten jalan normal
+
+                    if (e.cancelable) e.preventDefault();
+                    sheetEl.style.transform = `translate3d(0, ${deltaY}px, 0)`;
+                };
+
+                const onEnd = (e) => {
+                    if (!dragging) return;
+                    dragging = false;
+                    if (!verticalIntent) { verticalIntent = null; return; }
+
+                    const y = e.changedTouches[0].clientY;
+                    const deltaY = Math.max(y - startY, 0);
+                    const elapsed = Math.max(Date.now() - startTime, 1);
+                    const velocity = deltaY / elapsed;
+                    const sheetHeight = sheetEl.offsetHeight || window.innerHeight;
+                    const crossedThreshold = deltaY > sheetHeight * 0.28 || velocity > 0.6;
+
+                    sheetEl.style.transition = 'transform 0.3s cubic-bezier(0.2, 0, 0, 1)';
+
+                    if (crossedThreshold) {
+                        sheetEl.style.transform = `translate3d(0, 100%, 0)`;
+                        setDragClosing(true);
+                        setTimeout(() => { handleUIClose(); }, 280);
+                    } else {
+                        sheetEl.style.transform = `translate3d(0, 0, 0)`;
+                    }
+                    verticalIntent = null;
+                };
+
+                sheetEl.addEventListener('touchstart', onStart, { passive: true });
+                sheetEl.addEventListener('touchmove', onMove, { passive: false });
+                sheetEl.addEventListener('touchend', onEnd);
+
+                return () => {
+                    sheetEl.removeEventListener('touchstart', onStart);
+                    sheetEl.removeEventListener('touchmove', onMove);
+                    sheetEl.removeEventListener('touchend', onEnd);
+                };
+            }, [isOpen, title]);
+
             if (!mounted) return null;
             if (!isOpen && !isClosing) return null;
 
@@ -529,7 +622,7 @@
                     <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
                          onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
                     
-                    <div className={`relative w-full max-w-2xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
+                    <div ref={sheetRef} className={`relative w-full max-w-2xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing && !dragClosing ? 'animate-sheet-down' : (!isClosing ? 'animate-sheet-up' : '')}`}
                          style={{ paddingBottom: 'var(--sa-bottom)', height: '85dvh' }}>
                         
                         <div className="w-full flex justify-center pt-5 pb-3 shrink-0" onClick={handleUIClose}>
@@ -541,7 +634,7 @@
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
-                        <div className="px-6 pb-6 flex-1 overflow-y-auto no-scrollbar overscroll-contain">{children}</div>
+                        <div ref={contentRef} className="px-6 pb-6 flex-1 overflow-y-auto no-scrollbar overscroll-contain">{children}</div>
                     </div>
                 </div>
             );
@@ -864,7 +957,7 @@
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
-                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
                                             {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
                                                 <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
                                             ))}
@@ -872,7 +965,7 @@
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
-                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
                                             {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
                                                 <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
                                             ))}
@@ -993,7 +1086,7 @@
                                 {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2 p-1 bg-black/20 rounded-full" onClick={() => setSearch('')}>close</span>}
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1 md:flex-wrap">
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1 md:flex-wrap hscroll-x">
                                 {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(f => (
                                     <button key={f} onClick={() => setFilterType(f)}
                                         className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 ${
@@ -1428,6 +1521,8 @@
                 let startX = 0, startY = 0, startTime = 0;
                 let isDragging = false;
                 let isScrolling = null; 
+                let hScrollEl = null; // elemen chip/capsule yg lagi digeser horizontal, kalo ada
+                let hScrollStartLeft = 0;
 
                 const onStart = (e) => {
                     if (e.touches.length > 1) return;
@@ -1437,7 +1532,12 @@
                     isDragging = true;
                     isScrolling = null;
 
-                    tabsRef.current.forEach(el => { if (el) el.style.transition = 'none'; });
+                    // Cek kalo jari mulai dari row yang bisa di-scroll horizontal sendiri (misal capsule filter)
+                    const candidate = e.target.closest ? e.target.closest('.hscroll-x') : null;
+                    hScrollEl = (candidate && candidate.scrollWidth > candidate.clientWidth) ? candidate : null;
+                    hScrollStartLeft = hScrollEl ? hScrollEl.scrollLeft : 0;
+
+                    if (!hScrollEl) tabsRef.current.forEach(el => { if (el) el.style.transition = 'none'; });
                 };
 
                 const onMove = (e) => {
@@ -1456,6 +1556,14 @@
                     }
 
                     if (isScrolling) return; 
+
+                    // Kalo lagi di dalem capsule yg scrollable, biarin dia yang gerak, jangan geser tab
+                    if (hScrollEl) {
+                        if (isScrolling === false && e.cancelable) e.preventDefault();
+                        hScrollEl.scrollLeft = hScrollStartLeft - deltaX;
+                        return;
+                    }
+
                     if (isScrolling === false && e.cancelable) e.preventDefault(); 
 
                     const sw = window.innerWidth;
@@ -1488,6 +1596,9 @@
                 const onEnd = (e) => {
                     if (!isDragging) return;
                     isDragging = false;
+
+                    if (hScrollEl) { hScrollEl = null; return; } // capsule udah urus scroll-nya sendiri, ga usah proses tab
+
                     if (isScrolling) { triggerReset(); return; }
 
                     const x = e.changedTouches[0].clientX;
@@ -1530,6 +1641,7 @@
                     container.removeEventListener('touchend', onEnd);
                 };
             }, [activeIndex, setActiveTab, settings.hasStarted]);
+
 
             if (!settings.hasStarted) return <SplashScreen />;
 

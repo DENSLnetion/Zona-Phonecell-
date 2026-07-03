@@ -40,6 +40,9 @@
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
             --md-shape-3xl: 40px;
+
+            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.4), 0px 1px 3px 0px rgba(0, 0, 0, 0.6);
+            --md-elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.4), 0px 2px 3px 0px rgba(0, 0, 0, 0.6);
         }
 
         /* --- THEMES (ALL FORCED DARK MODE) --- */
@@ -467,21 +470,20 @@
             );
         };
 
-        // FIXED: BottomSheet dijamin anti-melayang, absolut nempel ke bawah.
+        // FIXED: Pake React Portal biar Bottom Sheet bebas dari kurungan container scroll tab
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
+            const [mounted, setMounted] = useState(false);
+
+            useEffect(() => { setMounted(true); }, []);
 
             useEffect(() => {
-                if (isOpen) {
-                    window.history.pushState({ modal: title }, '');
-                }
+                if (isOpen) window.history.pushState({ modal: title }, '');
                 const handlePopState = (e) => { if (isOpen) executeClose(); };
                 if (isOpen) window.addEventListener('popstate', handlePopState);
                 
-                return () => {
-                    if (isOpen) window.removeEventListener('popstate', handlePopState);
-                };
-            }, [isOpen]);
+                return () => { if (isOpen) window.removeEventListener('popstate', handlePopState); };
+            }, [isOpen, title]);
 
             const executeClose = () => {
                 setIsClosing(true);
@@ -496,15 +498,19 @@
                 }
             };
 
+            if (!mounted) return null;
             if (!isOpen && !isClosing) return null;
 
-            return (
-                <div className="fixed top-0 left-0 right-0 bottom-0 z-[100] overflow-hidden" style={{ zIndex: 100 }}>
-                    <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
+            // Di-render pakai createPortal supaya langsung nempel ke <body>, bukan dalem scroll tab
+            const sheetContent = (
+                <div className="fixed inset-0 z-[9999] flex flex-col justify-end" style={{ pointerEvents: 'auto' }}>
+                    <div className={`absolute inset-0 bg-black/70 backdrop-blur-sm ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
                          onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
-                    {/* Fixed 70dvh dan absolut ke bottom 0 */}
-                    <div className={`absolute bottom-0 left-0 right-0 w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
-                         style={{ paddingBottom: 'var(--sa-bottom)', height: '70dvh' }}>
+                    
+                    {/* Tingginya ditambah jadi 85dvh biar luas */}
+                    <div className={`relative w-full max-w-lg mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
+                         style={{ paddingBottom: 'var(--sa-bottom)', height: '85dvh' }}>
+                        
                         <div className="w-full flex justify-center pt-5 pb-3 shrink-0" onClick={handleUIClose}>
                             <div className="w-12 h-1.5 rounded-full bg-[var(--md-sys-color-outline)] opacity-50" />
                         </div>
@@ -514,11 +520,12 @@
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
-                        {/* Area Konten Scroll */}
                         <div className="px-6 pb-6 flex-1 overflow-y-auto no-scrollbar overscroll-contain">{children}</div>
                     </div>
                 </div>
             );
+
+            return ReactDOM.createPortal(sheetContent, document.body);
         };
 
         const SnackbarContainer = () => {
@@ -713,8 +720,8 @@
             
             // Pewarnaan logis
             let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; // Default (Jalan)
-            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
-            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
+            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; // Material warna-warni
+            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; // Merah
 
             const timerRef = useRef(null);
             const isDragging = useRef(false);
@@ -1249,7 +1256,7 @@
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode)</p>
+                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
                         <div className="grid grid-cols-3 gap-4">
                             {themes.map(t => (
                                 <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}

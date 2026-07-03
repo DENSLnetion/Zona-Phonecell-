@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Zona Poncell</title>
+    <meta name="theme-color" content="#ffffff" id="meta-theme-color">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Zona Poncell Ultimate</title>
     
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -16,204 +19,360 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Material Symbols -->
+    <!-- Google Fonts: Plus Jakarta Sans for Modern Expressive Look & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        'primary-light': 'var(--color-primary-light)',
+                        'primary-dark': 'var(--color-primary-dark)',
+                        surface: 'var(--color-surface)',
+                        'surface-alt': 'var(--color-surface-alt)',
+                        background: 'var(--color-background)',
+                        text: 'var(--color-text)',
+                        'text-muted': 'var(--color-text-muted)',
+                        border: 'var(--color-border)',
+                        success: '#10b981',
+                        danger: '#f43f5e',
+                        warning: '#f59e0b',
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px var(--color-primary-glow)',
+                        'floating': '0 20px 40px -15px var(--color-primary-glow)',
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                        '5xl': '2.5rem',
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'bounce-soft': 'bounceSoft 2s infinite',
+                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        bounceSoft: {
+                            '0%, 100%': { transform: 'translateY(-2%)' },
+                            '50%': { transform: 'translateY(2%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        /* Base Material You Variables (Default: Blue) */
+        /* === DYNAMIC THEME SYSTEM === */
         :root {
-            /* Light Theme */
-            --md-sys-color-primary: #0061a4;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #d1e4ff;
-            --md-sys-color-on-primary-container: #001d36;
+            /* Default Blue Theme (Light) */
+            --color-primary: #2563eb;
+            --color-primary-light: #dbeafe;
+            --color-primary-dark: #1d4ed8;
+            --color-primary-glow: rgba(37, 99, 235, 0.4);
             
-            --md-sys-color-secondary: #535f70;
-            --md-sys-color-on-secondary: #ffffff;
-            --md-sys-color-secondary-container: #d7e3f7;
-            --md-sys-color-on-secondary-container: #101c2b;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-surface-alt: #f1f5f9;
+            --color-text: #0f172a;
+            --color-text-muted: #64748b;
+            --color-border: #e2e8f0;
             
-            --md-sys-color-error: #ba1a1a;
-            --md-sys-color-on-error: #ffffff;
-            --md-sys-color-error-container: #ffdad6;
-            --md-sys-color-on-error-container: #410002;
-            
-            --md-sys-color-background: #fdfcff;
-            --md-sys-color-on-background: #1a1c1e;
-            --md-sys-color-surface: #fdfcff;
-            --md-sys-color-on-surface: #1a1c1e;
-            --md-sys-color-surface-variant: #dfe2eb;
-            --md-sys-color-on-surface-variant: #42474e;
-            --md-sys-color-outline: #73777f;
-            --md-sys-color-outline-variant: #c3c7cf;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
         }
 
-        /* Dark Theme Variables */
-        .dark-theme {
-            --md-sys-color-primary: #9ecaeb;
-            --md-sys-color-on-primary: #003258;
-            --md-sys-color-primary-container: #00497d;
-            --md-sys-color-on-primary-container: #d1e4ff;
+        /* Dark Mode Variables */
+        .dark {
+            --color-background: #0f172a;
+            --color-surface: #1e293b;
+            --color-surface-alt: #334155;
+            --color-text: #f8fafc;
+            --color-text-muted: #94a3b8;
+            --color-border: #334155;
             
-            --md-sys-color-secondary: #bbc7db;
-            --md-sys-color-on-secondary: #253140;
-            --md-sys-color-secondary-container: #3b4858;
-            --md-sys-color-on-secondary-container: #d7e3f7;
-            
-            --md-sys-color-error: #ffb4ab;
-            --md-sys-color-on-error: #690005;
-            --md-sys-color-error-container: #93000a;
-            --md-sys-color-on-error-container: #ffb4ab;
-            
-            --md-sys-color-background: #1a1c1e;
-            --md-sys-color-on-background: #e2e2e6;
-            --md-sys-color-surface: #1a1c1e;
-            --md-sys-color-on-surface: #e2e2e6;
-            --md-sys-color-surface-variant: #42474e;
-            --md-sys-color-on-surface-variant: #c3c7cf;
-            --md-sys-color-outline: #8d9199;
-            --md-sys-color-outline-variant: #42474e;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        /* Theme Variations - Green */
-        .theme-green {
-            --md-sys-color-primary: #146c2e;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #9ff7ae;
-            --md-sys-color-on-primary-container: #002108;
-            --md-sys-color-secondary: #526350;
-            --md-sys-color-secondary-container: #d5e8cf;
-            --md-sys-color-on-secondary-container: #101f10;
+        /* Theme Variants */
+        .theme-emerald {
+            --color-primary: #10b981;
+            --color-primary-light: #d1fae5;
+            --color-primary-dark: #047857;
+            --color-primary-glow: rgba(16, 185, 129, 0.4);
         }
-        .dark-theme.theme-green {
-            --md-sys-color-primary: #83da93;
-            --md-sys-color-on-primary: #003911;
-            --md-sys-color-primary-container: #00531a;
-            --md-sys-color-on-primary-container: #9ff7ae;
-            --md-sys-color-secondary: #b9ccb4;
-            --md-sys-color-secondary-container: #3a4b39;
-        }
+        .dark.theme-emerald { --color-primary-light: #064e3b; }
 
-        /* Theme Variations - Purple */
-        .theme-purple {
-            --md-sys-color-primary: #6750a4;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #eaddff;
-            --md-sys-color-on-primary-container: #21005d;
-            --md-sys-color-secondary: #625b71;
-            --md-sys-color-secondary-container: #e8def8;
-            --md-sys-color-on-secondary-container: #1d192b;
+        .theme-amethyst {
+            --color-primary: #8b5cf6;
+            --color-primary-light: #ede9fe;
+            --color-primary-dark: #6d28d9;
+            --color-primary-glow: rgba(139, 92, 246, 0.4);
         }
-        .dark-theme.theme-purple {
-            --md-sys-color-primary: #d0bcff;
-            --md-sys-color-on-primary: #381e72;
-            --md-sys-color-primary-container: #4f378b;
-            --md-sys-color-on-primary-container: #eaddff;
-            --md-sys-color-secondary: #ccc2dc;
-            --md-sys-color-secondary-container: #4a4458;
-        }
+        .dark.theme-amethyst { --color-primary-light: #4c1d95; }
 
-        /* Global Reset & Utility */
+        .theme-rose {
+            --color-primary: #f43f5e;
+            --color-primary-light: #ffe4e6;
+            --color-primary-dark: #be123c;
+            --color-primary-glow: rgba(244, 63, 94, 0.4);
+        }
+        .dark.theme-rose { --color-primary-light: #881337; }
+
+        .theme-sunset {
+            --color-primary: #f97316;
+            --color-primary-light: #ffedd5;
+            --color-primary-dark: #c2410c;
+            --color-primary-glow: rgba(249, 115, 22, 0.4);
+        }
+        .dark.theme-sunset { --color-primary-light: #7c2d12; }
+
+        /* === GLOBAL RESETS & UTILITIES === */
         body { 
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background);
+            background-color: var(--color-background);
+            color: var(--color-text);
             -webkit-tap-highlight-color: transparent;
             margin: 0;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow: hidden; /* Prevent body scroll, handle in #root */
         }
-        ::-webkit-scrollbar { display: none; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
         /* Material Symbols Config */
         .material-symbols-rounded { 
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; 
+            transition: all 0.3s ease;
         }
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
-        /* Animations */
-        .page-enter { animation: slideUpFade 0.3s cubic-bezier(0.2, 0, 0, 1) forwards; }
-        @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        
-        .ripple {
+        /* Custom Ripple Effect */
+        .ripple-btn {
             position: relative;
             overflow: hidden;
+            transform: translate3d(0, 0, 0);
         }
-        .ripple::after {
+        .ripple-btn::after {
             content: "";
+            display: block;
             position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 100%;
-            background: currentColor;
-            border-radius: 50%;
-            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
             opacity: 0;
-            transition: transform 0.4s, opacity 0.4s;
+            transition: transform .5s, opacity 1s;
         }
-        .ripple:active::after {
-            transform: translate(-50%, -50%) scale(2);
-            opacity: 0.12;
+        .ripple-btn:active::after {
+            transform: scale(0, 0);
+            opacity: 0.3;
             transition: 0s;
         }
+        .dark .ripple-btn::after {
+            background-image: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 10.01%);
+        }
 
-        /* Material UI Classes */
-        .md-surface { background-color: var(--md-sys-color-surface); }
-        .md-surface-variant { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
-        .md-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        .md-primary-container { background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
-        .md-text-primary { color: var(--md-sys-color-primary); }
-        .md-error-container { background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
-        
-        .md-input {
-            width: 100%;
-            background-color: transparent;
-            color: var(--md-sys-color-on-surface);
-            border: none;
-            outline: none;
-            padding: 16px;
-            font-size: 16px;
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--glass-border);
         }
-        .md-input-container {
-            background-color: var(--md-sys-color-surface-variant);
-            border-radius: 4px 4px 0 0;
-            border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
-            transition: background-color 0.2s, border-color 0.2s;
+
+        .glass-card {
+            background: var(--color-surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--tw-shadow-soft);
+        }
+
+        /* Custom Floating Inputs */
+        .floating-input-group {
             position: relative;
+            margin-bottom: 1.5rem;
         }
-        .md-input-container:focus-within {
-            border-bottom: 2px solid var(--md-sys-color-primary);
+        .floating-input {
+            width: 100%;
+            padding: 1.25rem 1rem 0.5rem 1rem;
+            background-color: var(--color-surface-alt);
+            border: 2px solid transparent;
+            border-radius: 1rem;
+            color: var(--color-text);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
         }
-        .md-input-container.disabled {
-            opacity: 0.5;
+        .floating-input:focus {
+            border-color: var(--color-primary);
+            background-color: var(--color-surface);
+            box-shadow: 0 0 0 4px var(--color-primary-glow);
+        }
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
             pointer-events: none;
+            transition: all 0.2s ease-out;
+            font-size: 1rem;
+        }
+        .floating-input:focus ~ .floating-label,
+        .floating-input:not(:placeholder-shown) ~ .floating-label {
+            top: 0.5rem;
+            transform: translateY(0);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+        .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
+            color: var(--color-text-muted);
+        }
+        
+        /* Select Styling */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        .dark select {
+             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        }
+
+        /* Bottom Sheet Animation */
+        .bottom-sheet-overlay {
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .bottom-sheet-overlay.active {
+            opacity: 1;
+        }
+        .bottom-sheet {
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+        
+        /* Fullscreen modifications */
+        :fullscreen {
+            background-color: var(--color-background);
+        }
+        :-webkit-full-screen {
+            background-color: var(--color-background);
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-    <div id="root" class="h-full w-full max-w-xl mx-auto flex flex-col relative shadow-2xl"></div>
+<body>
+    <div id="root" class="h-[100dvh] w-full max-w-xl mx-auto flex flex-col relative overflow-hidden bg-background shadow-2xl ring-1 ring-border sm:rounded-3xl sm:h-[95dvh] sm:mt-[2.5dvh]"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
+        const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
-        // --- Helper ---
-        const formatRupiah = (angkaStr) => {
-            if (!angkaStr) return '';
-            const number = parseInt(angkaStr.replace(/[^0-9]/g, ''), 10);
-            if (isNaN(number)) return '';
-            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(number);
-        };
-        const getRawNumber = (rpStr) => {
-            if (!rpStr) return 0;
-            return parseInt(rpStr.replace(/[^0-9]/g, ''), 10) || 0;
+        // --- UTILITIES ---
+        const formatRupiah = (number) => {
+            if (number === null || number === undefined || isNaN(number)) return '0';
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(number).replace('Rp', '').trim();
         };
 
-        // --- Komponen Input Material ---
-        const TextField = ({ label, value, onChange, type = "text", inputMode = "text", disabled = false, isCurrency = false, list }) => {
-            const displayValue = isCurrency ? (value ? `Rp ${formatRupiah(value.toString())}` : '') : value;
+        const getRawNumber = (str) => {
+            if (!str) return 0;
+            return parseInt(str.toString().replace(/[^0-9-]/g, ''), 10) || 0;
+        };
+
+        const formatDate = (isoString) => {
+            const date = new Date(isoString);
+            return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+        };
+
+        const getGreeting = () => {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Selamat Pagi';
+            if (hour < 15) return 'Selamat Siang';
+            if (hour < 18) return 'Selamat Sore';
+            return 'Selamat Malam';
+        };
+
+        // --- COMPONENTS ---
+
+        // 1. Toast Notification System
+        const Toast = ({ message, type = 'success', onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            const icons = {
+                success: 'check_circle',
+                error: 'error',
+                info: 'info'
+            };
+
+            const colors = {
+                success: 'bg-success text-white',
+                error: 'bg-danger text-white',
+                info: 'bg-primary text-white'
+            };
+
+            return (
+                <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-slide-up" style={{ animationDirection: 'normal', animationName: 'slideDown' }}>
+                    <div class={`flex items-center gap-2 px-5 py-3 rounded-full shadow-floating ${colors[type]}`}>
+                        <span class="material-symbols-rounded text-xl">{icons[type]}</span>
+                        <span class="font-semibold text-sm tracking-wide">{message}</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // 2. Modern Floating Input
+        const TextField = ({ label, value, onChange, type = "text", inputMode = "text", disabled = false, isCurrency = false, list, icon }) => {
+            const displayValue = isCurrency ? (value ? formatRupiah(value) : '') : value;
             
             const handleChange = (e) => {
                 if (isCurrency) {
@@ -225,8 +384,7 @@
             };
 
             return (
-                <div class={`md-input-container mt-2 ${disabled ? 'disabled' : ''}`}>
-                    <label class="absolute top-2 left-4 text-[12px] text-[var(--md-sys-color-on-surface-variant)]">{label}</label>
+                <div class={`floating-input-group ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
                     <input
                         type={type}
                         inputMode={inputMode}
@@ -235,362 +393,921 @@
                         disabled={disabled}
                         list={list}
                         placeholder=" "
-                        class="md-input pt-6 pb-2"
+                        class="floating-input pl-12"
                         autoComplete="off"
                     />
+                    <label class="floating-label pl-10">{label}</label>
+                    <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted icon-outlined">
+                        {icon}
+                    </span>
+                    {isCurrency && value && (
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-primary bg-primary-light px-2 py-1 rounded-md">
+                            IDR
+                        </span>
+                    )}
                 </div>
             );
         };
 
-        // --- Main App ---
-        const App = () => {
-            const [transactions, setTransactions] = useState([]);
-            const [activeTab, setActiveTab] = useState('input');
-            const [isLoaded, setIsLoaded] = useState(false);
-            
-            // Pengaturan
-            const [isDark, setIsDark] = useState(false);
-            const [themeColor, setThemeColor] = useState('blue'); // blue, green, purple
+        // 3. Bottom Sheet Modal
+        const BottomSheet = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div class="fixed inset-0 z-50 max-w-xl mx-auto flex flex-col justify-end">
+                    <div class={`absolute inset-0 bottom-sheet-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}></div>
+                    <div class={`relative w-full bg-surface rounded-t-[2.5rem] shadow-2xl bottom-sheet flex flex-col max-h-[90dvh] ${isOpen ? 'active' : ''}`}>
+                        {/* Drag Handle */}
+                        <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onClick={onClose}>
+                            <div class="w-16 h-1.5 bg-border rounded-full"></div>
+                        </div>
+                        
+                        <div class="px-6 pb-4 flex justify-between items-center border-b border-border">
+                            <h2 class="text-xl font-bold text-text">{title}</h2>
+                            <button onClick={onClose} class="p-2 bg-surface-alt rounded-full text-text-muted hover:text-text transition-colors">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        
+                        <div class="p-6 overflow-y-auto no-scrollbar flex-1">
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
-            // Load Data & Settings
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            // State
+            const [transactions, setTransactions] = useState([]);
+            const [activeTab, setActiveTab] = useState('dash');
+            const [isLoaded, setIsLoaded] = useState(false);
+            const [toast, setToast] = useState(null);
+            
+            // UI States
+            const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+            const [selectedItem, setSelectedItem] = useState(null);
+            
+            // Settings
+            const [settings, setSettings] = useState({
+                isDark: false,
+                themeColor: 'blue',
+                chartType: 'bar',
+                userName: 'Juragan',
+                isFullscreen: false
+            });
+
+            // Initialize Data
             useEffect(() => {
-                const savedDb = localStorage.getItem('zp_db_v3');
-                if (savedDb) setTransactions(JSON.parse(savedDb));
-                
-                const savedSettings = localStorage.getItem('zp_settings');
-                if (savedSettings) {
-                    const s = JSON.parse(savedSettings);
-                    setIsDark(s.isDark);
-                    setThemeColor(s.themeColor);
-                }
-                setIsLoaded(true);
+                const loadData = () => {
+                    try {
+                        const savedDb = localStorage.getItem('zp_ultra_db');
+                        if (savedDb) setTransactions(JSON.parse(savedDb));
+                        
+                        const savedSettings = localStorage.getItem('zp_ultra_settings');
+                        if (savedSettings) {
+                            setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
+                        }
+                    } catch (e) {
+                        console.error("Failed to load data", e);
+                    }
+                    setIsLoaded(true);
+                };
+                loadData();
             }, []);
 
             // Save Data
             useEffect(() => {
-                if (isLoaded) localStorage.setItem('zp_db_v3', JSON.stringify(transactions));
+                if (isLoaded) {
+                    localStorage.setItem('zp_ultra_db', JSON.stringify(transactions));
+                }
             }, [transactions, isLoaded]);
 
-            // Apply Theme to Body
+            // Save Settings & Apply Theme
             useEffect(() => {
                 if (!isLoaded) return;
-                const body = document.body;
-                body.className = 'h-screen flex flex-col overflow-hidden'; // reset
-                if (isDark) body.classList.add('dark-theme');
-                if (themeColor !== 'blue') body.classList.add(`theme-${themeColor}`);
+                localStorage.setItem('zp_ultra_settings', JSON.stringify(settings));
                 
-                localStorage.setItem('zp_settings', JSON.stringify({ isDark, themeColor }));
-            }, [isDark, themeColor, isLoaded]);
+                const root = document.documentElement;
+                // Apply Dark Mode
+                if (settings.isDark) {
+                    root.classList.add('dark');
+                    document.getElementById('meta-theme-color').content = '#0f172a';
+                } else {
+                    root.classList.remove('dark');
+                    document.getElementById('meta-theme-color').content = '#f8fafc';
+                }
+                
+                // Apply Theme Color
+                root.className = root.className.replace(/theme-\w+/g, '').trim();
+                if (settings.themeColor !== 'blue') {
+                    root.classList.add(`theme-${settings.themeColor}`);
+                }
+            }, [settings, isLoaded]);
 
-            const itemsDictionary = useMemo(() => [...new Set(transactions.map(t => t.nama))], [transactions]);
+            const showToast = (msg, type='success') => setToast({ message: msg, type });
 
-            const handleSave = (data) => {
-                setTransactions([...transactions, data]);
-                setActiveTab('history');
+            const handleSaveTransaction = (data) => {
+                setTransactions([data, ...transactions]); // Prepend new data
+                setIsAddModalOpen(false);
+                showToast('Catatan berhasil ditambahkan!');
+                if(activeTab !== 'dash') setActiveTab('history');
             };
 
             const handleDelete = (id) => {
-                if (confirm('Hapus catatan ini?')) {
+                if (confirm('Yakin ingin menghapus catatan ini secara permanen?')) {
                     setTransactions(transactions.filter(t => t.id !== id));
+                    setSelectedItem(null);
+                    showToast('Catatan dihapus', 'info');
                 }
             };
 
-            if (!isLoaded) return null;
+            const toggleFullscreen = () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch((err) => {
+                        showToast('Layar penuh tidak didukung di perangkat ini', 'error');
+                    });
+                    setSettings(s => ({...s, isFullscreen: true}));
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                        setSettings(s => ({...s, isFullscreen: false}));
+                    }
+                }
+            };
+
+            if (!isLoaded) return (
+                <div class="h-full flex items-center justify-center bg-background">
+                    <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            );
 
             return (
                 <>
-                    {/* Top App Bar */}
-                    <header class="h-16 px-4 flex items-center justify-between md-surface z-10">
-                        <h1 class="text-xl font-medium" style={{ color: 'var(--md-sys-color-on-surface)' }}>Zona Poncell</h1>
-                        <button onClick={() => setIsDark(!isDark)} class="p-2 rounded-full ripple text-[var(--md-sys-color-on-surface-variant)]">
-                            <span class="material-symbols-rounded icon-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
-                        </button>
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                    
+                    {/* Header */}
+                    <header class="pt-10 pb-4 px-6 bg-surface z-10 rounded-b-3xl shadow-sm border-b border-border flex justify-between items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-xl shadow-inner">
+                                {settings.userName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-text-muted uppercase tracking-wider">{getGreeting()},</p>
+                                <h1 class="text-xl font-extrabold text-text leading-tight">{settings.userName}</h1>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onClick={() => setSettings(s => ({...s, isDark: !s.isDark}))} class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center text-text ripple-btn transition-transform active:scale-95">
+                                <span class="material-symbols-rounded">{settings.isDark ? 'light_mode' : 'dark_mode'}</span>
+                            </button>
+                        </div>
                     </header>
 
-                    {/* Content Area */}
-                    <main class="flex-1 overflow-y-auto relative page-enter" key={activeTab}>
-                        {activeTab === 'input' && <InputTab onSave={handleSave} itemsDict={itemsDictionary} />}
-                        {activeTab === 'dash' && <DashTab data={transactions} />}
-                        {activeTab === 'history' && <HistoryTab data={transactions} onDelete={handleDelete} />}
-                        {activeTab === 'settings' && <SettingsTab 
+                    {/* Main Content Area */}
+                    <main class="flex-1 overflow-y-auto no-scrollbar relative bg-background" key={activeTab}>
+                        {activeTab === 'dash' && <Dashboard data={transactions} chartType={settings.chartType} />}
+                        {activeTab === 'history' && <History data={transactions} onItemClick={setSelectedItem} />}
+                        {activeTab === 'settings' && <Settings 
                             data={transactions} 
-                            setRestore={setTransactions}
-                            themeColor={themeColor} setThemeColor={setThemeColor} 
+                            setTransactions={setTransactions}
+                            settings={settings} 
+                            setSettings={setSettings}
+                            toggleFullscreen={toggleFullscreen}
+                            showToast={showToast}
                         />}
+                        <div class="h-28"></div> {/* Padding for FAB & Nav */}
                     </main>
 
-                    {/* Navigation Bar (Material 3) */}
-                    <nav class="md-surface-variant pb-safe pt-2 pb-3 px-2 flex justify-between items-center shadow-[0_-1px_3px_rgba(0,0,0,0.1)] z-20">
-                        <NavBtn icon="edit_square" label="Catat" active={activeTab === 'input'} onClick={() => setActiveTab('input')} />
-                        <NavBtn icon="bar_chart" label="Laporan" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
-                        <NavBtn icon="receipt_long" label="Histori" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
-                        <NavBtn icon="settings" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
-                    </nav>
+                    {/* Fancy Floating Navigation */}
+                    <div class="absolute bottom-6 left-6 right-6 z-20">
+                        <nav class="glass-panel rounded-[2rem] px-2 py-2 flex justify-between items-center shadow-floating relative">
+                            
+                            {/* Nav Items (Left) */}
+                            <div class="flex flex-1 justify-around">
+                                <NavBtn icon="space_dashboard" label="Beranda" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
+                                <NavBtn icon="receipt_long" label="Riwayat" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+                            </div>
+
+                            {/* Center FAB Space */}
+                            <div class="w-20"></div>
+
+                            {/* Nav Items (Right) */}
+                            <div class="flex flex-1 justify-around">
+                                <NavBtn icon="analytics" label="Analisa" active={activeTab === 'analytics'} onClick={() => {
+                                    showToast('Fitur Analisa Mendalam segera hadir!', 'info');
+                                }} />
+                                <NavBtn icon="tune" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
+                            </div>
+
+                            {/* The Prominent FAB */}
+                            <button 
+                                onClick={() => setIsAddModalOpen(true)}
+                                class="absolute left-1/2 -translate-x-1/2 -top-6 w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-glow transition-transform hover:scale-105 active:scale-95 z-30 group"
+                            >
+                                <span class="material-symbols-rounded text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
+                            </button>
+                        </nav>
+                    </div>
+
+                    {/* Add Transaction Modal */}
+                    <BottomSheet isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Catat Transaksi">
+                        <InputForm onSave={handleSaveTransaction} existingData={transactions} />
+                    </BottomSheet>
+
+                    {/* Item Details Modal */}
+                    <BottomSheet isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title="Detail Transaksi">
+                        {selectedItem && <ItemDetail item={selectedItem} onDelete={handleDelete} onClose={() => setSelectedItem(null)} />}
+                    </BottomSheet>
                 </>
             );
         };
 
-        const InputTab = ({ onSave, itemsDict }) => {
-            const [jenis, setJenis] = useState('Servis');
-            const [nama, setNama] = useState('');
-            const [modalVal, setModalVal] = useState('');
-            const [jualVal, setJualVal] = useState('');
+        // --- SUB VIEWS ---
 
-            // Reset modal saat pilih servis
-            useEffect(() => {
-                if (jenis === 'Servis') setModalVal('0');
-                else if (modalVal === '0') setModalVal('');
-            }, [jenis]);
-
-            const submit = (e) => {
-                e.preventDefault();
-                if (!nama.trim() || !jualVal) return alert("Lengkapi nama dan harga jual.");
-                
-                const m = getRawNumber(modalVal);
-                const j = getRawNumber(jualVal);
-                
-                onSave({
-                    id: Date.now(),
-                    tanggal: new Date().toISOString(),
-                    jenis,
-                    nama: nama.trim(),
-                    modal: m,
-                    jual: j,
-                    laba: j - m
-                });
-            };
-
-            return (
-                <div class="p-4 pb-20">
-                    <form onSubmit={submit} class="space-y-6">
-                        {/* Segmented Button (Material 3) */}
-                        <div class="flex rounded-full border border-[var(--md-sys-color-outline)] overflow-hidden h-10">
-                            {['Servis', 'Sparepart', 'Aksesoris'].map((j, i) => (
-                                <button 
-                                    type="button" key={j} onClick={() => setJenis(j)}
-                                    class={`flex-1 text-sm font-medium transition-colors ripple ${jenis === j ? 'md-primary-container' : 'bg-transparent text-[var(--md-sys-color-on-surface)]'} ${i !== 2 ? 'border-r border-[var(--md-sys-color-outline)]' : ''}`}
-                                >
-                                    {jenis === j && <span class="material-symbols-rounded text-[16px] mr-1 align-middle">check</span>}
-                                    {j}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div class="space-y-2">
-                            <TextField label="Nama Barang / Garapan" value={nama} onChange={setNama} list="item-list" />
-                            <datalist id="item-list">
-                                {itemsDict.map((item, idx) => <option key={idx} value={item} />)}
-                            </datalist>
-                        </div>
-
-                        <div class="flex gap-4">
-                            <div class="flex-1">
-                                <TextField label="Harga Modal" value={modalVal} onChange={setModalVal} inputMode="numeric" isCurrency={true} disabled={jenis === 'Servis'} />
-                            </div>
-                            <div class="flex-1">
-                                <TextField label="Harga Jual" value={jualVal} onChange={setJualVal} inputMode="numeric" isCurrency={true} />
-                            </div>
-                        </div>
-
-                        {/* Laba Card */}
-                        <div class="md-primary-container p-4 rounded-2xl flex justify-between items-center mt-2">
-                            <span class="text-sm font-medium">Estimasi Laba</span>
-                            <span class="text-xl font-bold">
-                                Rp {formatRupiah((getRawNumber(jualVal) - getRawNumber(modalVal)).toString())}
-                            </span>
-                        </div>
-
-                        {/* FAB Style Button */}
-                        <button type="submit" class="w-full md-primary h-14 rounded-full font-medium text-[16px] shadow-md ripple mt-6 flex items-center justify-center gap-2">
-                            <span class="material-symbols-rounded">save</span>
-                            Simpan Catatan
-                        </button>
-                    </form>
-                </div>
-            );
-        };
-
-        const DashTab = ({ data }) => {
+        const Dashboard = ({ data, chartType }) => {
             const chartRef = useRef(null);
             const chartInst = useRef(null);
 
-            const tOmset = data.reduce((a, c) => a + c.jual, 0);
-            const tModal = data.reduce((a, c) => a + c.modal, 0);
-            const tLaba = data.reduce((a, c) => a + c.laba, 0);
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            
+            const currentMonthData = data.filter(d => {
+                const date = new Date(d.tanggal);
+                return date.getMonth() === thisMonth && date.getFullYear() === thisYear;
+            });
 
+            const tOmset = currentMonthData.reduce((a, c) => a + c.jual, 0);
+            const tModal = currentMonthData.reduce((a, c) => a + c.modal, 0);
+            const tLaba = currentMonthData.reduce((a, c) => a + c.laba, 0);
+            const margin = tOmset > 0 ? ((tLaba / tOmset) * 100).toFixed(1) : 0;
+
+            const totalTransactions = currentMonthData.length;
+            const successTransactions = currentMonthData.filter(d => d.status === 'Selesai').length;
+
+            // Chart Rendering Logic
             useEffect(() => {
                 if (chartInst.current) chartInst.current.destroy();
-                if (data.length === 0) return;
+                if (!chartRef.current) return;
 
-                const dates = [...Array(7)].map((_, i) => {
+                const ctx = chartRef.current.getContext('2d');
+                const rootStyle = getComputedStyle(document.documentElement);
+                const primaryColor = rootStyle.getPropertyValue('--color-primary').trim() || '#2563eb';
+                const textColor = rootStyle.getPropertyValue('--color-text-muted').trim() || '#64748b';
+                const gridColor = rootStyle.getPropertyValue('--color-border').trim() || '#e2e8f0';
+
+                // Aggregate last 7 days
+                const last7Days = [...Array(7)].map((_, i) => {
                     const d = new Date();
                     d.setDate(d.getDate() - (6 - i));
                     return d.toISOString().split('T')[0];
                 });
 
-                const laba = dates.map(date => data.filter(d => d.tanggal.startsWith(date)).reduce((s, i) => s + i.laba, 0));
-                const labels = dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+                const labaData = last7Days.map(date => 
+                    data.filter(d => d.tanggal.startsWith(date) && d.status === 'Selesai').reduce((s, i) => s + i.laba, 0)
+                );
+                const labels = last7Days.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
 
-                const ctx = chartRef.current.getContext('2d');
-                // Get CSS variable color for chart
-                const rootStyle = getComputedStyle(document.body);
-                const primaryColor = rootStyle.getPropertyValue('--md-sys-color-primary').trim() || '#0061a4';
-
-                chartInst.current = new Chart(ctx, {
-                    type: 'bar',
+                const config = {
+                    type: chartType === 'pie' ? 'doughnut' : chartType,
                     data: {
                         labels,
                         datasets: [{
-                            label: 'Laba',
-                            data: laba,
-                            backgroundColor: primaryColor,
-                            borderRadius: 4
+                            label: 'Laba Bersih',
+                            data: labaData,
+                            backgroundColor: chartType === 'line' ? 'transparent' : primaryColor,
+                            borderColor: primaryColor,
+                            borderWidth: 2,
+                            borderRadius: chartType === 'bar' ? 6 : 0,
+                            pointBackgroundColor: '#fff',
+                            pointRadius: 4,
+                            fill: true,
+                            tension: 0.4 // curvy lines
                         }]
                     },
                     options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            y: { display: false },
-                            x: { grid: { display: false }, ticks: { color: rootStyle.getPropertyValue('--md-sys-color-on-surface').trim() } }
-                        }
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: rootStyle.getPropertyValue('--color-surface').trim(),
+                                titleColor: rootStyle.getPropertyValue('--color-text').trim(),
+                                bodyColor: rootStyle.getPropertyValue('--color-text').trim(),
+                                borderColor: gridColor,
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: (context) => `Rp ${formatRupiah(context.raw)}`
+                                }
+                            }
+                        },
+                        scales: chartType === 'pie' || chartType === 'doughnut' ? {} : { 
+                            y: { 
+                                display: false, // hide y axis for cleaner look
+                                beginAtZero: true 
+                            },
+                            x: { 
+                                grid: { display: false }, 
+                                ticks: { color: textColor, font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } },
+                                border: { display: false }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
                     }
-                });
+                };
+
+                // Add gradient for line chart
+                if (chartType === 'line') {
+                    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, rootStyle.getPropertyValue('--color-primary-glow').trim());
+                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                    config.data.datasets[0].backgroundColor = gradient;
+                    config.data.datasets[0].fill = true;
+                }
+
+                chartInst.current = new Chart(ctx, config);
+                
                 return () => { if (chartInst.current) chartInst.current.destroy(); }
-            }, [data, document.body.className]); // Re-render chart if theme changes
+            }, [data, chartType, document.documentElement.className]);
 
             return (
-                <div class="p-4 pb-20 space-y-4">
-                    {/* Hero Card */}
-                    <div class="md-primary-container p-6 rounded-3xl shadow-sm">
-                        <p class="text-sm font-medium opacity-80 mb-1">Total Laba Bersih</p>
-                        <p class="text-3xl font-bold">Rp {formatRupiah(tLaba.toString())}</p>
+                <div class="p-6 space-y-6 animate-fade-in">
+                    
+                    {/* Big Hero Card */}
+                    <div class="relative overflow-hidden bg-primary p-6 rounded-[2rem] shadow-floating text-white group">
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+                        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-black opacity-10 rounded-full blur-xl"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-sm font-medium text-white/80">Laba Bersih Bulan Ini</p>
+                                <span class="material-symbols-rounded bg-white/20 p-1.5 rounded-full text-sm">trending_up</span>
+                            </div>
+                            <h2 class="text-4xl font-extrabold tracking-tight mb-4">Rp {formatRupiah(tLaba)}</h2>
+                            
+                            <div class="flex gap-4 pt-4 border-t border-white/20">
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-wider text-white/60 mb-0.5">Total Omset</p>
+                                    <p class="font-semibold">Rp {formatRupiah(tOmset)}</p>
+                                </div>
+                                <div class="w-[1px] bg-white/20"></div>
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-wider text-white/60 mb-0.5">Margin</p>
+                                    <p class="font-semibold">{margin}%</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
+                    {/* Secondary Stats Grid */}
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="md-surface-variant p-4 rounded-2xl">
-                            <p class="text-xs font-medium opacity-70 mb-1">Total Omset</p>
-                            <p class="text-lg font-bold">Rp {formatRupiah(tOmset.toString())}</p>
+                        <div class="bg-surface p-4 rounded-3xl shadow-sm border border-border flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-warning/10 text-warning flex items-center justify-center">
+                                <span class="material-symbols-rounded">build</span>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-muted font-medium">Servis</p>
+                                <p class="text-lg font-bold text-text">{currentMonthData.filter(d=>d.jenis === 'Servis').length}</p>
+                            </div>
                         </div>
-                        <div class="md-error-container p-4 rounded-2xl">
-                            <p class="text-xs font-medium opacity-80 mb-1">Modal Keluar</p>
-                            <p class="text-lg font-bold">Rp {formatRupiah(tModal.toString())}</p>
+                        <div class="bg-surface p-4 rounded-3xl shadow-sm border border-border flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-success/10 text-success flex items-center justify-center">
+                                <span class="material-symbols-rounded">check_circle</span>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-muted font-medium">Selesai</p>
+                                <p class="text-lg font-bold text-text">{successTransactions}/{totalTransactions}</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="md-surface border border-[var(--md-sys-color-outline-variant)] p-4 rounded-3xl mt-4">
-                        <p class="text-sm font-medium mb-4 text-[var(--md-sys-color-on-surface)]">Laba 7 Hari Terakhir</p>
-                        <div class="h-48 w-full">
+                    {/* Chart Section */}
+                    <div class="bg-surface border border-border p-5 rounded-[2rem] shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-base font-bold text-text">Grafik 7 Hari Terakhir</h3>
+                            <div class="px-3 py-1 bg-primary-light text-primary text-xs font-bold rounded-full">
+                                {chartType.toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="h-56 w-full relative">
                             {data.length === 0 ? 
-                                <div class="h-full flex items-center justify-center text-sm opacity-50">Belum ada data</div> : 
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-text-muted">
+                                    <span class="material-symbols-rounded text-4xl mb-2 opacity-50">bar_chart</span>
+                                    <p class="text-sm font-medium">Belum ada data</p>
+                                </div> : 
                                 <canvas ref={chartRef}></canvas>
                             }
                         </div>
                     </div>
+
+                    {/* Recent Activity */}
+                    <div>
+                        <h3 class="text-base font-bold text-text mb-4 px-2">Aktivitas Terakhir</h3>
+                        <div class="space-y-3">
+                            {data.slice(0, 3).map(item => (
+                                <ActivityItem key={item.id} item={item} />
+                            ))}
+                            {data.length === 0 && (
+                                <div class="text-center py-6 text-text-muted bg-surface rounded-3xl border border-border">
+                                    <span class="material-symbols-rounded text-3xl opacity-50 mb-2">inbox</span>
+                                    <p class="text-sm font-medium">Belum ada aktivitas</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             );
         };
 
-        const HistoryTab = ({ data, onDelete }) => {
-            const sorted = [...data].sort((a, b) => b.id - a.id);
+
+        const History = ({ data, onItemClick }) => {
+            const [filter, setFilter] = useState('Semua');
+            const [search, setSearch] = useState('');
+
+            const filteredData = useMemo(() => {
+                return data.filter(item => {
+                    const matchFilter = filter === 'Semua' || item.jenis === filter;
+                    const matchSearch = item.nama.toLowerCase().includes(search.toLowerCase()) || 
+                                        (item.pelanggan && item.pelanggan.toLowerCase().includes(search.toLowerCase()));
+                    return matchFilter && matchSearch;
+                }).sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            }, [data, filter, search]);
+
+            const categories = ['Semua', 'Servis', 'Sparepart', 'Aksesoris'];
 
             return (
-                <div class="p-4 pb-20 space-y-3">
-                    {sorted.length === 0 && <p class="text-center text-sm opacity-50 mt-10">Histori kosong.</p>}
-                    
-                    {sorted.map(item => (
-                        <div key={item.id} class="md-surface border border-[var(--md-sys-color-outline-variant)] p-4 rounded-2xl flex justify-between items-center">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-medium px-2 py-0.5 md-primary-container rounded-sm">{item.jenis}</span>
-                                    <span class="text-[11px] opacity-60">{new Date(item.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</span>
-                                </div>
-                                <p class="font-medium text-[15px]">{item.nama}</p>
-                                <p class="text-sm font-bold md-text-primary mt-1">Laba: Rp {formatRupiah(item.laba.toString())}</p>
-                            </div>
-                            <button onClick={() => onDelete(item.id)} class="p-2 text-[var(--md-sys-color-error)] ripple rounded-full">
-                                <span class="material-symbols-rounded icon-outlined">delete</span>
+                <div class="p-6 space-y-5 animate-fade-in flex flex-col h-full">
+                    {/* Search Bar */}
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Cari garapan atau pelanggan..." 
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            class="w-full bg-surface-alt border border-border text-text rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface transition-all shadow-sm"
+                        />
+                        <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">search</span>
+                    </div>
+
+                    {/* Filter Chips */}
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                        {categories.map(c => (
+                            <button 
+                                key={c}
+                                onClick={() => setFilter(c)}
+                                class={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all shadow-sm ${filter === c ? 'bg-primary text-white scale-105' : 'bg-surface border border-border text-text-muted hover:bg-surface-alt'}`}
+                            >
+                                {c}
                             </button>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
+                    {/* List */}
+                    <div class="flex-1 space-y-3">
+                        {filteredData.length === 0 ? (
+                            <div class="flex flex-col items-center justify-center h-48 text-text-muted">
+                                <span class="material-symbols-rounded text-5xl opacity-20 mb-3">search_off</span>
+                                <p class="font-medium">Tidak ada data ditemukan</p>
+                            </div>
+                        ) : (
+                            filteredData.map(item => (
+                                <div key={item.id} onClick={() => onItemClick(item)} class="cursor-pointer transition-transform active:scale-95">
+                                    <ActivityItem item={item} />
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             );
         };
 
-        const SettingsTab = ({ data, setRestore, themeColor, setThemeColor }) => {
-            const backup = () => {
-                const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `ZP_Backup_${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
+
+        const InputForm = ({ onSave, existingData }) => {
+            const [jenis, setJenis] = useState('Servis');
+            const [nama, setNama] = useState('');
+            const [pelanggan, setPelanggan] = useState('');
+            const [modalVal, setModalVal] = useState('');
+            const [jualVal, setJualVal] = useState('');
+            const [status, setStatus] = useState('Proses');
+            const [catatan, setCatatan] = useState('');
+
+            // Autocomplete dictionary
+            const itemsDict = useMemo(() => [...new Set(existingData.map(t => t.nama))], [existingData]);
+
+            // Reset modal logic
+            useEffect(() => {
+                if (jenis === 'Servis') {
+                    setModalVal('0');
+                } else if (modalVal === '0' || modalVal === 0) {
+                    setModalVal('');
+                }
+            }, [jenis]);
+
+            const submit = (e) => {
+                e.preventDefault();
+                if (!nama.trim() || !jualVal) {
+                    alert("Mohon lengkapi Nama Barang dan Harga Jual!");
+                    return;
+                }
+                
+                const m = getRawNumber(modalVal);
+                const j = getRawNumber(jualVal);
+                
+                onSave({
+                    id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                    tanggal: new Date().toISOString(),
+                    jenis,
+                    nama: nama.trim(),
+                    pelanggan: pelanggan.trim() || 'Umum',
+                    modal: m,
+                    jual: j,
+                    laba: j - m,
+                    status,
+                    catatan: catatan.trim()
+                });
+                
+                // Reset form
+                setNama(''); setPelanggan(''); setModalVal(''); setJualVal(''); setCatatan('');
             };
 
-            const restore = (e) => {
+            const laba = getRawNumber(jualVal) - getRawNumber(modalVal);
+
+            return (
+                <form onSubmit={submit} class="space-y-4">
+                    {/* Category Selector */}
+                    <div class="flex p-1 bg-surface-alt rounded-2xl border border-border relative">
+                        {['Servis', 'Sparepart', 'Aksesoris'].map((j) => (
+                            <button 
+                                type="button" key={j} onClick={() => setJenis(j)}
+                                class={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 z-10 ${jenis === j ? 'text-primary shadow-sm bg-surface' : 'text-text-muted hover:text-text'}`}
+                            >
+                                {j}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon="build" list="item-list" />
+                            <datalist id="item-list">
+                                {itemsDict.map((item, idx) => <option key={idx} value={item} />)}
+                            </datalist>
+                        </div>
+                        <div class="col-span-2">
+                            <TextField label="Nama Pelanggan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                        </div>
+                        
+                        <TextField label="Harga Modal" value={modalVal} onChange={setModalVal} inputMode="numeric" isCurrency={true} icon="inventory_2" disabled={jenis === 'Servis'} />
+                        <TextField label="Harga Jual / Biaya" value={jualVal} onChange={setJualVal} inputMode="numeric" isCurrency={true} icon="payments" />
+                    </div>
+                    
+                    {/* Status & Notes */}
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="floating-input-group !mb-0">
+                            <select 
+                                value={status} onChange={(e) => setStatus(e.target.value)}
+                                class="floating-input pl-12 h-[3.5rem] bg-surface-alt border-transparent focus:bg-surface focus:border-primary text-text font-bold"
+                            >
+                                <option value="Selesai">✅ Selesai</option>
+                                <option value="Proses">⏳ Proses</option>
+                                <option value="Batal">❌ Batal</option>
+                            </select>
+                            <label class="floating-label pl-10" style={{top: '0.5rem', transform: 'translateY(0)', fontSize: '0.75rem', color: 'var(--color-primary)'}}>Status</label>
+                            <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-text-muted icon-outlined">flag</span>
+                        </div>
+                        
+                        <TextField label="Catatan Tambahan" value={catatan} onChange={setCatatan} icon="edit_note" />
+                    </div>
+
+                    {/* Live Profit Preview */}
+                    <div class="bg-primary-light/50 border border-primary-light p-4 rounded-2xl flex justify-between items-center mt-2">
+                        <div>
+                            <p class="text-xs font-semibold text-primary-dark uppercase">Estimasi Laba</p>
+                            <p class="text-2xl font-extrabold text-primary">Rp {formatRupiah(laba)}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                            <span class="material-symbols-rounded">trending_up</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-glow ripple-btn mt-4 flex items-center justify-center gap-2">
+                        <span class="material-symbols-rounded">save</span>
+                        Simpan Transaksi
+                    </button>
+                </form>
+            );
+        };
+
+
+        const ItemDetail = ({ item, onDelete, onClose }) => {
+            const getStatusColor = (status) => {
+                if (status === 'Selesai') return 'text-success bg-success/10 border-success/20';
+                if (status === 'Proses') return 'text-warning bg-warning/10 border-warning/20';
+                return 'text-danger bg-danger/10 border-danger/20';
+            };
+
+            return (
+                <div class="space-y-6">
+                    {/* Header Item */}
+                    <div class="flex items-center gap-4">
+                        <div class={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${item.jenis === 'Servis' ? 'bg-warning/10 text-warning' : item.jenis === 'Sparepart' ? 'bg-primary-light text-primary' : 'bg-amethyst/10 text-amethyst'}`}>
+                            <span class="material-symbols-rounded">
+                                {item.jenis === 'Servis' ? 'home_repair_service' : item.jenis === 'Sparepart' ? 'memory' : 'headphones'}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-text">{item.nama}</h3>
+                            <p class="text-sm font-medium text-text-muted">{formatDate(item.tanggal)}</p>
+                        </div>
+                    </div>
+
+                    {/* Grid Details */}
+                    <div class="bg-surface-alt p-5 rounded-3xl grid grid-cols-2 gap-y-4 gap-x-2 border border-border">
+                        <div>
+                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Kategori</p>
+                            <p class="font-bold text-text">{item.jenis}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Pelanggan</p>
+                            <p class="font-bold text-text">{item.pelanggan || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Harga Modal</p>
+                            <p class="font-bold text-danger">Rp {formatRupiah(item.modal)}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Harga Jual</p>
+                            <p class="font-bold text-success">Rp {formatRupiah(item.jual)}</p>
+                        </div>
+                        <div class="col-span-2 pt-2 border-t border-border mt-2">
+                            <p class="text-xs text-text-muted font-medium mb-1 uppercase tracking-wider">Laba Bersih</p>
+                            <p class="text-2xl font-extrabold text-primary">Rp {formatRupiah(item.laba)}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div class={`px-4 py-1.5 rounded-full border font-bold text-sm flex items-center gap-2 ${getStatusColor(item.status)}`}>
+                            <span class="material-symbols-rounded text-[18px]">
+                                {item.status === 'Selesai' ? 'check_circle' : item.status === 'Proses' ? 'pending' : 'cancel'}
+                            </span>
+                            {item.status}
+                        </div>
+                        
+                        <button onClick={() => onDelete(item.id)} class="flex items-center gap-2 px-4 py-2 text-danger bg-danger/10 hover:bg-danger/20 rounded-full font-bold transition-colors">
+                            <span class="material-symbols-rounded text-[18px]">delete</span>
+                            Hapus
+                        </button>
+                    </div>
+                    
+                    {item.catatan && (
+                        <div class="bg-surface p-4 rounded-2xl border border-border border-l-4 border-l-primary">
+                            <p class="text-xs text-text-muted font-medium mb-1">Catatan Tambahan:</p>
+                            <p class="text-sm font-medium text-text">{item.catatan}</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+
+        const Settings = ({ data, setTransactions, settings, setSettings, toggleFullscreen, showToast }) => {
+            const exportData = (type) => {
+                if (data.length === 0) return showToast('Data masih kosong!', 'error');
+                
+                let content, filename, mimeType;
+                
+                if (type === 'json') {
+                    content = JSON.stringify(data, null, 2);
+                    filename = `ZonCell_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                    mimeType = 'application/json';
+                } else if (type === 'csv') {
+                    const headers = ['ID', 'Tanggal', 'Jenis', 'Nama', 'Pelanggan', 'Modal', 'Jual', 'Laba', 'Status', 'Catatan'];
+                    const rows = data.map(r => [
+                        r.id, r.tanggal, r.jenis, `"${r.nama}"`, `"${r.pelanggan}"`, r.modal, r.jual, r.laba, r.status, `"${r.catatan}"`
+                    ]);
+                    content = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                    filename = `ZonCell_Report_${new Date().toISOString().split('T')[0]}.csv`;
+                    mimeType = 'text/csv';
+                }
+
+                const blob = new Blob([content], { type: mimeType });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                a.click();
+                showToast(`Berhasil export ke ${type.toUpperCase()}`);
+            };
+
+            const handleRestore = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
                 const r = new FileReader();
                 r.onload = (ev) => {
                     try {
                         const parsed = JSON.parse(ev.target.result);
-                        if(Array.isArray(parsed)) { setRestore(parsed); alert("Data dipulihkan."); }
-                    } catch(err) { alert("File tidak valid."); }
+                        if (Array.isArray(parsed)) { 
+                            if(confirm(`Pulihkan ${parsed.length} data? Data lama akan tertimpa.`)) {
+                                setTransactions(parsed); 
+                                showToast("Data berhasil dipulihkan."); 
+                            }
+                        } else throw new Error();
+                    } catch(err) { 
+                        showToast("Format file tidak valid/rusak.", "error"); 
+                    }
                 };
                 r.readAsText(file);
+                e.target.value = null; // reset input
             };
 
+            const handleClear = () => {
+                const conf = prompt('Ketik "HAPUS" untuk menghapus semua data transaksi secara permanen:');
+                if (conf === 'HAPUS') {
+                    setTransactions([]);
+                    showToast('Semua data berhasil dihapus.', 'info');
+                } else if (conf !== null) {
+                    showToast('Gagal memverifikasi penghapusan.', 'error');
+                }
+            };
+
+            const themes = [
+                { id: 'blue', color: '#2563eb', name: 'Ocean' },
+                { id: 'emerald', color: '#10b981', name: 'Emerald' },
+                { id: 'amethyst', color: '#8b5cf6', name: 'Amethyst' },
+                { id: 'rose', color: '#f43f5e', name: 'Rose' },
+                { id: 'sunset', color: '#f97316', name: 'Sunset' },
+            ];
+
             return (
-                <div class="p-4 pb-20 space-y-6">
-                    {/* Theme Selector */}
-                    <div>
-                        <p class="text-sm font-medium mb-3 opacity-70">Warna Tema</p>
-                        <div class="flex gap-4">
-                            {['blue', 'green', 'purple'].map(c => (
+                <div class="p-6 pb-32 space-y-8 animate-fade-in">
+                    
+                    {/* Profile Section */}
+                    <div class="flex items-center gap-4 bg-surface p-5 rounded-3xl border border-border shadow-sm">
+                        <div class="w-16 h-16 rounded-full bg-primary-light text-primary flex items-center justify-center text-3xl font-bold shadow-inner">
+                            {settings.userName.charAt(0)}
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs text-text-muted font-bold uppercase">Profil Toko</p>
+                            <input 
+                                type="text" 
+                                value={settings.userName} 
+                                onChange={(e) => setSettings({...settings, userName: e.target.value || 'Juragan'})}
+                                class="bg-transparent text-xl font-extrabold text-text w-full outline-none border-b-2 border-transparent focus:border-primary transition-colors py-1"
+                            />
+                        </div>
+                        <span class="material-symbols-rounded text-text-muted">edit</span>
+                    </div>
+
+                    {/* Tampilan */}
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Tampilan & Gaya</h3>
+                        
+                        <div class="bg-surface rounded-3xl border border-border shadow-sm overflow-hidden">
+                            <div class="p-4 flex items-center justify-between border-b border-border">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-rounded text-text-muted">dark_mode</span>
+                                    <span class="font-bold text-text">Mode Gelap</span>
+                                </div>
                                 <button 
-                                    key={c} onClick={() => setThemeColor(c)}
-                                    class={`w-12 h-12 rounded-full flex items-center justify-center ripple border-2 ${themeColor === c ? 'border-[var(--md-sys-color-on-background)]' : 'border-transparent'}`}
-                                    style={{ backgroundColor: c === 'blue' ? '#0061a4' : c === 'green' ? '#146c2e' : '#6750a4' }}
+                                    onClick={() => setSettings(s => ({...s, isDark: !s.isDark}))}
+                                    class={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out ${settings.isDark ? 'bg-primary' : 'bg-surface-alt border border-border'}`}
                                 >
-                                    {themeColor === c && <span class="material-symbols-rounded text-white">check</span>}
+                                    <div class={`w-4 h-4 rounded-full bg-white shadow-md transition-transform duration-300 ${settings.isDark ? 'translate-x-6' : 'translate-x-0 bg-text-muted'}`}></div>
                                 </button>
-                            ))}
+                            </div>
+
+                            <div class="p-4">
+                                <p class="text-sm font-bold text-text mb-3">Warna Aksen</p>
+                                <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                                    {themes.map(t => (
+                                        <button 
+                                            key={t.id} onClick={() => setSettings({...settings, themeColor: t.id})}
+                                            class={`relative w-12 h-12 rounded-full flex-shrink-0 transition-all ${settings.themeColor === t.id ? 'scale-110 shadow-lg ring-4 ring-offset-2 ring-offset-surface' : 'hover:scale-105 opacity-80'}`}
+                                            style={{ backgroundColor: t.color, ringColor: t.color }}
+                                        >
+                                            {settings.themeColor === t.id && <span class="material-symbols-rounded absolute inset-0 flex items-center justify-center text-white drop-shadow-md">check</span>}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <hr class="border-[var(--md-sys-color-outline-variant)]" />
-
-                    {/* Data Management */}
-                    <div>
-                        <p class="text-sm font-medium mb-3 opacity-70">Manajemen Data</p>
-                        <div class="space-y-3">
-                            <button onClick={backup} class="w-full flex items-center gap-4 p-4 md-surface-variant rounded-2xl ripple text-left">
-                                <span class="material-symbols-rounded">download</span>
-                                <div>
-                                    <p class="font-medium">Backup Data</p>
-                                    <p class="text-xs opacity-70">Simpan catatan ke JSON</p>
+                    {/* Preferensi */}
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Preferensi Dasbor</h3>
+                        <div class="bg-surface rounded-3xl border border-border shadow-sm overflow-hidden divide-y divide-border">
+                            
+                            <div class="p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-rounded text-text-muted">monitoring</span>
+                                    <span class="font-bold text-text">Tipe Grafik Default</span>
                                 </div>
+                                <select 
+                                    value={settings.chartType} 
+                                    onChange={(e) => setSettings({...settings, chartType: e.target.value})}
+                                    class="bg-surface-alt text-text font-bold text-sm py-2 px-4 rounded-xl outline-none border border-transparent focus:border-primary pr-8"
+                                >
+                                    <option value="bar">Bar Chart</option>
+                                    <option value="line">Line Chart</option>
+                                    <option value="pie">Donut Chart</option>
+                                </select>
+                            </div>
+                            
+                            <div class="p-4 flex items-center justify-between cursor-pointer active:bg-surface-alt transition-colors" onClick={toggleFullscreen}>
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-rounded text-text-muted">{settings.isFullscreen ? 'fullscreen_exit' : 'fullscreen'}</span>
+                                    <div>
+                                        <span class="font-bold text-text block">Layar Penuh (Fullscreen)</span>
+                                        <span class="text-xs text-text-muted">Gunakan mode aplikasi penuh</span>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-rounded text-text-muted">chevron_right</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Data Manajemen */}
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-extrabold text-text-muted uppercase tracking-wider pl-2">Manajemen Data</h3>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onClick={() => exportData('json')} class="bg-surface p-4 rounded-3xl border border-border flex flex-col items-center justify-center gap-2 active:bg-primary-light/30 transition-colors">
+                                <span class="material-symbols-rounded text-3xl text-primary">data_object</span>
+                                <span class="font-bold text-sm text-text">Backup JSON</span>
                             </button>
                             
-                            <label class="w-full flex items-center gap-4 p-4 md-surface-variant rounded-2xl ripple text-left cursor-pointer">
-                                <span class="material-symbols-rounded">upload</span>
-                                <div>
-                                    <p class="font-medium">Restore Data</p>
-                                    <p class="text-xs opacity-70">Pulihkan dari file JSON</p>
-                                </div>
-                                <input type="file" accept=".json" class="hidden" onChange={restore} />
+                            <label class="bg-surface p-4 rounded-3xl border border-border flex flex-col items-center justify-center gap-2 active:bg-primary-light/30 transition-colors cursor-pointer">
+                                <span class="material-symbols-rounded text-3xl text-primary">restore_page</span>
+                                <span class="font-bold text-sm text-text">Restore Data</span>
+                                <input type="file" accept=".json" class="hidden" onChange={handleRestore} />
                             </label>
+
+                            <button onClick={() => exportData('csv')} class="col-span-2 bg-surface p-4 rounded-3xl border border-border flex items-center justify-center gap-3 active:bg-primary-light/30 transition-colors">
+                                <span class="material-symbols-rounded text-success">table_view</span>
+                                <span class="font-bold text-text">Export Laporan CSV (Excel)</span>
+                            </button>
                         </div>
+                        
+                        <button onClick={handleClear} class="w-full mt-4 p-4 rounded-2xl border border-danger/30 bg-danger/5 text-danger font-bold flex items-center justify-center gap-2 active:bg-danger/20 transition-colors">
+                            <span class="material-symbols-rounded">delete_forever</span>
+                            Hapus Semua Data
+                        </button>
+                    </div>
+
+                    <div class="text-center pt-4 pb-8 opacity-50">
+                        <p class="text-xs font-bold">Zona Poncell Ultimate v3.5</p>
+                        <p class="text-[10px]">Dibuat dengan 🔥 oleh AI</p>
+                    </div>
+
+                </div>
+            );
+        };
+
+        // Helper Component for List Items
+        const ActivityItem = ({ item }) => {
+            const getIcon = (j) => j === 'Servis' ? 'home_repair_service' : j === 'Sparepart' ? 'memory' : 'headphones';
+            const getColor = (j) => j === 'Servis' ? 'bg-warning/10 text-warning' : j === 'Sparepart' ? 'bg-primary-light text-primary' : 'bg-amethyst/10 text-amethyst';
+            const getStatusColor = (s) => s === 'Selesai' ? 'text-success' : s === 'Proses' ? 'text-warning' : 'text-danger';
+
+            return (
+                <div class="bg-surface p-4 rounded-[1.5rem] border border-border shadow-sm flex items-center gap-4 group hover:border-primary/50 transition-colors">
+                    <div class={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${getColor(item.jenis)}`}>
+                        <span class="material-symbols-rounded">{getIcon(item.jenis)}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-text truncate text-[15px]">{item.nama}</h4>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class={`text-[10px] font-bold px-2 py-0.5 rounded-md bg-surface-alt ${getStatusColor(item.status)}`}>
+                                {item.status}
+                            </span>
+                            <span class="text-xs text-text-muted font-medium truncate">{item.pelanggan || item.jenis}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-extrabold text-text text-[15px]">+Rp{formatRupiah(item.laba)}</p>
+                        <p class="text-[10px] font-semibold text-text-muted mt-1">{new Date(item.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</p>
                     </div>
                 </div>
             );
         };
 
+
         const NavBtn = ({ icon, label, active, onClick }) => (
-            <button onClick={onClick} class={`flex flex-col items-center justify-center w-16 h-14 rounded-xl ripple ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
-                <div class={`px-4 py-1 rounded-full mb-0.5 transition-colors ${active ? 'md-primary-container' : 'bg-transparent'}`}>
-                    <span class={`material-symbols-rounded ${active ? '' : 'icon-outlined'}`}>{icon}</span>
+            <button 
+                onClick={onClick} 
+                class={`flex flex-col items-center justify-center w-16 h-14 rounded-2xl transition-all duration-300 ${active ? 'text-primary scale-110' : 'text-text-muted hover:text-text'}`}
+            >
+                <div class={`relative px-4 py-1 rounded-full mb-1 transition-all duration-300 ${active ? 'bg-primary-light/50' : 'bg-transparent'}`}>
+                    <span class={`material-symbols-rounded transition-all duration-300 ${active ? 'icon-filled drop-shadow-md' : 'icon-outlined'}`}>{icon}</span>
+                    {active && <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>}
                 </div>
-                <span class="text-[12px] font-medium tracking-wide">{label}</span>
+                <span class={`text-[10px] tracking-wide transition-all duration-300 ${active ? 'font-extrabold' : 'font-medium opacity-70'}`}>{label}</span>
             </button>
         );
 

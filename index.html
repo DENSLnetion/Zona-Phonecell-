@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Zona Poncell</title>
     
     <!-- React & ReactDOM -->
@@ -16,79 +16,271 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Material Symbols & Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
-                    },
-                    colors: {
-                        // Material 3 Expressive Palette (Vibrant & Bold)
-                        m3: {
-                            bg: '#FFFBFE',
-                            surface: '#F4EDFB',
-                            primary: '#6750A4',
-                            onPrimary: '#FFFFFF',
-                            primaryContainer: '#EADDFF',
-                            onPrimaryContainer: '#21005D',
-                            secondary: '#006A60',
-                            secondaryContainer: '#74F8E5',
-                            onSecondaryContainer: '#00201C',
-                            tertiary: '#8D4A60',
-                            tertiaryContainer: '#FFD8E4',
-                            onTertiaryContainer: '#3E001D',
-                            error: '#B3261E',
-                            errorContainer: '#F9DEDC',
-                            onErrorContainer: '#410E0B',
-                            outline: '#79747E'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #FFFBFE; -webkit-tap-highlight-color: transparent; }
+        /* Base Material You Variables (Default: Blue) */
+        :root {
+            /* Light Theme */
+            --md-sys-color-primary: #0061a4;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d1e4ff;
+            --md-sys-color-on-primary-container: #001d36;
+            
+            --md-sys-color-secondary: #535f70;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #d7e3f7;
+            --md-sys-color-on-secondary-container: #101c2b;
+            
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-on-error: #ffffff;
+            --md-sys-color-error-container: #ffdad6;
+            --md-sys-color-on-error-container: #410002;
+            
+            --md-sys-color-background: #fdfcff;
+            --md-sys-color-on-background: #1a1c1e;
+            --md-sys-color-surface: #fdfcff;
+            --md-sys-color-on-surface: #1a1c1e;
+            --md-sys-color-surface-variant: #dfe2eb;
+            --md-sys-color-on-surface-variant: #42474e;
+            --md-sys-color-outline: #73777f;
+            --md-sys-color-outline-variant: #c3c7cf;
+        }
+
+        /* Dark Theme Variables */
+        .dark-theme {
+            --md-sys-color-primary: #9ecaeb;
+            --md-sys-color-on-primary: #003258;
+            --md-sys-color-primary-container: #00497d;
+            --md-sys-color-on-primary-container: #d1e4ff;
+            
+            --md-sys-color-secondary: #bbc7db;
+            --md-sys-color-on-secondary: #253140;
+            --md-sys-color-secondary-container: #3b4858;
+            --md-sys-color-on-secondary-container: #d7e3f7;
+            
+            --md-sys-color-error: #ffb4ab;
+            --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a;
+            --md-sys-color-on-error-container: #ffb4ab;
+            
+            --md-sys-color-background: #1a1c1e;
+            --md-sys-color-on-background: #e2e2e6;
+            --md-sys-color-surface: #1a1c1e;
+            --md-sys-color-on-surface: #e2e2e6;
+            --md-sys-color-surface-variant: #42474e;
+            --md-sys-color-on-surface-variant: #c3c7cf;
+            --md-sys-color-outline: #8d9199;
+            --md-sys-color-outline-variant: #42474e;
+        }
+
+        /* Theme Variations - Green */
+        .theme-green {
+            --md-sys-color-primary: #146c2e;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #9ff7ae;
+            --md-sys-color-on-primary-container: #002108;
+            --md-sys-color-secondary: #526350;
+            --md-sys-color-secondary-container: #d5e8cf;
+            --md-sys-color-on-secondary-container: #101f10;
+        }
+        .dark-theme.theme-green {
+            --md-sys-color-primary: #83da93;
+            --md-sys-color-on-primary: #003911;
+            --md-sys-color-primary-container: #00531a;
+            --md-sys-color-on-primary-container: #9ff7ae;
+            --md-sys-color-secondary: #b9ccb4;
+            --md-sys-color-secondary-container: #3a4b39;
+        }
+
+        /* Theme Variations - Purple */
+        .theme-purple {
+            --md-sys-color-primary: #6750a4;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #eaddff;
+            --md-sys-color-on-primary-container: #21005d;
+            --md-sys-color-secondary: #625b71;
+            --md-sys-color-secondary-container: #e8def8;
+            --md-sys-color-on-secondary-container: #1d192b;
+        }
+        .dark-theme.theme-purple {
+            --md-sys-color-primary: #d0bcff;
+            --md-sys-color-on-primary: #381e72;
+            --md-sys-color-primary-container: #4f378b;
+            --md-sys-color-on-primary-container: #eaddff;
+            --md-sys-color-secondary: #ccc2dc;
+            --md-sys-color-secondary-container: #4a4458;
+        }
+
+        /* Global Reset & Utility */
+        body { 
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
         ::-webkit-scrollbar { display: none; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 600; }
-        /* Animasi transisi tab */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Material Symbols Config */
+        .material-symbols-rounded { 
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
+        }
+        .icon-outlined { font-variation-settings: 'FILL' 0; }
+
+        /* Animations */
+        .page-enter { animation: slideUpFade 0.3s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            background: currentColor;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: transform 0.4s, opacity 0.4s;
+        }
+        .ripple:active::after {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0.12;
+            transition: 0s;
+        }
+
+        /* Material UI Classes */
+        .md-surface { background-color: var(--md-sys-color-surface); }
+        .md-surface-variant { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        .md-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .md-primary-container { background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+        .md-text-primary { color: var(--md-sys-color-primary); }
+        .md-error-container { background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
+        
+        .md-input {
+            width: 100%;
+            background-color: transparent;
+            color: var(--md-sys-color-on-surface);
+            border: none;
+            outline: none;
+            padding: 16px;
+            font-size: 16px;
+        }
+        .md-input-container {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+            transition: background-color 0.2s, border-color 0.2s;
+            position: relative;
+        }
+        .md-input-container:focus-within {
+            border-bottom: 2px solid var(--md-sys-color-primary);
+        }
+        .md-input-container.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body class="text-gray-900 h-screen flex flex-col overflow-hidden">
-    <div id="root" class="h-full w-full max-w-2xl mx-auto flex flex-col bg-m3-bg relative shadow-2xl"></div>
+<body class="h-screen flex flex-col overflow-hidden">
+    <div id="root" class="h-full w-full max-w-xl mx-auto flex flex-col relative shadow-2xl"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // Logika formatting yang bulletproof
-        const formatRpStr = (val) => {
-            if (!val) return '';
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+        // --- Helper ---
+        const formatRupiah = (angkaStr) => {
+            if (!angkaStr) return '';
+            const number = parseInt(angkaStr.replace(/[^0-9]/g, ''), 10);
+            if (isNaN(number)) return '';
+            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(number);
+        };
+        const getRawNumber = (rpStr) => {
+            if (!rpStr) return 0;
+            return parseInt(rpStr.replace(/[^0-9]/g, ''), 10) || 0;
         };
 
+        // --- Komponen Input Material ---
+        const TextField = ({ label, value, onChange, type = "text", inputMode = "text", disabled = false, isCurrency = false, list }) => {
+            const displayValue = isCurrency ? (value ? `Rp ${formatRupiah(value.toString())}` : '') : value;
+            
+            const handleChange = (e) => {
+                if (isCurrency) {
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    onChange(raw);
+                } else {
+                    onChange(e.target.value);
+                }
+            };
+
+            return (
+                <div class={`md-input-container mt-2 ${disabled ? 'disabled' : ''}`}>
+                    <label class="absolute top-2 left-4 text-[12px] text-[var(--md-sys-color-on-surface-variant)]">{label}</label>
+                    <input
+                        type={type}
+                        inputMode={inputMode}
+                        value={displayValue}
+                        onChange={handleChange}
+                        disabled={disabled}
+                        list={list}
+                        placeholder=" "
+                        class="md-input pt-6 pb-2"
+                        autoComplete="off"
+                    />
+                </div>
+            );
+        };
+
+        // --- Main App ---
         const App = () => {
             const [transactions, setTransactions] = useState([]);
             const [activeTab, setActiveTab] = useState('input');
             const [isLoaded, setIsLoaded] = useState(false);
+            
+            // Pengaturan
+            const [isDark, setIsDark] = useState(false);
+            const [themeColor, setThemeColor] = useState('blue'); // blue, green, purple
 
+            // Load Data & Settings
             useEffect(() => {
-                const saved = localStorage.getItem('zonaponcell_db');
-                if (saved) setTransactions(JSON.parse(saved));
+                const savedDb = localStorage.getItem('zp_db_v3');
+                if (savedDb) setTransactions(JSON.parse(savedDb));
+                
+                const savedSettings = localStorage.getItem('zp_settings');
+                if (savedSettings) {
+                    const s = JSON.parse(savedSettings);
+                    setIsDark(s.isDark);
+                    setThemeColor(s.themeColor);
+                }
                 setIsLoaded(true);
             }, []);
 
+            // Save Data
             useEffect(() => {
-                if (isLoaded) localStorage.setItem('zonaponcell_db', JSON.stringify(transactions));
+                if (isLoaded) localStorage.setItem('zp_db_v3', JSON.stringify(transactions));
             }, [transactions, isLoaded]);
+
+            // Apply Theme to Body
+            useEffect(() => {
+                if (!isLoaded) return;
+                const body = document.body;
+                body.className = 'h-screen flex flex-col overflow-hidden'; // reset
+                if (isDark) body.classList.add('dark-theme');
+                if (themeColor !== 'blue') body.classList.add(`theme-${themeColor}`);
+                
+                localStorage.setItem('zp_settings', JSON.stringify({ isDark, themeColor }));
+            }, [isDark, themeColor, isLoaded]);
 
             const itemsDictionary = useMemo(() => [...new Set(transactions.map(t => t.nama))], [transactions]);
 
@@ -98,42 +290,41 @@
             };
 
             const handleDelete = (id) => {
-                if (confirm('Yakin lu mau hapus data ini? Kalo ilang ga bisa balik.')) {
+                if (confirm('Hapus catatan ini?')) {
                     setTransactions(transactions.filter(t => t.id !== id));
                 }
             };
 
-            const handleRestore = (data) => {
-                setTransactions(data);
-                setActiveTab('history');
-            };
-
-            if (!isLoaded) return <div class="p-10 text-center font-bold font-display text-xl">Loading bentar...</div>;
+            if (!isLoaded) return null;
 
             return (
                 <>
-                    <header class="bg-m3-bg pt-6 pb-4 px-5 sticky top-0 z-10 flex justify-between items-center border-b border-m3-surface">
-                        <div>
-                            <h1 class="text-3xl font-extrabold font-display text-m3-primary tracking-tight">ZONA PONCELL</h1>
-                            <p class="text-sm font-bold text-m3-secondary">Sistem Cuan Logis</p>
-                        </div>
-                        <div class="h-12 w-12 bg-m3-primaryContainer rounded-2xl flex items-center justify-center text-m3-onPrimaryContainer">
-                            <span class="material-symbols-outlined text-3xl">bolt</span>
-                        </div>
+                    {/* Top App Bar */}
+                    <header class="h-16 px-4 flex items-center justify-between md-surface z-10">
+                        <h1 class="text-xl font-medium" style={{ color: 'var(--md-sys-color-on-surface)' }}>Zona Poncell</h1>
+                        <button onClick={() => setIsDark(!isDark)} class="p-2 rounded-full ripple text-[var(--md-sys-color-on-surface-variant)]">
+                            <span class="material-symbols-rounded icon-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
+                        </button>
                     </header>
 
-                    <main class="flex-1 overflow-y-auto relative pb-28 fade-in">
+                    {/* Content Area */}
+                    <main class="flex-1 overflow-y-auto relative page-enter" key={activeTab}>
                         {activeTab === 'input' && <InputTab onSave={handleSave} itemsDict={itemsDictionary} />}
                         {activeTab === 'dash' && <DashTab data={transactions} />}
                         {activeTab === 'history' && <HistoryTab data={transactions} onDelete={handleDelete} />}
-                        {activeTab === 'settings' && <SettingsTab data={transactions} onRestore={handleRestore} />}
+                        {activeTab === 'settings' && <SettingsTab 
+                            data={transactions} 
+                            setRestore={setTransactions}
+                            themeColor={themeColor} setThemeColor={setThemeColor} 
+                        />}
                     </main>
 
-                    <nav class="absolute bottom-0 w-full bg-m3-surface shadow-[0_-10px_40px_rgba(103,80,164,0.1)] rounded-t-[32px] px-2 pb-safe pt-3 pb-4 flex justify-around items-center z-20">
-                        <NavBtn icon="add_box" label="Input" active={activeTab === 'input'} onClick={() => setActiveTab('input')} />
-                        <NavBtn icon="query_stats" label="Cuan" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
-                        <NavBtn icon="list_alt" label="Histori" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
-                        <NavBtn icon="manufacturing" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
+                    {/* Navigation Bar (Material 3) */}
+                    <nav class="md-surface-variant pb-safe pt-2 pb-3 px-2 flex justify-between items-center shadow-[0_-1px_3px_rgba(0,0,0,0.1)] z-20">
+                        <NavBtn icon="edit_square" label="Catat" active={activeTab === 'input'} onClick={() => setActiveTab('input')} />
+                        <NavBtn icon="bar_chart" label="Laporan" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
+                        <NavBtn icon="receipt_long" label="Histori" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+                        <NavBtn icon="settings" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
                     </nav>
                 </>
             );
@@ -142,105 +333,77 @@
         const InputTab = ({ onSave, itemsDict }) => {
             const [jenis, setJenis] = useState('Servis');
             const [nama, setNama] = useState('');
-            const [modalRaw, setModalRaw] = useState('');
-            const [jualRaw, setJualRaw] = useState('');
+            const [modalVal, setModalVal] = useState('');
+            const [jualVal, setJualVal] = useState('');
 
-            const handleModal = (e) => setModalRaw(e.target.value.replace(/\D/g, ''));
-            const handleJual = (e) => setJualRaw(e.target.value.replace(/\D/g, ''));
-
+            // Reset modal saat pilih servis
             useEffect(() => {
-                if (jenis === 'Servis') setModalRaw('0');
+                if (jenis === 'Servis') setModalVal('0');
+                else if (modalVal === '0') setModalVal('');
             }, [jenis]);
 
             const submit = (e) => {
                 e.preventDefault();
-                if (!nama.trim() || !jualRaw) return alert("Isi nama sama harga jual yang bener, jangan kosong!");
+                if (!nama.trim() || !jualVal) return alert("Lengkapi nama dan harga jual.");
                 
-                const valModal = parseInt(modalRaw || '0', 10);
-                const valJual = parseInt(jualRaw || '0', 10);
+                const m = getRawNumber(modalVal);
+                const j = getRawNumber(jualVal);
                 
                 onSave({
                     id: Date.now(),
                     tanggal: new Date().toISOString(),
                     jenis,
-                    nama,
-                    modal: valModal,
-                    jual: valJual,
-                    laba: valJual - valModal
+                    nama: nama.trim(),
+                    modal: m,
+                    jual: j,
+                    laba: j - m
                 });
-
-                setNama('');
-                setModalRaw(jenis === 'Servis' ? '0' : '');
-                setJualRaw('');
             };
 
             return (
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Catat Dulu Bos</h2>
-                    
+                <div class="p-4 pb-20">
                     <form onSubmit={submit} class="space-y-6">
-                        <div class="bg-m3-surface p-1.5 rounded-[24px] flex gap-2">
-                            {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
+                        {/* Segmented Button (Material 3) */}
+                        <div class="flex rounded-full border border-[var(--md-sys-color-outline)] overflow-hidden h-10">
+                            {['Servis', 'Sparepart', 'Aksesoris'].map((j, i) => (
                                 <button 
-                                    type="button" 
-                                    key={j}
-                                    onClick={() => setJenis(j)}
-                                    class={`flex-1 py-4 px-2 rounded-[20px] font-bold text-sm transition-all ${jenis === j ? 'bg-m3-primary text-m3-onPrimary shadow-lg scale-[1.02]' : 'text-m3-outline hover:bg-black/5'}`}
+                                    type="button" key={j} onClick={() => setJenis(j)}
+                                    class={`flex-1 text-sm font-medium transition-colors ripple ${jenis === j ? 'md-primary-container' : 'bg-transparent text-[var(--md-sys-color-on-surface)]'} ${i !== 2 ? 'border-r border-[var(--md-sys-color-outline)]' : ''}`}
                                 >
+                                    {jenis === j && <span class="material-symbols-rounded text-[16px] mr-1 align-middle">check</span>}
                                     {j}
                                 </button>
                             ))}
                         </div>
 
-                        <div class="space-y-3">
-                            <label class="text-sm font-extrabold text-m3-primary tracking-wide uppercase ml-2">Detail Garapan / Barang</label>
-                            <input 
-                                type="text" 
-                                list="item-list"
-                                value={nama}
-                                onChange={(e) => setNama(e.target.value)}
-                                placeholder="Cth: LCD Samsung A50..."
-                                class="w-full bg-m3-surface border-2 border-transparent rounded-[24px] px-6 py-5 focus:border-m3-primary focus:bg-m3-bg outline-none transition-all text-lg font-semibold shadow-sm"
-                            />
+                        <div class="space-y-2">
+                            <TextField label="Nama Barang / Garapan" value={nama} onChange={setNama} list="item-list" />
                             <datalist id="item-list">
                                 {itemsDict.map((item, idx) => <option key={idx} value={item} />)}
                             </datalist>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-3">
-                                <label class="text-sm font-extrabold text-m3-tertiary tracking-wide uppercase ml-2">Modal</label>
-                                <input 
-                                    type="text" inputMode="numeric" pattern="[0-9]*"
-                                    value={modalRaw ? formatRpStr(modalRaw) : ''}
-                                    onChange={handleModal}
-                                    disabled={jenis === 'Servis'}
-                                    placeholder="Rp 0"
-                                    class="w-full bg-m3-tertiaryContainer text-m3-onTertiaryContainer border-none rounded-[24px] px-5 py-5 focus:ring-4 focus:ring-m3-tertiary/30 outline-none transition-all text-lg font-bold disabled:opacity-50 disabled:grayscale"
-                                />
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <TextField label="Harga Modal" value={modalVal} onChange={setModalVal} inputMode="numeric" isCurrency={true} disabled={jenis === 'Servis'} />
                             </div>
-                            <div class="space-y-3">
-                                <label class="text-sm font-extrabold text-m3-secondary tracking-wide uppercase ml-2">Jual</label>
-                                <input 
-                                    type="text" inputMode="numeric" pattern="[0-9]*"
-                                    value={jualRaw ? formatRpStr(jualRaw) : ''}
-                                    onChange={handleJual}
-                                    placeholder="Rp 0"
-                                    class="w-full bg-m3-secondaryContainer text-m3-onSecondaryContainer border-none rounded-[24px] px-5 py-5 focus:ring-4 focus:ring-m3-secondary/30 outline-none transition-all text-lg font-bold"
-                                />
+                            <div class="flex-1">
+                                <TextField label="Harga Jual" value={jualVal} onChange={setJualVal} inputMode="numeric" isCurrency={true} />
                             </div>
                         </div>
 
-                        <div class="bg-m3-bg p-6 rounded-[32px] border-[3px] border-m3-surface flex justify-between items-center mt-4">
-                            <span class="font-extrabold text-m3-outline uppercase tracking-wider text-sm">Estimasi Laba</span>
-                            <span class="text-3xl font-display font-black text-m3-primary">
-                                {formatRpStr((parseInt(jualRaw || 0) - parseInt(modalRaw || 0)).toString())}
+                        {/* Laba Card */}
+                        <div class="md-primary-container p-4 rounded-2xl flex justify-between items-center mt-2">
+                            <span class="text-sm font-medium">Estimasi Laba</span>
+                            <span class="text-xl font-bold">
+                                Rp {formatRupiah((getRawNumber(jualVal) - getRawNumber(modalVal)).toString())}
                             </span>
                         </div>
 
-                        <button type="submit" class="w-full bg-m3-primary text-m3-onPrimary font-display font-black text-xl py-5 rounded-[32px] shadow-xl shadow-m3-primary/30 active:scale-95 transition-all mt-4 flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined">save</span>
-                            SIKAT DATA!
+                        {/* FAB Style Button */}
+                        <button type="submit" class="w-full md-primary h-14 rounded-full font-medium text-[16px] shadow-md ripple mt-6 flex items-center justify-center gap-2">
+                            <span class="material-symbols-rounded">save</span>
+                            Simpan Catatan
                         </button>
                     </form>
                 </div>
@@ -249,15 +412,14 @@
 
         const DashTab = ({ data }) => {
             const chartRef = useRef(null);
-            const chartInstance = useRef(null);
+            const chartInst = useRef(null);
 
-            const totalOmset = data.reduce((a, c) => a + c.jual, 0);
-            const totalModal = data.reduce((a, c) => a + c.modal, 0);
-            const totalLaba = data.reduce((a, c) => a + c.laba, 0);
+            const tOmset = data.reduce((a, c) => a + c.jual, 0);
+            const tModal = data.reduce((a, c) => a + c.modal, 0);
+            const tLaba = data.reduce((a, c) => a + c.laba, 0);
 
             useEffect(() => {
-                if (chartInstance.current) chartInstance.current.destroy();
-                
+                if (chartInst.current) chartInst.current.destroy();
                 if (data.length === 0) return;
 
                 const dates = [...Array(7)].map((_, i) => {
@@ -266,66 +428,62 @@
                     return d.toISOString().split('T')[0];
                 });
 
-                const labaHarian = dates.map(date => 
-                    data.filter(d => d.tanggal.startsWith(date)).reduce((sum, item) => sum + item.laba, 0)
-                );
-                
-                const displayDates = dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+                const laba = dates.map(date => data.filter(d => d.tanggal.startsWith(date)).reduce((s, i) => s + i.laba, 0));
+                const labels = dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
 
                 const ctx = chartRef.current.getContext('2d');
-                chartInstance.current = new Chart(ctx, {
-                    type: 'line',
+                // Get CSS variable color for chart
+                const rootStyle = getComputedStyle(document.body);
+                const primaryColor = rootStyle.getPropertyValue('--md-sys-color-primary').trim() || '#0061a4';
+
+                chartInst.current = new Chart(ctx, {
+                    type: 'bar',
                     data: {
-                        labels: displayDates,
+                        labels,
                         datasets: [{
-                            label: 'Laba Bersih',
-                            data: labaHarian,
-                            borderColor: '#6750A4',
-                            backgroundColor: '#EADDFF',
-                            borderWidth: 4,
-                            pointBackgroundColor: '#006A60',
-                            pointRadius: 6,
-                            fill: true,
-                            tension: 0.4
+                            label: 'Laba',
+                            data: laba,
+                            backgroundColor: primaryColor,
+                            borderRadius: 4
                         }]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: {
-                            y: { display: false, beginAtZero: true },
-                            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } } }
+                        scales: { 
+                            y: { display: false },
+                            x: { grid: { display: false }, ticks: { color: rootStyle.getPropertyValue('--md-sys-color-on-surface').trim() } }
                         }
                     }
                 });
-                return () => { if (chartInstance.current) chartInstance.current.destroy(); }
-            }, [data]);
+                return () => { if (chartInst.current) chartInst.current.destroy(); }
+            }, [data, document.body.className]); // Re-render chart if theme changes
 
             return (
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Analisis Cuan</h2>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="col-span-2 bg-m3-secondaryContainer text-m3-onSecondaryContainer p-6 rounded-[32px] shadow-sm">
-                            <p class="text-sm font-extrabold tracking-wide uppercase opacity-70 mb-2">Total Laba Bersih</p>
-                            <p class="text-4xl font-display font-black">{formatRpStr(totalLaba.toString())}</p>
+                <div class="p-4 pb-20 space-y-4">
+                    {/* Hero Card */}
+                    <div class="md-primary-container p-6 rounded-3xl shadow-sm">
+                        <p class="text-sm font-medium opacity-80 mb-1">Total Laba Bersih</p>
+                        <p class="text-3xl font-bold">Rp {formatRupiah(tLaba.toString())}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="md-surface-variant p-4 rounded-2xl">
+                            <p class="text-xs font-medium opacity-70 mb-1">Total Omset</p>
+                            <p class="text-lg font-bold">Rp {formatRupiah(tOmset.toString())}</p>
                         </div>
-                        <div class="bg-m3-primaryContainer text-m3-onPrimaryContainer p-5 rounded-[24px]">
-                            <p class="text-xs font-extrabold uppercase opacity-70 mb-1">Total Omset</p>
-                            <p class="text-xl font-display font-bold">{formatRpStr(totalOmset.toString())}</p>
-                        </div>
-                        <div class="bg-m3-errorContainer text-m3-onErrorContainer p-5 rounded-[24px]">
-                            <p class="text-xs font-extrabold uppercase opacity-70 mb-1">Total Modal Keluar</p>
-                            <p class="text-xl font-display font-bold">{formatRpStr(totalModal.toString())}</p>
+                        <div class="md-error-container p-4 rounded-2xl">
+                            <p class="text-xs font-medium opacity-80 mb-1">Modal Keluar</p>
+                            <p class="text-lg font-bold">Rp {formatRupiah(tModal.toString())}</p>
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-[32px] border-2 border-m3-surface shadow-sm">
-                        <h3 class="font-bold text-m3-outline uppercase tracking-wider text-sm mb-4">Grafik Laba 7 Hari</h3>
-                        <div class="h-52 w-full relative">
+                    <div class="md-surface border border-[var(--md-sys-color-outline-variant)] p-4 rounded-3xl mt-4">
+                        <p class="text-sm font-medium mb-4 text-[var(--md-sys-color-on-surface)]">Laba 7 Hari Terakhir</p>
+                        <div class="h-48 w-full">
                             {data.length === 0 ? 
-                                <div class="absolute inset-0 flex items-center justify-center text-m3-outline font-bold">Data kosong njir.</div> 
-                                : <canvas ref={chartRef}></canvas>
+                                <div class="h-full flex items-center justify-center text-sm opacity-50">Belum ada data</div> : 
+                                <canvas ref={chartRef}></canvas>
                             }
                         </div>
                     </div>
@@ -337,103 +495,90 @@
             const sorted = [...data].sort((a, b) => b.id - a.id);
 
             return (
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Histori Garapan</h2>
+                <div class="p-4 pb-20 space-y-3">
+                    {sorted.length === 0 && <p class="text-center text-sm opacity-50 mt-10">Histori kosong.</p>}
                     
-                    <div class="space-y-4">
-                        {sorted.length === 0 && (
-                            <div class="bg-m3-surface p-10 rounded-[32px] text-center border border-m3-outline/20 mt-10">
-                                <span class="material-symbols-outlined text-5xl text-m3-outline mb-2">search_off</span>
-                                <p class="font-bold text-m3-outline">Kosong melompong.<br/>Belum ada cuan masuk.</p>
-                            </div>
-                        )}
-                        {sorted.map(item => {
-                            const d = new Date(item.tanggal);
-                            const tgl = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
-                            return (
-                                <div key={item.id} class="bg-white p-5 rounded-[28px] border-2 border-m3-surface shadow-sm flex items-center justify-between gap-4">
-                                    <div class="flex-1 overflow-hidden">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="text-[10px] font-black uppercase tracking-wider px-3 py-1 bg-m3-primaryContainer text-m3-onPrimaryContainer rounded-full">{item.jenis}</span>
-                                            <span class="text-xs font-bold text-m3-outline">{tgl}</span>
-                                        </div>
-                                        <p class="font-bold text-lg text-gray-900 truncate">{item.nama}</p>
-                                        <div class="flex gap-3 mt-1">
-                                            <p class="text-sm font-bold text-m3-secondary">Laba: {formatRpStr(item.laba.toString())}</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => onDelete(item.id)} class="p-4 bg-m3-errorContainer text-m3-error rounded-[20px] active:scale-90 transition-transform flex-shrink-0">
-                                        <span class="material-symbols-outlined">delete</span>
-                                    </button>
+                    {sorted.map(item => (
+                        <div key={item.id} class="md-surface border border-[var(--md-sys-color-outline-variant)] p-4 rounded-2xl flex justify-between items-center">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] font-medium px-2 py-0.5 md-primary-container rounded-sm">{item.jenis}</span>
+                                    <span class="text-[11px] opacity-60">{new Date(item.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</span>
                                 </div>
-                            )
-                        })}
-                    </div>
+                                <p class="font-medium text-[15px]">{item.nama}</p>
+                                <p class="text-sm font-bold md-text-primary mt-1">Laba: Rp {formatRupiah(item.laba.toString())}</p>
+                            </div>
+                            <button onClick={() => onDelete(item.id)} class="p-2 text-[var(--md-sys-color-error)] ripple rounded-full">
+                                <span class="material-symbols-rounded icon-outlined">delete</span>
+                            </button>
+                        </div>
+                    ))}
                 </div>
             );
         };
 
-        const SettingsTab = ({ data, onRestore }) => {
+        const SettingsTab = ({ data, setRestore, themeColor, setThemeColor }) => {
             const backup = () => {
                 const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = `ZONAPONCELL_BACKUP_${new Date().getTime()}.json`;
+                a.download = `ZP_Backup_${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
             };
 
             const restore = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
+                const r = new FileReader();
+                r.onload = (ev) => {
                     try {
                         const parsed = JSON.parse(ev.target.result);
-                        if (Array.isArray(parsed)) {
-                            onRestore(parsed);
-                            alert("Beres! Data sukses dibalikkin.");
-                        } else throw new Error();
-                    } catch (err) {
-                        alert("File lu error/bukan backupan valid.");
-                    }
+                        if(Array.isArray(parsed)) { setRestore(parsed); alert("Data dipulihkan."); }
+                    } catch(err) { alert("File tidak valid."); }
                 };
-                reader.readAsText(file);
+                r.readAsText(file);
             };
 
             return (
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Setingan Sistem</h2>
-                    
-                    <div class="space-y-5">
-                        <div class="bg-m3-primaryContainer p-6 rounded-[32px] flex flex-col gap-5">
-                            <div class="flex items-center gap-4 text-m3-onPrimaryContainer">
-                                <span class="material-symbols-outlined text-4xl">cloud_download</span>
-                                <div>
-                                    <h3 class="font-display font-black text-xl">Backup Data</h3>
-                                    <p class="text-sm font-medium opacity-80">Amanin data cuan lu ke file JSON</p>
-                                </div>
-                            </div>
-                            <button onClick={backup} class="w-full bg-m3-primary text-m3-onPrimary font-bold py-4 rounded-[24px] active:scale-95 transition-all text-lg shadow-lg">
-                                Download Backup
-                            </button>
+                <div class="p-4 pb-20 space-y-6">
+                    {/* Theme Selector */}
+                    <div>
+                        <p class="text-sm font-medium mb-3 opacity-70">Warna Tema</p>
+                        <div class="flex gap-4">
+                            {['blue', 'green', 'purple'].map(c => (
+                                <button 
+                                    key={c} onClick={() => setThemeColor(c)}
+                                    class={`w-12 h-12 rounded-full flex items-center justify-center ripple border-2 ${themeColor === c ? 'border-[var(--md-sys-color-on-background)]' : 'border-transparent'}`}
+                                    style={{ backgroundColor: c === 'blue' ? '#0061a4' : c === 'green' ? '#146c2e' : '#6750a4' }}
+                                >
+                                    {themeColor === c && <span class="material-symbols-rounded text-white">check</span>}
+                                </button>
+                            ))}
                         </div>
+                    </div>
 
-                        <div class="bg-m3-tertiaryContainer p-6 rounded-[32px] flex flex-col gap-5">
-                            <div class="flex items-center gap-4 text-m3-onTertiaryContainer">
-                                <span class="material-symbols-outlined text-4xl">cloud_upload</span>
+                    <hr class="border-[var(--md-sys-color-outline-variant)]" />
+
+                    {/* Data Management */}
+                    <div>
+                        <p class="text-sm font-medium mb-3 opacity-70">Manajemen Data</p>
+                        <div class="space-y-3">
+                            <button onClick={backup} class="w-full flex items-center gap-4 p-4 md-surface-variant rounded-2xl ripple text-left">
+                                <span class="material-symbols-rounded">download</span>
                                 <div>
-                                    <h3 class="font-display font-black text-xl">Restore Data</h3>
-                                    <p class="text-sm font-medium opacity-80">Tarik balik data dari file JSON lama</p>
+                                    <p class="font-medium">Backup Data</p>
+                                    <p class="text-xs opacity-70">Simpan catatan ke JSON</p>
                                 </div>
-                            </div>
-                            <label class="w-full bg-m3-tertiary text-m3-onPrimary font-bold py-4 rounded-[24px] active:scale-95 transition-all text-center text-lg shadow-lg cursor-pointer block">
-                                Pilih File JSON
+                            </button>
+                            
+                            <label class="w-full flex items-center gap-4 p-4 md-surface-variant rounded-2xl ripple text-left cursor-pointer">
+                                <span class="material-symbols-rounded">upload</span>
+                                <div>
+                                    <p class="font-medium">Restore Data</p>
+                                    <p class="text-xs opacity-70">Pulihkan dari file JSON</p>
+                                </div>
                                 <input type="file" accept=".json" class="hidden" onChange={restore} />
                             </label>
-                        </div>
-                        
-                        <div class="text-center mt-10">
-                            <p class="text-m3-outline font-bold text-xs uppercase tracking-widest">Zona Poncell v2.0 - Material Expressive</p>
                         </div>
                     </div>
                 </div>
@@ -441,11 +586,11 @@
         };
 
         const NavBtn = ({ icon, label, active, onClick }) => (
-            <button onClick={onClick} class={`flex flex-col items-center justify-center min-w-[72px] transition-all relative ${active ? 'text-m3-onPrimaryContainer' : 'text-m3-outline hover:text-m3-primary'}`}>
-                <div class={`px-5 py-1.5 rounded-full mb-1 transition-all duration-300 ${active ? 'bg-m3-primaryContainer scale-110' : 'bg-transparent'}`}>
-                    <span class={`material-symbols-outlined text-3xl transition-transform ${active ? 'scale-110' : ''}`}>{icon}</span>
+            <button onClick={onClick} class={`flex flex-col items-center justify-center w-16 h-14 rounded-xl ripple ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                <div class={`px-4 py-1 rounded-full mb-0.5 transition-colors ${active ? 'md-primary-container' : 'bg-transparent'}`}>
+                    <span class={`material-symbols-rounded ${active ? '' : 'icon-outlined'}`}>{icon}</span>
                 </div>
-                <span class={`text-[11px] font-extrabold tracking-wide ${active ? 'opacity-100' : 'opacity-70'}`}>{label}</span>
+                <span class="text-[12px] font-medium tracking-wide">{label}</span>
             </button>
         );
 
@@ -454,4 +599,3 @@
     </script>
 </body>
 </html>
-

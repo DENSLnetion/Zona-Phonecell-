@@ -697,7 +697,17 @@
                     if (!verticalIntent) return; // biarin scroll konten jalan normal
 
                     if (e.cancelable) e.preventDefault();
-                    sheetEl.style.transform = `translate3d(0, ${deltaY}px, 0)`;
+
+                    let translateY = deltaY;
+                    if (deltaY < 0) {
+                        // Ditarik ke ATAS: kasih efek karet (resistance) terus "mentok"
+                        // di jarak kecil -- ga boleh melayang jauh ke atas posisi normalnya.
+                        const MAX_PULL_UP = 24; // px, batas paling jauh boleh ke atas
+                        const resisted = deltaY * 0.35;
+                        translateY = Math.max(resisted, -MAX_PULL_UP);
+                    }
+
+                    sheetEl.style.transform = `translate3d(0, ${translateY}px, 0)`;
                 };
 
                 const onEnd = (e) => {

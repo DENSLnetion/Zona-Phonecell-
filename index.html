@@ -320,7 +320,6 @@
 
         // LOGIKA MURNI: Mode "Gw Banget"
         const formatModeUang = (angka, isGwBanget, context) => {
-            // context = 'cuan' | 'list'
             if (isGwBanget) {
                 const abs = Math.abs(angka);
                 const isNeg = angka < 0;
@@ -353,15 +352,9 @@
                 }
 
                 if (isNeg) return `Nombok ${res}`;
-                
-                if (context === 'cuan') {
-                    return hasSlang ? res : `Rp${res}`;
-                } else { 
-                    // context 'list': gausah tulis Rp
-                    return res; 
-                }
+                if (context === 'cuan') return hasSlang ? res : `Rp${res}`;
+                return res; 
             } else {
-                // NORMAL MODE
                 const valStr = formatRupiah(Math.abs(angka));
                 return angka < 0 ? `Rp-${valStr}` : `Rp${valStr}`;
             }
@@ -406,6 +399,32 @@
                  if (offset === 0) return 'Bulan Ini';
                  return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric'}).format(d);
              }
+        };
+
+        // KONVERTER JSON KE CSV (Tanpa Library Eksternal biar ga berat)
+        const jsonToCsv = (items) => {
+            if (!items || !items.length) return '';
+            
+            const headers = ['ID', 'Tanggal', 'Jenis', 'Nama / Keterangan', 'Pelanggan', 'Modal', 'Jual', 'Jumlah', 'Total Laba', 'Status'];
+            let csvContent = headers.join(',') + '\r\n';
+
+            items.forEach(item => {
+                const row = [
+                    `"${item.id}"`,
+                    `"${item.tanggal}"`,
+                    `"${item.jenis}"`,
+                    `"${item.nama.replace(/"/g, '""')}"`, // Escape tanda kutip biar ga berantakan di excel
+                    `"${item.pelanggan.replace(/"/g, '""')}"`,
+                    item.modal,
+                    item.jual,
+                    item.jumlah,
+                    item.laba,
+                    `"${item.status}"`
+                ];
+                csvContent += row.join(',') + '\r\n';
+            });
+
+            return csvContent;
         };
 
         // ==========================================================================
@@ -555,7 +574,6 @@
             if (!mounted) return null;
             if (!isOpen && !isClosing) return null;
 
-            // Hapus backdrop-blur, murni solid opacity. Tidak pakai efek spring untuk bottom sheet.
             const sheetContent = (
                 <div className="fixed inset-0 z-[9999] flex flex-col justify-end" style={{ pointerEvents: 'auto' }}>
                     <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
@@ -669,7 +687,6 @@
                             </div>
                             
                             <div className="flex items-end gap-3 mb-6 mt-2">
-                                {/* Hapus Capsule 100%, Format Cuan Murni apply Gw Banget Mode */}
                                 <h2 className="text-[40px] font-extrabold tracking-tighter leading-none">{formatModeUang(laba, settings.gwBanget, 'cuan')}</h2>
                             </div>
                             
@@ -760,15 +777,12 @@
 
         const ActivityItem = ({ item, onClick, selectable, selected, onSelect }) => {
             const { settings } = useContext(AppContext);
-            const iconMap = {
-                'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'headphones', 'Top Up': 'account_balance_wallet'
-            };
+            const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'headphones', 'Top Up': 'account_balance_wallet' };
             const icon = iconMap[item.jenis] || 'build';
             
-            // Pewarnaan logis
-            let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; // Default (Jalan)
-            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; // Material warna-warni
-            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; // Merah
+            let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; 
+            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; 
+            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; 
 
             const timerRef = useRef(null);
             const isDragging = useRef(false);
@@ -847,7 +861,7 @@
                 if(!nama.trim()) { showSnackbar('Woi, Keterangan / Tujuan isi dulu!'); return; }
                 
                 const m = getRawNumber(modalStr); 
-                const j = getRawNumber(jualStr) || 0; // Bebas harga jual 0
+                const j = getRawNumber(jualStr) || 0; 
                 
                 let finalNama = nama.trim();
                 if(isTopUp) finalNama = `Top Up ${subTopUp} (${viaTopUp}) - ${finalNama}`;
@@ -890,7 +904,6 @@
                             <div>
                                 <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
                                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                                    {/* Murni perubahan warna/border. Animasi per atau scale-zoom dihapus total supaya ga kepotong pinggirnya. */}
                                     {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
                                         <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
                                     ))}
@@ -899,7 +912,6 @@
                             <div>
                                 <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
                                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                                    {/* Bebas dari kepotong, murni M3 styling flat solid border. */}
                                     {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
                                         <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
                                     ))}
@@ -1168,7 +1180,7 @@
                         groups[key].itemsLaku += t.jumlah;
                     }
                 });
-                return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); // Sort latest first
+                return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); 
             }, [totalSelesai]);
 
             return (
@@ -1278,12 +1290,65 @@
                 { id: 'purple', color: '#d0bcff' }, { id: 'red', color: '#ffb4ab' }, { id: 'teal', color: '#4fd8eb' }
             ];
 
-            const handleBackup = () => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
-                const a = document.createElement('a'); a.href = dataStr; a.download = `ZonaPoncell_Backup_${new Date().getTime()}.json`; a.click();
-                showSnackbar('Sip, Data udah di-backup');
+            // LOGIKA EXPORT BUAT APK (Pake Web Share API)
+            const handleExportFile = async (type) => {
+                if (transactions.length === 0) {
+                    showSnackbar('Data masih kosong bos, ga ada yang bisa di-export.');
+                    return;
+                }
+
+                const isCSV = type === 'csv';
+                const dateStr = new Date().getTime();
+                const fileName = `ZonaPoncell_Export_${dateStr}.${isCSV ? 'csv' : 'json'}`;
+                
+                let fileContent = '';
+                let mimeType = '';
+
+                if (isCSV) {
+                    fileContent = jsonToCsv(transactions);
+                    mimeType = 'text/csv';
+                } else {
+                    fileContent = JSON.stringify(transactions);
+                    mimeType = 'application/json';
+                }
+
+                const blob = new Blob([fileContent], { type: mimeType });
+                
+                // Cek apakah browser / webview support Share API untuk file
+                if (navigator.share && navigator.canShare) {
+                    const file = new File([blob], fileName, { type: mimeType });
+                    if (navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: `Export Data ${isCSV ? 'Excel/CSV' : 'JSON'}`,
+                                text: 'Nih bos datanya.'
+                            });
+                            showSnackbar('Mantap, file berhasil dikirim/disimpen 🚀');
+                            return; // Kalo sukses share, stop disini.
+                        } catch (err) {
+                            console.log('Share batal atau gagal:', err);
+                            // Kalo user batalin share gapapa, lanjoot ke fallback kalo emang error.
+                            if (err.name !== 'AbortError') showSnackbar('Share gagal, nyoba cara download biasa...');
+                            else return;
+                        }
+                    }
+                }
+
+                // Fallback: Kalo Share API ga support (misal di PC / Webview versi jadul)
+                // Pake cara download standard <a>
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showSnackbar(`Sip, Data di-download sbg ${type.toUpperCase()}`);
             };
 
+            // Restore tetep pake <input type="file"> karena ini standar native dialog Android (kalo diset di WebChromeClient apk lu)
             const handleRestore = (e) => {
                 const file = e.target.files[0]; if (!file) return;
                 const reader = new FileReader();
@@ -1294,6 +1359,7 @@
                     } catch(err) { showSnackbar('File ga jelas bos, gagal!'); }
                 };
                 reader.readAsText(file);
+                e.target.value = ''; // Reset input
             };
 
             const handleClear = () => {
@@ -1345,17 +1411,26 @@
                     </div>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="text-[13px] font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2">Ngatur Database</h3>
-                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors mt-2" onClick={handleBackup}>
-                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">download</span></div>
-                            <div className="text-left"><p className="font-bold text-base">Amankan Data (Backup)</p><p className="text-[13px] font-medium opacity-70">Download ke JSON</p></div>
+                        <h3 className="text-[13px] font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2">Ngatur Database (Support APK)</h3>
+                        
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors mt-2" onClick={() => handleExportFile('csv')}>
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-success)]/20 text-[var(--md-sys-color-success)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">table_view</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Export ke Excel/CSV</p><p className="text-[13px] font-medium opacity-70">Laporan rapih buat bos</p></div>
                         </Ripple>
+
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => handleExportFile('json')}>
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">save</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Backup Mentahan (JSON)</p><p className="text-[13px] font-medium opacity-70">Buat jaga-jaga kalo error</p></div>
+                        </Ripple>
+
                         <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer active:scale-[0.98] spring-bounce">
                             <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload</span></div>
-                            <div className="text-left"><p className="font-bold text-base">Balikin Data (Restore)</p><p className="text-[13px] font-medium opacity-70">Ambil dari JSON</p></div>
+                            <div className="text-left"><p className="font-bold text-base">Restore Data (JSON)</p><p className="text-[13px] font-medium opacity-70">Masukin file backup lu</p></div>
                             <input type="file" accept=".json" className="hidden" onChange={handleRestore} />
                         </label>
+                        
                         <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
+                        
                         <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] hover:text-[var(--md-sys-color-on-error-container)] transition-colors group" onClick={handleClear}>
                             <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-error)]/20 text-[var(--md-sys-color-error)] group-hover:bg-[var(--md-sys-color-error)] group-hover:text-[var(--md-sys-color-on-error)] flex items-center justify-center mr-5 shrink-0 transition-colors"><span className="material-symbols-rounded text-[24px]">local_fire_department</span></div>
                             <div className="text-left"><p className="font-extrabold text-base">Bakar Semua Data</p><p className="text-[13px] font-medium opacity-80">Reset pabrik aplikasi</p></div>
@@ -1507,5 +1582,4 @@
     </script>
 </body>
 </html>
-
 

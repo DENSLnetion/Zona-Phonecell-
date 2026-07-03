@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#fbfdf8" id="meta-theme-color">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Zona Poncell M3 Ultimate</title>
+    <title>Zona Poncell M3 Pro</title>
     
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -19,7 +19,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Google Fonts: Readex Pro & Material Symbols Rounded -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,9 +27,8 @@
 
     <style>
         /* ==========================================================================
-           MATERIAL 3 (MATERIAL YOU) DESIGN TOKENS & THEMING ENGINE
+           MATERIAL 3 DESIGN TOKENS & THEMING ENGINE
            ========================================================================== */
-        
         :root {
             --sa-top: env(safe-area-inset-top, 0px);
             --sa-bottom: env(safe-area-inset-bottom, 0px);
@@ -43,9 +42,13 @@
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
             --md-shape-full: 9999px;
+
+            --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+            --md-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
         }
 
-        /* --- THEME 1: BLUE (Default) --- */
+        /* --- THEMES --- */
         .theme-blue {
             --md-sys-color-primary: #0061a4; --md-sys-color-on-primary: #ffffff;
             --md-sys-color-primary-container: #d1e4ff; --md-sys-color-on-primary-container: #001d36;
@@ -66,7 +69,6 @@
             --md-sys-color-surface-container: #f1f0f4;
             --md-sys-color-surface-container-high: #ebeaef;
             --md-sys-color-surface-container-highest: #e0e0e6;
-            --md-sys-color-inverse-surface: #2f3033; --md-sys-color-inverse-on-surface: #f1f0f4;
         }
         .dark.theme-blue {
             --md-sys-color-primary: #9ecaeb; --md-sys-color-on-primary: #003258;
@@ -88,10 +90,8 @@
             --md-sys-color-surface-container: #211f26;
             --md-sys-color-surface-container-high: #2b2930;
             --md-sys-color-surface-container-highest: #36343b;
-            --md-sys-color-inverse-surface: #e2e2e6; --md-sys-color-inverse-on-surface: #2f3033;
         }
 
-        /* --- THEME 2: GREEN --- */
         .theme-green {
             --md-sys-color-primary: #146c2e; --md-sys-color-on-primary: #ffffff;
             --md-sys-color-primary-container: #9ff7ae; --md-sys-color-on-primary-container: #002108;
@@ -112,7 +112,6 @@
             --md-sys-color-surface-container: #f0f2eb;
             --md-sys-color-surface-container-high: #eaede6;
             --md-sys-color-surface-container-highest: #e4e7e0;
-            --md-sys-color-inverse-surface: #2f312d; --md-sys-color-inverse-on-surface: #f0f2eb;
         }
         .dark.theme-green {
             --md-sys-color-primary: #83da93; --md-sys-color-on-primary: #003911;
@@ -134,19 +133,26 @@
             --md-sys-color-surface-container: #20211e;
             --md-sys-color-surface-container-high: #2a2b28;
             --md-sys-color-surface-container-highest: #353632;
-            --md-sys-color-inverse-surface: #e2e3dd; --md-sys-color-inverse-on-surface: #2f312d;
         }
 
         /* ==========================================================================
-           GLOBAL & UTILITIES
+           GLOBAL UTILITIES & ANTI-SELECTION
            ========================================================================== */
         body { 
             font-family: 'Readex Pro', sans-serif;
             background-color: var(--md-sys-color-background);
             color: var(--md-sys-color-on-background);
-            -webkit-tap-highlight-color: transparent;
             margin: 0; padding: 0; overflow: hidden;
             transition: background-color 0.4s cubic-bezier(0.2, 0, 0, 1), color 0.4s ease;
+            
+            /* GLOBAL NATIVE APP FEEL - DISABLE TEXT SELECTION */
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Re-enable selection ONLY for input fields */
+        input, textarea {
+            -webkit-user-select: auto; user-select: auto;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -159,10 +165,10 @@
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
         /* ==========================================================================
-           ANIMATIONS
+           ANIMATIONS (M3 Emphasized Decelerate)
            ========================================================================== */
         @keyframes pageFadeIn {
-            0% { opacity: 0; transform: translateY(12px) scale(0.99); }
+            0% { opacity: 0; transform: translateY(12px) scale(0.98); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         .animate-page { animation: pageFadeIn 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) forwards; }
@@ -173,98 +179,95 @@
         @keyframes slideDownSheet { 0% { transform: translateY(0); } 100% { transform: translateY(100%); } }
         .animate-sheet-down { animation: slideDownSheet 0.4s cubic-bezier(0.3, 0, 0.8, 0.15) forwards; }
 
+        @keyframes slideDownAppBar { 0% { transform: translateY(-100%); } 100% { transform: translateY(0); } }
+        .animate-appbar-down { animation: slideDownAppBar 0.3s cubic-bezier(0.2, 0, 0, 1) forwards; }
+
         @keyframes fadeInOverlay { 0% { opacity: 0; } 100% { opacity: 1; } }
         .animate-overlay-in { animation: fadeInOverlay 0.4s ease forwards; }
-
-        @keyframes staggerFade { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
         
-        @keyframes fabPop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fabPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-fab { animation: fabPop 0.5s cubic-bezier(0.2, 0, 0, 1) forwards; }
 
         /* ==========================================================================
-           M3 COMPONENTS STYLES (Custom CSS)
+           CUSTOM COMPONENTS STYLES
            ========================================================================== */
         
-        /* RIPPLE EFFECT */
-        .ripple-root { position: relative; overflow: hidden; }
+        /* 1. RIPPLE EFFECT */
+        .ripple-root { position: relative; overflow: hidden; cursor: pointer; }
         .ripple-span {
-            position: absolute; border-radius: 50%;
-            transform: scale(0); animation: ripple-animation 0.6s linear;
-            background-color: currentColor; opacity: 0.15; pointer-events: none;
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple-animation 0.6s linear; background-color: currentColor;
+            opacity: 0.15; pointer-events: none;
         }
         @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
 
-        /* TEXT FIELD (FIXED NGEBUK) */
+        /* 2. TEXT FIELD (FIXED LABEL OVERLAP) */
         .m3-text-field {
-            position: relative;
-            background-color: var(--md-sys-color-surface-container-highest);
+            position: relative; background-color: var(--md-sys-color-surface-container-highest);
             border-radius: var(--md-shape-xs) var(--md-shape-xs) 0 0;
-            display: flex; flex-direction: column; min-height: 56px;
-            transition: background-color 0.2s;
+            display: flex; flex-direction: column; min-height: 56px; transition: 0.2s;
         }
         .m3-text-field:hover { background-color: var(--md-sys-color-surface-variant); }
         .m3-text-field::after {
             content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
             background-color: var(--md-sys-color-on-surface-variant); transition: 0.2s;
         }
-        .m3-text-field.is-active::after { height: 2px; background-color: var(--md-sys-color-primary); }
-        
+        .m3-text-field:focus-within::after { height: 2px; background-color: var(--md-sys-color-primary); }
         .m3-input {
             width: 100%; border: none; outline: none; background: transparent;
             padding: 24px 16px 8px 16px; font-size: 16px;
-            color: var(--md-sys-color-on-surface); font-family: inherit; z-index: 2;
+            color: var(--md-sys-color-on-surface); font-family: inherit;
         }
         .m3-input.has-icon { padding-left: 52px; }
-        
         .m3-label {
             position: absolute; left: 16px; top: 16px; pointer-events: none;
             color: var(--md-sys-color-on-surface-variant); font-size: 16px;
-            transition: 0.2s cubic-bezier(0.2, 0, 0, 1); transform-origin: left top; z-index: 1;
+            transition: 0.2s cubic-bezier(0.2, 0, 0, 1); transform-origin: left top;
         }
         .m3-input.has-icon ~ .m3-label { left: 52px; }
         
-        /* MAGIC FIX: Use .is-active class from React instead of just CSS pseudoclasses */
-        .m3-text-field.is-active .m3-label {
+        /* THE FIX: Check for .has-value class added via React instead of relying solely on CSS pseudo */
+        .m3-input:focus ~ .m3-label, .m3-input.has-value ~ .m3-label {
             transform: translateY(-8px) scale(0.75);
-            color: var(--md-sys-color-primary);
         }
-
+        .m3-input:focus ~ .m3-label { color: var(--md-sys-color-primary); }
+        
         .m3-icon {
             position: absolute; left: 16px; top: 16px; pointer-events: none;
-            color: var(--md-sys-color-on-surface-variant); z-index: 1;
+            color: var(--md-sys-color-on-surface-variant);
         }
-        .m3-text-field.is-active .m3-icon { color: var(--md-sys-color-on-surface); }
+        .m3-input:focus ~ .m3-icon { color: var(--md-sys-color-on-surface); }
 
-        /* M3 SLIDER */
+        /* 3. SWITCH (M3) */
+        .m3-switch-track {
+            width: 52px; height: 32px; border-radius: 16px; border: 2px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-surface-container-highest); display: flex; align-items: center; padding: 2px;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); cursor: pointer;
+        }
+        .m3-switch-track.active { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+        .m3-switch-thumb {
+            width: 16px; height: 16px; border-radius: 50%; background-color: var(--md-sys-color-outline);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); display: flex; justify-content: center; align-items: center;
+        }
+        .m3-switch-track.active .m3-switch-thumb {
+            width: 24px; height: 24px; background-color: var(--md-sys-color-on-primary); transform: translateX(20px);
+        }
+        .m3-switch-icon { font-size: 16px !important; opacity: 0; color: var(--md-sys-color-on-primary-container); transition: 0.2s; }
+        .m3-switch-track.active .m3-switch-icon { opacity: 1; }
+
+        /* 4. SLIDER (M3) */
         .m3-slider {
-            -webkit-appearance: none; width: 100%; height: 4px;
-            background: var(--md-sys-color-surface-variant);
-            border-radius: 2px; outline: none;
+            -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px;
+            background: var(--md-sys-color-surface-variant); outline: none;
         }
         .m3-slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 20px; height: 20px; border-radius: 50%;
             background: var(--md-sys-color-primary); cursor: pointer;
-            transition: transform 0.1s;
+            box-shadow: 0 0 0 4px var(--md-sys-color-surface);
+            transition: 0.2s;
         }
-        .m3-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
-
-        /* CUSTOM CHECKBOX */
-        .m3-checkbox {
-            appearance: none; width: 20px; height: 20px;
-            border: 2px solid var(--md-sys-color-on-surface-variant);
-            border-radius: 2px; position: relative; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .m3-checkbox:checked {
-            background-color: var(--md-sys-color-primary);
-            border-color: var(--md-sys-color-primary);
-        }
-        .m3-checkbox:checked::after {
-            content: ''; position: absolute; left: 5px; top: 1px;
-            width: 6px; height: 12px; border: solid white;
-            border-width: 0 2px 2px 0; transform: rotate(45deg);
-        }
+        .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 10px rgba(0, 97, 164, 0.2); }
 
     </style>
 </head>
@@ -275,10 +278,10 @@
         const { useState, useEffect, useMemo, useRef, useCallback, createContext, useContext } = React;
 
         // ==========================================================================
-        // UTILITIES
+        // UTILITIES & DATA
         // ==========================================================================
         const formatRupiah = (angka) => {
-            if (angka === null || angka === undefined || isNaN(angka)) return '0';
+            if (!angka && angka !== 0) return '0';
             return new Intl.NumberFormat('id-ID').format(angka);
         };
         const getRawNumber = (str) => parseInt(str.toString().replace(/[^0-9]/g, ''), 10) || 0;
@@ -290,20 +293,23 @@
         const formatDateShort = (isoString) => {
             return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', hour:'2-digit', minute:'2-digit' }).format(new Date(isoString));
         };
+
         const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
-        // Dummy Data (Modified to use Farhan & Jumlah)
-        const generateDummyData = (ownerName) => {
+        // Dummy Data Generator 
+        const generateDummyData = () => {
             const data = [];
             const types = ['Servis', 'Sparepart', 'Aksesoris'];
-            const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power'];
+            const statuses = ['Selesai', 'Selesai', 'Selesai', 'Proses', 'Batal'];
+            const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power', 'Kabel Data Type-C'];
             
-            for(let i=0; i<10; i++) {
-                const date = new Date(); date.setDate(date.getDate() - Math.floor(Math.random() * 10));
+            for(let i=0; i<25; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - Math.floor(Math.random() * 14)); 
                 const type = types[Math.floor(Math.random() * types.length)];
                 const modal = Math.floor(Math.random() * 10) * 15000;
                 const jual = modal + (Math.floor(Math.random() * 5 + 1) * 20000);
-                const jumlah = Math.floor(Math.random() * 3) + 1;
+                const jumlah = type === 'Servis' ? 1 : Math.floor(Math.random() * 4) + 1;
                 
                 data.push({
                     id: generateId() + i,
@@ -311,12 +317,12 @@
                     jenis: type,
                     nama: names[Math.floor(Math.random() * names.length)],
                     pelanggan: `Pelanggan ${Math.floor(Math.random() * 100)}`,
-                    modal: type === 'Servis' ? 0 : modal,
+                    modal: type === 'Servis' ? (Math.random() > 0.5 ? modal : 0) : modal,
                     jual: jual,
-                    jumlah: type === 'Servis' ? 1 : jumlah,
-                    laba: ((jual) - (type === 'Servis' ? 0 : modal)) * (type === 'Servis' ? 1 : jumlah),
-                    status: 'Selesai',
-                    catatan: `Ditambahkan otomatis oleh ${ownerName}.`
+                    jumlah: jumlah,
+                    laba: type === 'Servis' ? (jual - (Math.random() > 0.5 ? modal : 0)) * jumlah : (jual - modal) * jumlah,
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    catatan: 'Data contoh otomatis.'
                 });
             }
             return data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
@@ -333,38 +339,39 @@
                 theme: 'blue',
                 isDark: false,
                 storeName: 'Zona Poncell',
-                ownerName: 'Farhan', // Changed default to Farhan
-                hasStarted: false
+                ownerName: 'Farhan', // Diubah sesuai request
+                hasStarted: false 
             });
             const [snackbars, setSnackbars] = useState([]);
 
+            // Load Data
             useEffect(() => {
-                const savedDb = localStorage.getItem('zp_m3_data_v2');
-                const savedSettings = localStorage.getItem('zp_m3_config_v2');
-                
-                let currentSettings = { ...settings };
-                if (savedSettings) {
-                    currentSettings = { ...currentSettings, ...JSON.parse(savedSettings) };
-                    setSettings(currentSettings);
+                const savedDb = localStorage.getItem('zp_m3_data');
+                if (savedDb) {
+                    // Update legacy data yg ga ada jumlah
+                    const parsed = JSON.parse(savedDb).map(item => ({...item, jumlah: item.jumlah || 1}));
+                    setTransactions(parsed);
+                } else {
+                    const dummy = generateDummyData();
+                    setTransactions(dummy);
+                    localStorage.setItem('zp_m3_data', JSON.stringify(dummy));
                 }
 
-                if (savedDb) {
-                    setTransactions(JSON.parse(savedDb));
-                } else {
-                    const dummy = generateDummyData(currentSettings.ownerName);
-                    setTransactions(dummy);
-                    localStorage.setItem('zp_m3_data_v2', JSON.stringify(dummy));
-                }
+                const savedSettings = localStorage.getItem('zp_m3_config');
+                if (savedSettings) setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
             }, []);
 
+            // Save Data
             useEffect(() => {
-                if(transactions.length > 0) localStorage.setItem('zp_m3_data_v2', JSON.stringify(transactions));
+                if(transactions.length > 0) localStorage.setItem('zp_m3_data', JSON.stringify(transactions));
             }, [transactions]);
 
+            // Apply Theme
             useEffect(() => {
-                localStorage.setItem('zp_m3_config_v2', JSON.stringify(settings));
+                localStorage.setItem('zp_m3_config', JSON.stringify(settings));
                 const body = document.body;
-                body.className = ''; body.classList.add(`theme-${settings.theme}`);
+                body.className = ''; 
+                body.classList.add(`theme-${settings.theme}`);
                 if (settings.isDark) body.classList.add('dark');
 
                 setTimeout(() => {
@@ -376,7 +383,7 @@
             const showSnackbar = (message) => {
                 const id = Date.now();
                 setSnackbars(prev => [...prev, { id, message }]);
-                setTimeout(() => setSnackbars(prev => prev.filter(s => s.id !== id)), 3000);
+                setTimeout(() => setSnackbars(prev => prev.filter(s => s.id !== id)), 4000);
             };
 
             return (
@@ -387,68 +394,76 @@
         };
 
         // ==========================================================================
-        // UI COMPONENTS
+        // M3 UI COMPONENTS
         // ==========================================================================
         
-        const Ripple = ({ children, className = '', onClick }) => {
+        const Ripple = ({ children, className = '', onClick, onPointerDown, onPointerUp, onPointerMove, onPointerLeave, style }) => {
             const [ripples, setRipples] = useState([]);
+            
             const addRipple = (e) => {
+                if (onPointerDown) onPointerDown(e);
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = e.clientX - rect.left; const y = e.clientY - rect.top;
                 const size = Math.max(rect.width, rect.height);
                 setRipples(prev => [...prev, { x, y, size, id: Date.now() }]);
-                if(onClick) onClick(e);
             };
-            const cleanUp = () => setTimeout(() => setRipples([]), 600);
+            const cleanUp = (e) => {
+                if (onPointerUp && e.type === 'pointerup') onPointerUp(e);
+                if (onPointerLeave && e.type === 'pointerleave') onPointerLeave(e);
+                setTimeout(() => setRipples([]), 600); 
+            };
+            const handleMove = (e) => {
+                if(onPointerMove) onPointerMove(e);
+            }
+
             return (
-                <div className={`ripple-root ${className}`} onPointerDown={addRipple} onPointerUp={cleanUp} onPointerLeave={cleanUp}>
+                <div className={`ripple-root ${className}`} style={style}
+                     onPointerDown={addRipple} onPointerUp={cleanUp} onPointerLeave={cleanUp} onPointerMove={handleMove} onClick={onClick}>
                     {children}
-                    {ripples.map(r => <span key={r.id} className="ripple-span" style={{ top: r.y - r.size/2, left: r.x - r.size/2, width: r.size, height: r.size }} />)}
+                    {ripples.map(r => (
+                        <span key={r.id} className="ripple-span"
+                              style={{ top: r.y - r.size/2, left: r.x - r.size/2, width: r.size, height: r.size }} />
+                    ))}
                 </div>
             );
         };
 
         const Button = ({ variant = 'filled', children, icon, className='', onClick, fullWidth }) => {
-            let colors = variant === 'filled' ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' :
-                         variant === 'tonal' ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]' :
-                         variant === 'error' ? 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]' :
-                         'text-[var(--md-sys-color-primary)] bg-transparent';
+            let colors = '';
+            if (variant === 'filled') colors = 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]';
+            if (variant === 'tonal') colors = 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]';
+            if (variant === 'outlined') colors = 'border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)]';
+            if (variant === 'text') colors = 'text-[var(--md-sys-color-primary)] bg-transparent';
+            if (variant === 'error') colors = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
+
             return (
-                <Ripple className={`h-12 px-6 rounded-full flex items-center justify-center font-medium text-[15px] transition-shadow ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
+                <Ripple className={`h-12 px-6 rounded-full flex items-center justify-center font-medium text-sm transition-shadow ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
                     {icon && <span className="material-symbols-rounded mr-2 text-[20px]">{icon}</span>}
                     {children}
                 </Ripple>
             );
         };
 
-        // Fixed Ngebuk TextField
         const TextField = ({ label, value, onChange, icon, type="text", inputMode="text", multiline, prefix }) => {
-            const [isFocused, setIsFocused] = useState(false);
-            // Check if value exists and is not empty string
-            const hasValue = value !== undefined && value !== null && String(value).trim() !== '';
-            const isActive = isFocused || hasValue;
-
+            // Fix input bug: check string length
+            const hasVal = value !== null && value !== undefined && value.toString().length > 0;
             return (
-                <div className={`m3-text-field ${isActive ? 'is-active' : ''}`}>
+                <div className="m3-text-field">
                     {icon && <span className="material-symbols-rounded m3-icon icon-outlined">{icon}</span>}
                     {multiline ? (
                         <textarea 
-                            className={`m3-input no-scrollbar resize-none ${icon ? 'has-icon' : ''}`}
-                            value={value} onChange={e => onChange(e.target.value)}
-                            onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
-                            placeholder=" " rows="3"
+                            className={`m3-input no-scrollbar resize-none ${icon ? 'has-icon' : ''} ${hasVal ? 'has-value' : ''}`}
+                            value={value} onChange={e => onChange(e.target.value)} placeholder=" " rows="3"
                         />
                     ) : (
                         <input 
                             type={type} inputMode={inputMode}
-                            className={`m3-input ${icon ? 'has-icon' : ''}`}
-                            value={value} onChange={e => onChange(e.target.value)}
-                            onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
-                            placeholder=" "
+                            className={`m3-input ${icon ? 'has-icon' : ''} ${hasVal ? 'has-value' : ''}`}
+                            value={value} onChange={e => onChange(e.target.value)} placeholder=" "
                         />
                     )}
                     <label className="m3-label">{label}</label>
-                    {prefix && hasValue && (
+                    {prefix && value && (
                         <span className="absolute right-4 top-[24px] text-sm text-[var(--md-sys-color-on-surface-variant)]">{prefix}</span>
                     )}
                 </div>
@@ -458,23 +473,24 @@
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
             useEffect(() => { if (isOpen) setIsClosing(false); }, [isOpen]);
-            
+
             const handleClose = () => {
-                setIsClosing(true); setTimeout(() => { onClose(); setIsClosing(false); }, 350);
+                setIsClosing(true);
+                setTimeout(() => { onClose(); setIsClosing(false); }, 350); 
             };
 
             if (!isOpen && !isClosing) return null;
 
             return (
-                <div className="fixed inset-0 z-50 flex flex-col justify-end">
+                <div className="fixed inset-0 z-[100] flex flex-col justify-end">
                     <div className={`absolute inset-0 bg-black/50 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-opacity duration-300`} onClick={handleClose} />
                     <div className={`relative w-full max-h-[92vh] flex flex-col rounded-t-[var(--md-shape-xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
                          style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         <div className="w-full flex justify-center pt-4 pb-2" onClick={handleClose}>
-                            <div className="w-8 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)] opacity-50" />
+                            <div className="w-8 h-1.5 rounded-full bg-[var(--md-sys-color-outline-variant)] opacity-50" />
                         </div>
                         <div className="px-6 pb-2 flex justify-between items-center shrink-0">
-                            <h2 className="text-[22px] font-normal text-[var(--md-sys-color-on-surface)]">{title}</h2>
+                            <h2 className="text-[22px] font-medium text-[var(--md-sys-color-on-surface)]">{title}</h2>
                             <button onClick={handleClose} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)]">
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
@@ -485,36 +501,23 @@
             );
         };
 
+        const Switch = ({ checked, onChange }) => (
+            <div className={`m3-switch-track ${checked ? 'active' : ''}`} onClick={() => onChange(!checked)}>
+                <div className="m3-switch-thumb">
+                    <span className="material-symbols-rounded m3-switch-icon">check</span>
+                </div>
+            </div>
+        );
+
         const SnackbarContainer = () => {
             const { snackbars } = useContext(AppContext);
             return (
-                <div className="fixed bottom-[110px] left-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                <div className="fixed bottom-[110px] left-4 right-4 z-[200] flex flex-col gap-2 pointer-events-none" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                     {snackbars.map(snack => (
-                        <div key={snack.id} className="bg-[var(--md-sys-color-inverse-surface)] text-[var(--md-sys-color-inverse-on-surface)] px-4 py-3 rounded-[var(--md-shape-sm)] shadow-lg animate-page flex items-center justify-between">
-                            <span className="text-sm">{snack.message}</span>
+                        <div key={snack.id} className="bg-[var(--md-sys-color-on-surface)] text-[var(--md-sys-color-surface)] px-4 py-3 rounded-[var(--md-shape-sm)] shadow-lg animate-page flex items-center justify-between">
+                            <span className="text-sm font-medium">{snack.message}</span>
                         </div>
                     ))}
-                </div>
-            );
-        };
-
-        // Quantity Selector (Slider + Stepper)
-        const QuantitySelector = ({ value, onChange, label }) => {
-            return (
-                <div className="bg-[var(--md-sys-color-surface-container-highest)] p-4 rounded-[var(--md-shape-md)] flex flex-col gap-3">
-                    <div className="flex justify-between items-center">
-                        <span className="text-[var(--md-sys-color-on-surface-variant)] text-sm">{label}</span>
-                        <div className="flex items-center gap-3">
-                            <button onClick={() => onChange(Math.max(1, value - 1))} className="w-8 h-8 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface)] flex items-center justify-center shadow-sm">
-                                <span className="material-symbols-rounded text-lg">remove</span>
-                            </button>
-                            <span className="w-8 text-center font-medium text-lg text-[var(--md-sys-color-on-surface)]">{value}</span>
-                            <button onClick={() => onChange(value + 1)} className="w-8 h-8 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface)] flex items-center justify-center shadow-sm">
-                                <span className="material-symbols-rounded text-lg">add</span>
-                            </button>
-                        </div>
-                    </div>
-                    <input type="range" min="1" max="50" value={value} onChange={(e) => onChange(parseInt(e.target.value))} className="m3-slider" />
                 </div>
             );
         };
@@ -523,6 +526,7 @@
         // APP SCREENS
         // ==========================================================================
 
+        // --- SPLASH ---
         const SplashScreen = () => {
             const { settings, setSettings } = useContext(AppContext);
             const startApp = async () => {
@@ -531,72 +535,127 @@
             };
             return (
                 <div className="h-[100dvh] w-full flex flex-col items-center justify-center bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] p-6 relative">
-                    <div className="w-24 h-24 rounded-[32px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-6 shadow-2xl animate-fab">
-                        <span className="material-symbols-rounded text-[48px]">storefront</span>
+                    <div className="w-28 h-28 rounded-[36px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl animate-fab">
+                        <span className="material-symbols-rounded text-[56px]">smartphone</span>
                     </div>
-                    <h1 className="text-4xl font-normal mb-2 text-center animate-page">Zona Poncell</h1>
-                    <p className="text-primary-container opacity-80 mb-12 text-center animate-page">Sistem Manajemen M3 Ultimate</p>
-                    <div className="absolute bottom-12 w-full px-6 flex justify-center animate-page" style={{animationDelay: '0.2s'}}>
-                        <Ripple className="w-full max-w-sm h-14 bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] rounded-full flex items-center justify-center font-medium text-lg shadow-lg" onClick={startApp}>
-                            Masuk Aplikasi <span className="material-symbols-rounded ml-2">arrow_forward</span>
+                    <h1 className="text-4xl font-semibold mb-2 text-center animate-page" style={{animationDelay: '0.1s'}}>Zona Poncell</h1>
+                    <p className="text-[var(--md-sys-color-primary-container)] opacity-90 mb-12 text-center text-lg animate-page" style={{animationDelay: '0.2s'}}>Sistem Manajemen Konter Cerdas</p>
+                    
+                    <div className="absolute bottom-16 w-full px-6 flex justify-center animate-page" style={{animationDelay: '0.4s'}}>
+                        <Ripple className="w-full max-w-xs h-14 bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] rounded-full flex items-center justify-center font-medium text-lg shadow-lg" onClick={startApp}>
+                            Buka Sistem
+                            <span className="material-symbols-rounded ml-3">login</span>
                         </Ripple>
                     </div>
                 </div>
             );
         };
 
-        // --- DASHBOARD ---
+        // --- TAB 1: DASBOR (Scrollable) ---
         const TabDasbor = () => {
             const { transactions, settings } = useContext(AppContext);
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
+            const cm = new Date().getMonth(); const cy = new Date().getFullYear();
+            const pm = cm === 0 ? 11 : cm - 1; const py = cm === 0 ? cy - 1 : cy;
             
-            const monthData = transactions.filter(d => new Date(d.tanggal).getMonth() === currentMonth && new Date(d.tanggal).getFullYear() === currentYear);
-            const laba = monthData.filter(d => d.status === 'Selesai').reduce((sum, item) => sum + item.laba, 0);
-            const omset = monthData.filter(d => d.status === 'Selesai').reduce((sum, item) => sum + (item.jual * (item.jumlah || 1)), 0);
+            const monthData = transactions.filter(d => new Date(d.tanggal).getMonth() === cm && new Date(d.tanggal).getFullYear() === cy);
+            const prevMonthData = transactions.filter(d => new Date(d.tanggal).getMonth() === pm && new Date(d.tanggal).getFullYear() === py);
+
+            const laba = monthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + i.laba, 0);
+            const omset = monthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + (i.jual * i.jumlah), 0);
+            
+            const labaPrev = prevMonthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + i.laba, 0);
+            const growth = labaPrev === 0 ? 100 : Math.round(((laba - labaPrev) / labaPrev) * 100);
+            
             const activeJobs = transactions.filter(d => d.status === 'Proses').length;
-            const greeting = new Date().getHours() < 12 ? 'Selamat Pagi' : new Date().getHours() < 18 ? 'Selamat Siang' : 'Selamat Malam';
+            const hour = new Date().getHours();
+            const greeting = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 19 ? 'Selamat Sore' : 'Selamat Malam';
 
             return (
-                <div className="p-4 space-y-6 animate-page pb-24" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    {/* Header */}
                     <div className="flex justify-between items-center mb-2">
                         <div>
                             <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">{greeting},</p>
-                            <h1 className="text-2xl font-medium text-[var(--md-sys-color-on-surface)]">{settings.ownerName}</h1>
+                            <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">{settings.ownerName}</h1>
                         </div>
-                        <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shadow-sm">
-                            <span className="material-symbols-rounded">store</span>
-                        </div>
-                    </div>
-
-                    <div className="p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-lg">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-bl-full transform translate-x-8 -translate-y-8"></div>
-                        <p className="text-sm opacity-90 font-light mb-1">Total Laba Bersih Bulan Ini</p>
-                        <h2 className="text-[36px] font-normal tracking-tight mb-6">Rp{formatRupiah(laba)}</h2>
-                        <div className="flex gap-4">
-                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-2 rounded-[var(--md-shape-lg)] flex-1 flex flex-col">
-                                <span className="text-[10px] uppercase font-bold opacity-80">Omset</span>
-                                <span className="font-medium text-sm">Rp{formatRupiah(omset)}</span>
-                            </div>
-                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-2 rounded-[var(--md-shape-lg)] flex-1 flex flex-col">
-                                <span className="text-[10px] uppercase font-bold opacity-80">Aktif</span>
-                                <span className="font-medium text-sm">{activeJobs} Antrian</span>
-                            </div>
+                        <div className="w-14 h-14 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shadow-sm border-2 border-[var(--md-sys-color-surface)]">
+                            <span className="material-symbols-rounded text-2xl">account_circle</span>
                         </div>
                     </div>
 
+                    {/* Main Card (Hero) */}
+                    <div className="p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-xl">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-bl-full transform translate-x-10 -translate-y-10"></div>
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black opacity-10 rounded-tr-full transform -translate-x-5 translate-y-5"></div>
+                        
+                        <div className="relative z-10">
+                            <div className="flex justify-between items-start mb-1">
+                                <p className="text-sm opacity-90 font-medium tracking-wide">Laba Bersih Bulan Ini</p>
+                                <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${growth >= 0 ? 'bg-white/20' : 'bg-red-500/30'}`}>
+                                    <span className="material-symbols-rounded text-[14px] mr-1">{growth >= 0 ? 'trending_up' : 'trending_down'}</span>
+                                    {Math.abs(growth)}%
+                                </div>
+                            </div>
+                            <h2 className="text-[38px] font-semibold tracking-tighter mb-6">Rp{formatRupiah(laba)}</h2>
+                            
+                            <div className="flex gap-3">
+                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-3 rounded-[var(--md-shape-xl)] flex-1 flex flex-col justify-center shadow-sm">
+                                    <span className="text-[10px] uppercase font-bold opacity-70 mb-0.5">Total Omset</span>
+                                    <span className="font-semibold text-sm">Rp{formatRupiah(omset)}</span>
+                                </div>
+                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-3 rounded-[var(--md-shape-xl)] flex-1 flex flex-col justify-center shadow-sm">
+                                    <span className="text-[10px] uppercase font-bold opacity-70 mb-0.5">Antrian Aktif</span>
+                                    <span className="font-semibold text-sm">{activeJobs} Pekerjaan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pintasan Cepat */}
                     <div>
-                        <h3 className="text-lg font-medium text-[var(--md-sys-color-on-surface)] mb-4">Aktivitas Terakhir</h3>
+                        <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider mb-3 ml-1">Kinerja Kategori</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="p-4 rounded-[var(--md-shape-xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-rounded text-[20px]">build_circle</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-sm">Servis</h3>
+                                    <p className="text-xs opacity-80">{monthData.filter(d=>d.jenis==='Servis').length} Selesai</p>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-[var(--md-shape-xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-rounded text-[20px]">inventory_2</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-sm">Barang</h3>
+                                    <p className="text-xs opacity-80">{monthData.filter(d=>d.jenis!=='Servis').reduce((s,i)=>s+i.jumlah,0)} Terjual</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div>
+                        <div className="flex justify-between items-center mb-3 ml-1">
+                            <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">Aktivitas Terakhir</h3>
+                        </div>
                         <div className="space-y-3">
-                            {transactions.slice(0, 5).map((item, i) => <ActivityItem key={item.id} item={item} delay={i * 0.05} />)}
-                            {transactions.length === 0 && <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-4">Belum ada transaksi</p>}
+                            {transactions.slice(0, 5).map((item, index) => (
+                                <ActivityItem key={item.id} item={item} delay={index * 0.05} />
+                            ))}
+                            {transactions.length === 0 && (
+                                <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-6 bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-xl)]">Belum ada transaksi</p>
+                            )}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const ActivityItem = ({ item, delay = 0, onClick, selectable, isSelected, onSelect }) => {
+        // --- HELPER: ACTIVITY ITEM (With Long Press Logic) ---
+        const ActivityItem = ({ item, delay = 0, onClick, selectable, selected, onSelect }) => {
             const isServis = item.jenis === 'Servis';
             const icon = isServis ? 'build' : item.jenis === 'Sparepart' ? 'memory' : 'headphones';
             
@@ -605,44 +664,71 @@
             if (item.status === 'Proses') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
             if (item.status === 'Batal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
+            // Long Press Logic
+            const timerRef = useRef(null);
+            const isDragging = useRef(false);
+
+            const handlePointerDown = (e) => {
+                if(e.button !== 0 && e.pointerType !== 'touch') return; // Ensure left click or touch
+                isDragging.current = false;
+                timerRef.current = setTimeout(() => {
+                    if(!isDragging.current && onSelect && !selectable) {
+                        onSelect();
+                        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50); // Haptic feedback
+                    }
+                }, 500);
+            };
+
+            const handlePointerMove = () => { isDragging.current = true; clearTimeout(timerRef.current); };
+            const handlePointerUp = () => { clearTimeout(timerRef.current); };
+            
+            const handleClick = () => {
+                if(selectable && onSelect) onSelect();
+                else if(!selectable && onClick) onClick();
+            };
+
             return (
-                <div onClick={selectable ? onSelect : onClick} className="flex items-center gap-4 p-4 bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-xl)] shadow-sm ripple-root" style={{ animation: `staggerFade 0.4s ${delay}s ease forwards`, opacity: 0 }}>
-                    {selectable && (
-                        <div className="shrink-0 pl-1">
-                            <input type="checkbox" className="m3-checkbox" checked={isSelected} readOnly />
+                <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
+                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-xl)] shadow-sm ripple-root transition-all duration-200
+                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)] scale-[0.98]' : 'bg-[var(--md-sys-color-surface-container-low)]'}
+                     `} 
+                     style={{ animation: delay !== null ? `staggerFade 0.4s ${delay}s ease forwards` : 'none', opacity: delay !== null ? 0 : 1 }}>
+                    
+                    {selectable ? (
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                            <span className="material-symbols-rounded">{selected ? 'check' : 'circle'}</span>
                         </div>
-                    )}
-                    {!selectable && (
+                    ) : (
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${statusColor}`}>
                             <span className="material-symbols-rounded">{icon}</span>
                         </div>
                     )}
+                    
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-[var(--md-sys-color-on-surface)] truncate text-base">{item.nama}</h4>
-                        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] truncate">
-                            {formatDateShort(item.tanggal)} • {item.pelanggan} {item.jumlah > 1 ? `(x${item.jumlah})` : ''}
-                        </p>
+                        <h4 className="font-semibold text-[var(--md-sys-color-on-surface)] truncate text-base">{item.nama}</h4>
+                        <p className="text-[13px] text-[var(--md-sys-color-on-surface-variant)] truncate">{formatDateShort(item.tanggal)} • {item.pelanggan}</p>
                     </div>
                     <div className="text-right shrink-0">
-                        <p className={`font-medium text-sm mb-0.5 ${item.laba < 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-primary)]'}`}>
-                            {item.laba < 0 ? '-' : ''}Rp{formatRupiah(Math.abs(item.laba))}
-                        </p>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColor}`}>{item.status}</span>
+                        <p className="font-semibold text-[var(--md-sys-color-primary)] text-[15px] mb-1">Rp{formatRupiah(item.laba)}</p>
+                        <div className="flex items-center justify-end gap-1">
+                            {item.jumlah > 1 && <span className="text-[10px] font-bold bg-[var(--md-sys-color-surface-variant)] px-1.5 py-0.5 rounded text-[var(--md-sys-color-on-surface-variant)]">x{item.jumlah}</span>}
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${statusColor}`}>{item.status}</span>
+                        </div>
                     </div>
                 </div>
             );
-        };
+        }
 
-        // --- RIWAYAT (WITH MULTI-SELECT) ---
+        // --- TAB 2: RIWAYAT (Multi-Select Enabled) ---
         const TabRiwayat = () => {
             const { transactions, setTransactions, showSnackbar } = useContext(AppContext);
             const [search, setSearch] = useState('');
             const [filterType, setFilterType] = useState('Semua');
             const [selectedItem, setSelectedItem] = useState(null);
             
-            // Multi-select state
-            const [isSelectMode, setIsSelectMode] = useState(false);
+            // Selection Mode State
             const [selectedIds, setSelectedIds] = useState([]);
+            const isSelectionMode = selectedIds.length > 0;
 
             const filteredData = useMemo(() => {
                 return transactions.filter(t => {
@@ -652,254 +738,455 @@
                 });
             }, [transactions, search, filterType]);
 
-            const toggleSelect = (id) => {
-                if(selectedIds.includes(id)) setSelectedIds(selectedIds.filter(i => i !== id));
-                else setSelectedIds([...selectedIds, id]);
+            const toggleSelection = (id) => {
+                setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
             };
 
             const handleBulkDelete = () => {
-                if(confirm(`Hapus ${selectedIds.length} transaksi secara permanen?`)) {
+                if(confirm(`Hapus ${selectedIds.length} transaksi?`)) {
                     setTransactions(prev => prev.filter(t => !selectedIds.includes(t.id)));
-                    setSelectedIds([]); setIsSelectMode(false);
-                    showSnackbar(`${selectedIds.length} transaksi dihapus`);
+                    setSelectedIds([]);
+                    showSnackbar(`${selectedIds.length} item dihapus`);
                 }
             };
 
             const handleBulkCopy = () => {
                 const toCopy = transactions.filter(t => selectedIds.includes(t.id));
-                const copied = toCopy.map(t => ({...t, id: generateId(), tanggal: new Date().toISOString(), catatan: t.catatan + ' (Salinan)'}));
-                setTransactions(prev => [...copied, ...prev]);
-                setSelectedIds([]); setIsSelectMode(false);
-                showSnackbar(`${selectedIds.length} transaksi berhasil disalin`);
-            };
-
-            const exitSelectMode = () => {
-                setIsSelectMode(false); setSelectedIds([]);
+                const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: 'Proses' }));
+                setTransactions(prev => [...newItems, ...prev]);
+                setSelectedIds([]);
+                showSnackbar(`${newItems.length} item diduplikasi`);
             };
 
             return (
                 <div className="flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    {/* Top Action Bar (Changes during selection) */}
-                    {isSelectMode ? (
-                        <div className="px-4 h-14 flex items-center justify-between bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] mx-4 mb-4 rounded-full shadow-md animate-page">
-                            <div className="flex items-center gap-3">
-                                <button onClick={exitSelectMode} className="material-symbols-rounded">close</button>
-                                <span className="font-medium text-lg">{selectedIds.length} Dipilih</span>
+                    
+                    {/* Contextual App Bar (Selection Mode) */}
+                    {isSelectionMode && (
+                        <div className="absolute top-0 left-0 right-0 z-50 bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-16 flex items-center justify-between px-4 animate-appbar-down shadow-md" style={{ paddingTop: 'var(--sa-top)', height: 'calc(64px + var(--sa-top))' }}>
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => setSelectedIds([])} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                                    <span className="material-symbols-rounded">close</span>
+                                </button>
+                                <span className="text-xl font-medium">{selectedIds.length} Terpilih</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button onClick={handleBulkCopy} disabled={selectedIds.length===0} className="w-10 h-10 rounded-full hover:bg-black/10 flex items-center justify-center disabled:opacity-50">
+                            <div className="flex gap-2">
+                                <button onClick={handleBulkCopy} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
                                     <span className="material-symbols-rounded">content_copy</span>
                                 </button>
-                                <button onClick={handleBulkDelete} disabled={selectedIds.length===0} className="w-10 h-10 rounded-full hover:bg-black/10 flex items-center justify-center text-[var(--md-sys-color-error)] disabled:opacity-50">
+                                <button onClick={handleBulkDelete} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors text-[var(--md-sys-color-error)]">
                                     <span className="material-symbols-rounded">delete</span>
                                 </button>
                             </div>
                         </div>
-                    ) : (
-                        <div className="px-4 flex justify-between items-center mb-4 z-10">
-                            <h1 className="text-2xl font-medium text-[var(--md-sys-color-on-surface)]">Riwayat Transaksi</h1>
-                            <button onClick={() => setIsSelectMode(true)} className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] flex items-center justify-center shadow-sm">
-                                <span className="material-symbols-rounded">checklist</span>
-                            </button>
-                        </div>
                     )}
 
-                    {!isSelectMode && (
-                        <div className="px-4 space-y-4 pb-2 z-10">
-                            <div className="flex items-center h-14 bg-[var(--md-sys-color-surface-container-high)] rounded-full px-4 text-[var(--md-sys-color-on-surface)]">
-                                <span className="material-symbols-rounded mr-3 opacity-70">search</span>
-                                <input type="text" placeholder="Cari transaksi..." value={search} onChange={e => setSearch(e.target.value)}
-                                    className="bg-transparent border-none outline-none flex-1 text-base placeholder:text-[var(--md-sys-color-on-surface-variant)]" />
-                            </div>
-                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                                {['Semua', 'Servis', 'Sparepart', 'Aksesoris'].map(f => (
-                                    <button key={f} onClick={() => setFilterType(f)}
-                                        className={`px-4 h-8 rounded-lg text-sm font-medium border transition-colors shrink-0 ${
-                                            filterType === f ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent'
-                                        }`}>{f}</button>
-                                ))}
-                            </div>
+                    {/* Standard Header */}
+                    <div className="px-4 space-y-4 pb-2 z-10 bg-[var(--md-sys-color-background)]">
+                        <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">Riwayat</h1>
+                        
+                        <div className="flex items-center h-14 bg-[var(--md-sys-color-surface-container-high)] rounded-full px-4 text-[var(--md-sys-color-on-surface)] shadow-sm focus-within:ring-2 ring-[var(--md-sys-color-primary)] transition-all">
+                            <span className="material-symbols-rounded mr-3 opacity-70">search</span>
+                            <input type="text" placeholder="Cari nama, pelanggan..." value={search} onChange={e => setSearch(e.target.value)}
+                                className="bg-transparent border-none outline-none flex-1 text-base placeholder:text-[var(--md-sys-color-on-surface-variant)]" />
+                            {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2" onClick={() => setSearch('')}>close</span>}
                         </div>
-                    )}
 
-                    <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-3 pt-2">
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                            {['Semua', 'Servis', 'Sparepart', 'Aksesoris'].map(f => (
+                                <button key={f} onClick={() => setFilterType(f)}
+                                    className={`px-5 h-10 rounded-full text-sm font-semibold border transition-all shrink-0 ${
+                                        filterType === f 
+                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
+                                        : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent'
+                                    }`}>{f}</button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* List Area */}
+                    <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-3 pt-2">
                         {filteredData.length === 0 ? (
-                            <p className="text-center py-20 text-[var(--md-sys-color-on-surface-variant)]">Tidak ditemukan.</p>
+                            <div className="flex flex-col items-center justify-center py-24 text-[var(--md-sys-color-on-surface-variant)]">
+                                <span className="material-symbols-rounded text-6xl mb-4 opacity-40">manage_search</span>
+                                <p className="font-medium text-lg opacity-60">Tidak ada data</p>
+                                <p className="text-sm opacity-50">Coba ubah kata kunci pencarian.</p>
+                            </div>
                         ) : (
-                            filteredData.map(item => (
-                                <ActivityItem key={item.id} item={item} 
-                                              selectable={isSelectMode} 
-                                              isSelected={selectedIds.includes(item.id)}
-                                              onSelect={() => toggleSelect(item.id)}
+                            filteredData.map((item, index) => (
+                                <ActivityItem key={item.id} item={item} delay={search || filterType!=='Semua' ? null : index * 0.05} 
+                                              selectable={isSelectionMode} 
+                                              selected={selectedIds.includes(item.id)}
+                                              onSelect={() => toggleSelection(item.id)}
                                               onClick={() => setSelectedItem(item)} />
                             ))
                         )}
                     </div>
+
                     <DetailSheet item={selectedItem} onClose={() => setSelectedItem(null)} />
                 </div>
             );
         };
 
-        // --- TAB 3 & 4 (Analisis & Seting) Simplified for space, functionality intact ---
+        // --- TAB 3: ANALISIS MENDALAM ---
         const TabAnalisis = () => {
-            const { transactions } = useContext(AppContext);
-            // ... (Analisis UI unchanged, but logic uses `jumlah` for total omset calculation if needed)
-            const margin = transactions.length ? ((transactions.reduce((s,i)=>s+i.laba,0) / transactions.reduce((s,i)=>s+(i.jual*i.jumlah),0))*100).toFixed(1) : 0;
-            
-            return (
-                <div className="p-4 space-y-6 animate-page pb-24 h-full overflow-y-auto no-scrollbar" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <h1 className="text-2xl font-medium text-[var(--md-sys-color-on-surface)] mb-2">Analisis Bisnis</h1>
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-2xl)] shadow-sm">
-                        <p className="text-[var(--md-sys-color-on-surface-variant)] mb-2">Total Transaksi</p>
-                        <h2 className="text-4xl text-[var(--md-sys-color-primary)] mb-4">{transactions.length} <span className="text-lg">Item</span></h2>
-                        <div className="h-[1px] bg-[var(--md-sys-color-outline-variant)] mb-4"></div>
-                        <p className="text-[var(--md-sys-color-on-surface-variant)] mb-2">Margin Keuntungan Global</p>
-                        <h2 className="text-3xl text-[var(--md-sys-color-tertiary)]">{isNaN(margin) ? 0 : margin}%</h2>
-                    </div>
-                </div>
-            );
-        };
+            const { transactions, settings } = useContext(AppContext);
+            const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
+            const inst = useRef({ line: null, pie: null, bar: null });
 
-        const TabSeting = () => {
-            const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
+            const getColors = useCallback(() => {
+                const style = getComputedStyle(document.body);
+                return {
+                    primary: style.getPropertyValue('--md-sys-color-primary').trim(),
+                    tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
+                    error: style.getPropertyValue('--md-sys-color-error').trim(),
+                    text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(),
+                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
+                    surface: style.getPropertyValue('--md-sys-color-surface-container').trim()
+                };
+            }, [settings.theme, settings.isDark]);
+
+            useEffect(() => {
+                if (transactions.length === 0) return;
+                const c = getColors();
+                Object.values(inst.current).forEach(chart => chart && chart.destroy());
+
+                // 1. Line Chart (7 Days Revenue)
+                const last7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0]; });
+                const laba7 = last7.map(date => transactions.filter(t => t.tanggal.startsWith(date) && t.status === 'Selesai').reduce((s,i) => s + i.laba, 0));
+                
+                inst.current.line = new Chart(refLine.current.getContext('2d'), {
+                    type: 'line',
+                    data: { labels: last7.map(d => new Date(d).toLocaleDateString('id-ID', { weekday:'short'})), datasets: [{ label: 'Laba Bersih', data: laba7, borderColor: c.primary, backgroundColor: `${c.primary}20`, fill: true, tension: 0.5, pointBackgroundColor: c.primary, borderWidth: 3 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: c.text } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { color: c.text, callback: v => `${v/1000}k` } } } }
+                });
+
+                // 2. Doughnut (Category)
+                const counts = ['Servis', 'Sparepart', 'Aksesoris'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Selesai').length);
+                inst.current.pie = new Chart(refPie.current.getContext('2d'), {
+                    type: 'doughnut',
+                    data: { labels: ['Servis', 'Sparepart', 'Aks'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error], borderWidth: 0, hoverOffset: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: c.text, font: {family: 'Readex Pro', weight: '500'} } } } }
+                });
+
+                // 3. Horizontal Bar (Top Items by Quantity)
+                const itemsMap = {};
+                transactions.filter(t=>t.status==='Selesai' && t.jenis!=='Servis').forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; });
+                const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
+
+                if(topItems.length > 0 && refBar.current) {
+                    inst.current.bar = new Chart(refBar.current.getContext('2d'), {
+                        type: 'bar',
+                        data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 6 }] },
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false}, ticks: {color: c.text, font: {family:'Readex Pro'}} } } }
+                    });
+                }
+
+                return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
+            }, [transactions, settings.theme, settings.isDark, getColors]);
+
+            const totalSelesai = transactions.filter(t => t.status === 'Selesai');
+            const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
+            const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
+            const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
+
             return (
-                <div className="p-4 space-y-6 animate-page pb-24 h-full overflow-y-auto no-scrollbar" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <h1 className="text-2xl font-medium text-[var(--md-sys-color-on-surface)] mb-4">Seting Aplikasi</h1>
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-5 space-y-4">
-                        <TextField label="Nama Toko" value={settings.storeName} onChange={v => setSettings({...settings, storeName: v})} icon="store" />
-                        <TextField label="Nama Pemilik" value={settings.ownerName} onChange={v => setSettings({...settings, ownerName: v})} icon="person" />
+                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight">Analisis</h1>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-5 rounded-[var(--md-shape-xl)] shadow-sm">
+                            <span className="material-symbols-rounded text-2xl mb-2 opacity-80">monitoring</span>
+                            <p className="text-xs font-semibold uppercase tracking-wider opacity-80 mb-1">Rata Margin</p>
+                            <h2 className="text-3xl font-bold">{margin}%</h2>
+                        </div>
+                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-5 rounded-[var(--md-shape-xl)] shadow-sm">
+                            <span className="material-symbols-rounded text-2xl mb-2 opacity-80">done_all</span>
+                            <p className="text-xs font-semibold uppercase tracking-wider opacity-80 mb-1">Pekerjaan</p>
+                            <h2 className="text-3xl font-bold">{totalSelesai.length}</h2>
+                        </div>
                     </div>
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-5 space-y-4">
-                        <div className="flex justify-between items-center">
-                            <span className="text-[var(--md-sys-color-on-surface)]">Mode Gelap</span>
-                            <input type="checkbox" className="m3-checkbox" checked={settings.isDark} onChange={e => setSettings({...settings, isDark: e.target.checked})} />
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-[var(--md-sys-color-on-surface)]">Tren Laba (7 Hari)</h3>
+                            <span className="material-symbols-rounded text-[var(--md-sys-color-on-surface-variant)] text-sm">show_chart</span>
+                        </div>
+                        <div className="h-[200px] relative">
+                            {transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)]">Data tidak cukup</p>}
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Porsi Kategori</h3>
+                        <div className="h-[150px] relative">
+                            {transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-12 text-[var(--md-sys-color-on-surface-variant)]">Data tidak cukup</p>}
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Barang Terlaris</h3>
+                        <div className="h-[160px] relative">
+                            {transactions.filter(t=>t.jenis!=='Servis' && t.status==='Selesai').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-12 text-[var(--md-sys-color-on-surface-variant)]">Belum ada penjualan barang</p>}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // --- FORM ADD TRANSACTION ---
+        // --- TAB 4: SETING ---
+        const TabSeting = () => {
+            const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
+
+            const themes = [
+                { id: 'blue', color: '#0061a4', name: 'Blue' }, { id: 'green', color: '#146c2e', name: 'Green' }, { id: 'orange', color: '#8f4c00', name: 'Orange' }
+            ];
+
+            const handleBackup = () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
+                const a = document.createElement('a'); a.href = dataStr; a.download = `ZonaPoncell_Backup_${new Date().getTime()}.json`; a.click();
+                showSnackbar('Data berhasil di-backup');
+            };
+
+            const handleRestore = (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const json = JSON.parse(event.target.result);
+                        if(Array.isArray(json)) { setTransactions(json); showSnackbar('Data berhasil dipulihkan'); }
+                    } catch(err) { showSnackbar('Format file tidak valid!'); }
+                };
+                reader.readAsText(file);
+            };
+
+            const handleClear = () => {
+                if(confirm('Peringatan: Semua data transaksi akan dihapus permanen. Yakin?')) {
+                    setTransactions([]); showSnackbar('Semua data dibersihkan');
+                }
+            };
+
+            return (
+                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4">Seting</h1>
+                    
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 space-y-5 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase">Profil Konter</h3>
+                        <TextField label="Nama Konter" value={settings.storeName} onChange={v => setSettings({...settings, storeName: v})} icon="store" />
+                        <TextField label="Nama Pemilik" value={settings.ownerName} onChange={v => setSettings({...settings, ownerName: v})} icon="person" />
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 space-y-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase">Personalisasi M3</h3>
+                        
+                        <div className="flex justify-between items-center">
+                            <div className="text-[var(--md-sys-color-on-surface)] pr-4">
+                                <p className="font-semibold text-lg">Mode Gelap</p>
+                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] leading-tight mt-1">Gunakan warna gelap untuk menghemat baterai.</p>
+                            </div>
+                            <Switch checked={settings.isDark} onChange={v => setSettings({...settings, isDark: v})} />
+                        </div>
+
+                        <div className="pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
+                            <p className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Warna Tema Dinamis</p>
+                            <div className="flex gap-4">
+                                {themes.map(t => (
+                                    <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
+                                         className={`w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-110 shadow-lg ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-2 ring-offset-[var(--md-sys-color-surface)]' : 'scale-100 hover:scale-105'}`}
+                                         style={{ backgroundColor: t.color }}>
+                                         {settings.theme === t.id && <span className="material-symbols-rounded text-white text-3xl drop-shadow-md">check</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-3 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase p-3 ml-1">Database</h3>
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={handleBackup}>
+                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">download</span></div>
+                            <div className="text-left"><p className="font-semibold">Backup Database</p><p className="text-xs opacity-70">Unduh data ke JSON</p></div>
+                        </Ripple>
+                        <label className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer">
+                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">upload</span></div>
+                            <div className="text-left"><p className="font-semibold">Restore Data</p><p className="text-xs opacity-70">Pulihkan dari file JSON</p></div>
+                            <input type="file" accept=".json" className="hidden" onChange={handleRestore} />
+                        </label>
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] transition-colors mt-2" onClick={handleClear}>
+                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">delete_forever</span></div>
+                            <div className="text-left"><p className="font-semibold">Hapus Semua</p><p className="text-xs opacity-80">Reset pabrik aplikasi</p></div>
+                        </Ripple>
+                    </div>
+                    <p className="text-center text-[11px] text-[var(--md-sys-color-on-surface-variant)] pt-2 pb-6 tracking-widest uppercase font-semibold">Zona Poncell M3 Pro • V2.0</p>
+                </div>
+            );
+        };
+
+        // --- FORM TAMBAH (BOTTOM SHEET) ---
         const AddTransactionSheet = ({ isOpen, onClose }) => {
             const { setTransactions, showSnackbar } = useContext(AppContext);
             
             const [jenis, setJenis] = useState('Servis');
             const [nama, setNama] = useState('');
             const [pelanggan, setPelanggan] = useState('');
-            const [modalStr, setModalStr] = useState('');
-            const [jualStr, setJualStr] = useState('');
+            const [modalStr, setModalStr] = useState('0'); // Default 0
+            const [jualStr, setJualStr] = useState('0');   // Default 0
             const [jumlah, setJumlah] = useState(1);
             const [catatan, setCatatan] = useState('');
 
             useEffect(() => {
-                if (isOpen) { setJenis('Servis'); setNama(''); setPelanggan(''); setModalStr(''); setJualStr(''); setJumlah(1); setCatatan(''); }
+                if (isOpen) { setJenis('Servis'); setNama(''); setPelanggan(''); setModalStr('0'); setJualStr('0'); setJumlah(1); setCatatan(''); }
             }, [isOpen]);
 
             const handleSave = () => {
-                if(!nama.trim()) return showSnackbar('Nama Barang/Jasa wajib diisi!');
+                if(!nama.trim()) { showSnackbar('Nama barang/servis wajib diisi!'); return; }
                 
-                // If empty strings, default to 0
-                const m = modalStr === '' ? 0 : getRawNumber(modalStr);
-                const j = jualStr === '' ? 0 : getRawNumber(jualStr);
-                
+                const m = getRawNumber(modalStr); const j = getRawNumber(jualStr);
                 const newData = {
                     id: generateId(), tanggal: new Date().toISOString(),
                     jenis, nama: nama.trim(), pelanggan: pelanggan.trim() || 'Umum',
-                    modal: m, jual: j, jumlah, laba: (j - m) * jumlah,
-                    status: 'Proses', catatan: catatan.trim()
+                    modal: m, jual: j, jumlah: jumlah,
+                    laba: (j - m) * jumlah, status: 'Proses', catatan: catatan.trim()
                 };
 
-                setTransactions(prev => [newData, ...prev]);
-                showSnackbar('Transaksi berhasil dicatat'); onClose();
+                setTransactions(prev => [newData, ...prev]); showSnackbar('Transaksi dicatat'); onClose();
             };
 
-            const estModal = (modalStr === '' ? 0 : getRawNumber(modalStr)) * jumlah;
-            const estJual = (jualStr === '' ? 0 : getRawNumber(jualStr)) * jumlah;
-            const laba = estJual - estModal;
+            const laba = (getRawNumber(jualStr) - getRawNumber(modalStr)) * jumlah;
 
             return (
                 <BottomSheet isOpen={isOpen} onClose={onClose} title="Catat Transaksi">
-                    <div className="space-y-5 pt-2 pb-6">
-                        <div className="flex border border-[var(--md-sys-color-outline)] rounded-full overflow-hidden h-12">
+                    <div className="space-y-6 pt-3 pb-8">
+                        <div className="flex bg-[var(--md-sys-color-surface-container-high)] rounded-full p-1 h-12 shadow-inner">
                             {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
                                 <button key={j} type="button" onClick={() => setJenis(j)}
-                                    className={`flex-1 text-sm font-medium transition-colors ${jenis === j ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]' : 'text-[var(--md-sys-color-on-surface)] bg-transparent'}`}>
-                                    {j}
-                                </button>
+                                    className={`flex-1 text-sm font-semibold rounded-full transition-all duration-300 ${
+                                        jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' 
+                                        : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent'
+                                    }`}>{j}</button>
                             ))}
                         </div>
-                        <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon="build" />
+
+                        <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon={jenis==='Servis'?'build':'shopping_bag'} />
                         <TextField label="Nama Pelanggan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="person" />
                         
-                        <QuantitySelector label="Jumlah (Qty)" value={jumlah} onChange={setJumlah} />
-
                         <div className="grid grid-cols-2 gap-4">
-                            <TextField label="Harga Modal Satuan" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
-                            <TextField label="Harga Jual Satuan" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
+                            <TextField label="Biaya Modal" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
+                            <TextField label="Harga Jual" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
                         </div>
-                        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] -mt-2 italic">*Kosongkan harga jika Rp 0.</p>
+
+                        {/* Slider Jumlah (Hanya tampil jika bukan Servis) */}
+                        {jenis !== 'Servis' && (
+                            <div className="bg-[var(--md-sys-color-surface-container-highest)] p-4 rounded-t-[var(--md-shape-xs)] border-b border-[var(--md-sys-color-on-surface-variant)] relative pt-6">
+                                <span className="absolute left-4 top-2 text-[12px] font-medium text-[var(--md-sys-color-on-surface-variant)]">Kuantitas (Jumlah)</span>
+                                <div className="flex items-center gap-4 mt-2">
+                                    <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" />
+                                    <span className="w-10 text-center font-bold text-lg text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                </div>
+                            </div>
+                        )}
 
                         <TextField label="Catatan Tambahan" value={catatan} onChange={setCatatan} icon="notes" multiline />
 
-                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-4 rounded-[var(--md-shape-xl)] flex justify-between items-center">
-                            <span className="text-sm font-medium">Est. Laba ({jumlah}x)</span>
-                            <span className="text-xl font-medium">Rp{formatRupiah(laba)}</span>
+                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-5 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-sm">
+                            <div>
+                                <span className="text-xs font-bold uppercase tracking-wider opacity-80 block mb-1">Estimasi Laba</span>
+                                <span className="text-[10px] opacity-70">Termasuk perkalian jumlah</span>
+                            </div>
+                            <span className="text-2xl font-bold">Rp{formatRupiah(laba)}</span>
                         </div>
 
-                        <Button onClick={handleSave} icon="save" fullWidth className="mt-4">Simpan Catatan</Button>
+                        <Button onClick={handleSave} icon="save" fullWidth className="mt-2 h-14 text-base shadow-lg">Simpan ke Database</Button>
                     </div>
                 </BottomSheet>
             );
         };
 
+        // --- SHEET DETAIL ---
         const DetailSheet = ({ item, onClose }) => {
             const { setTransactions, showSnackbar } = useContext(AppContext);
             if (!item) return null;
 
-            const updateStatus = (s) => { setTransactions(prev => prev.map(t => t.id === item.id ? {...t, status: s} : t)); onClose(); };
-            const qty = item.jumlah || 1;
+            const updateStatus = (newStatus) => {
+                setTransactions(prev => prev.map(t => t.id === item.id ? {...t, status: newStatus} : t));
+                showSnackbar(`Status menjadi ${newStatus}`); onClose();
+            };
+
+            const handleDelete = () => {
+                if(confirm('Hapus transaksi ini secara permanen?')) {
+                    setTransactions(prev => prev.filter(t => t.id !== item.id));
+                    showSnackbar('Transaksi dihapus'); onClose();
+                }
+            };
+
+            let statusColor = 'text-[var(--md-sys-color-on-surface-variant)]';
+            if (item.status === 'Selesai') statusColor = 'text-[var(--md-sys-color-success)]';
+            if (item.status === 'Proses') statusColor = 'text-[var(--md-sys-color-primary)]';
+            if (item.status === 'Batal') statusColor = 'text-[var(--md-sys-color-error)]';
 
             return (
                 <BottomSheet isOpen={!!item} onClose={onClose} title="Detail Transaksi">
-                    <div className="space-y-6 pt-2 pb-6">
-                        <div className="text-center">
-                            <h2 className="text-2xl font-normal text-[var(--md-sys-color-on-surface)] mb-1">{item.nama}</h2>
-                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm">{formatDateLong(item.tanggal)}</p>
-                        </div>
-                        <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-5">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span>
-                                <span className="font-medium text-[var(--md-sys-color-on-surface)]">{qty}x</span>
+                    <div className="space-y-6 pt-3 pb-8">
+                        <div className="text-center bg-[var(--md-sys-color-surface)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                            <h2 className="text-2xl font-semibold text-[var(--md-sys-color-on-surface)] mb-1 leading-tight">{item.nama}</h2>
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm mb-3">{formatDateLong(item.tanggal)}</p>
+                            <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-sm font-medium">
+                                <span className="material-symbols-rounded text-sm">person</span> {item.pelanggan}
                             </div>
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">Total Modal</span>
-                                <span className="font-medium text-[var(--md-sys-color-error)]">Rp{formatRupiah(item.modal * qty)}</span>
+                        </div>
+
+                        <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-5 shadow-sm">
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Kuantitas</span>
+                                <span className="font-bold text-[var(--md-sys-color-on-surface)]">{item.jumlah}x</span>
+                            </div>
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Harga Modal /pcs</span>
+                                <span className="font-semibold text-[var(--md-sys-color-error)]">Rp{formatRupiah(item.modal)}</span>
                             </div>
                             <div className="flex justify-between items-center mb-4">
-                                <span className="text-sm text-[var(--md-sys-color-on-surface-variant)]">Total Jual</span>
-                                <span className="font-medium text-[var(--md-sys-color-success)]">Rp{formatRupiah(item.jual * qty)}</span>
+                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Harga Jual /pcs</span>
+                                <span className="font-semibold text-[var(--md-sys-color-success)]">Rp{formatRupiah(item.jual)}</span>
                             </div>
-                            <div className="border-t border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center">
-                                <span className="font-medium text-[var(--md-sys-color-on-surface)]">Laba Bersih</span>
-                                <span className="text-2xl font-medium text-[var(--md-sys-color-primary)]">Rp{formatRupiah(item.laba)}</span>
+                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center">
+                                <div>
+                                    <span className="font-bold text-[var(--md-sys-color-on-surface)] block">Laba Bersih</span>
+                                    <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">Total = (Jual - Modal) × {item.jumlah}</span>
+                                </div>
+                                <span className="text-3xl font-bold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(item.laba)}</span>
                             </div>
                         </div>
+
+                        {item.catatan && (
+                            <div className="bg-[var(--md-sys-color-surface-variant)] p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface-variant)] border-l-4 border-[var(--md-sys-color-primary)]">
+                                <p className="text-xs font-bold uppercase tracking-wider mb-1">Catatan</p>
+                                <p className="text-sm leading-relaxed">{item.catatan}</p>
+                            </div>
+                        )}
+
                         <div>
-                            <p className="text-sm font-medium text-[var(--md-sys-color-on-surface)] mb-3">Ubah Status</p>
+                            <p className="text-sm font-bold tracking-wider uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-1">Progres Pekerjaan</p>
                             <div className="flex gap-2">
                                 {['Proses', 'Selesai', 'Batal'].map(s => (
                                     <button key={s} onClick={() => updateStatus(s)}
-                                        className={`flex-1 h-12 rounded-full text-sm font-medium border transition-colors ${item.status === s ? `bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] border-transparent` : 'border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-on-surface)]'}`}>
-                                        {s}
-                                    </button>
+                                        className={`flex-1 h-12 rounded-full text-sm font-bold border-2 transition-all duration-300 ${
+                                            item.status === s 
+                                            ? `bg-[var(--md-sys-color-${s==='Selesai'?'success':s==='Proses'?'primary':'error'}-container)] text-[var(--md-sys-color-on-${s==='Selesai'?'success':s==='Proses'?'primary':'error'}-container)] border-transparent shadow-md scale-105`
+                                            : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
+                                        }`}>{s}</button>
                                 ))}
                             </div>
                         </div>
+
+                        <Button variant="text" icon="delete" fullWidth className="text-[var(--md-sys-color-error)] mt-2 h-14" onClick={handleDelete}>Hapus Data Permanen</Button>
                     </div>
                 </BottomSheet>
             );
         };
 
+        // ==========================================================================
+        // APP SHELL
+        // ==========================================================================
         const MainApp = () => {
             const { settings } = useContext(AppContext);
             const [activeTab, setActiveTab] = useState('dasbor');
@@ -909,9 +1196,9 @@
 
             const tabs = [
                 { id: 'dasbor', icon: 'home', label: 'Beranda' },
-                { id: 'riwayat', icon: 'receipt_long', label: 'Riwayat' },
-                { id: 'analisis', icon: 'analytics', label: 'Analisis' },
-                { id: 'seting', icon: 'settings', label: 'Seting' }
+                { id: 'riwayat', icon: 'history', label: 'Riwayat' },
+                { id: 'analisis', icon: 'query_stats', label: 'Analisis' },
+                { id: 'seting', icon: 'tune', label: 'Seting' }
             ];
 
             return (
@@ -923,21 +1210,24 @@
                         {activeTab === 'seting' && <TabSeting />}
                     </main>
 
-                    <div className={`absolute right-4 transition-all duration-300 z-20 ${activeTab === 'seting' ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100'}`} style={{ bottom: 'calc(96px + var(--sa-bottom))' }}>
-                        <Ripple onClick={() => setIsAddOpen(true)} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-xl)] shadow-[var(--md-elevation-3)] flex items-center h-14 px-5 cursor-pointer hover:shadow-[var(--md-elevation-4)] transition-shadow">
-                            <span className="material-symbols-rounded mr-3">edit</span><span className="font-medium">Catat</span>
+                    {/* Extended FAB */}
+                    <div className={`absolute right-4 transition-all duration-400 z-40 ${activeTab === 'seting' ? 'opacity-0 scale-50 pointer-events-none translate-y-10' : 'opacity-100 scale-100'}`} style={{ bottom: 'calc(96px + var(--sa-bottom))' }}>
+                        <Ripple onClick={() => setIsAddOpen(true)} className="m3-fab flex items-center h-16 px-6 cursor-pointer bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shadow-[var(--md-elevation-3)] rounded-[20px] hover:shadow-[var(--md-elevation-4)] hover:-translate-y-1 transition-all">
+                            <span className="material-symbols-rounded mr-3 text-[26px]">edit_document</span>
+                            <span className="font-semibold text-base">Catat Baru</span>
                         </Ripple>
                     </div>
 
-                    <nav className="h-20 shrink-0 bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-30 pb-[var(--sa-bottom)] border-t border-[var(--md-sys-color-outline-variant)]/20">
+                    {/* Navigation Bar */}
+                    <nav className="absolute bottom-0 w-full h-[88px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         {tabs.map(t => {
                             const active = activeTab === t.id;
                             return (
-                                <Ripple key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 cursor-pointer group">
-                                    <div className={`w-16 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
-                                        <span className={`material-symbols-rounded ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                <Ripple key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer">
+                                    <div className={`w-16 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                        <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
                                     </div>
-                                    <span className={`text-[12px] font-medium mt-1 transition-colors ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
+                                    <span className={`text-[12px] font-bold mt-1.5 transition-colors tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
                                 </Ripple>
                             );
                         })}
@@ -954,4 +1244,3 @@
     </script>
 </body>
 </html>
-

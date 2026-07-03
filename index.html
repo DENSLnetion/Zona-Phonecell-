@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#fbfdf8" id="meta-theme-color">
+    <meta name="theme-color" content="#1a1c1e" id="meta-theme-color">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Zona Poncell M3 Pro</title>
@@ -27,50 +27,25 @@
 
     <style>
         /* ==========================================================================
-           MATERIAL 3 DESIGN TOKENS & THEMING ENGINE
+           MATERIAL 3 DESIGN TOKENS (DARK MODE ONLY)
            ========================================================================== */
         :root {
             --sa-top: env(safe-area-inset-top, 0px);
             --sa-bottom: env(safe-area-inset-bottom, 0px);
-            --sa-left: env(safe-area-inset-left, 0px);
-            --sa-right: env(safe-area-inset-right, 0px);
-
+            
             --md-shape-xs: 4px;
             --md-shape-sm: 8px;
             --md-shape-md: 12px;
             --md-shape-lg: 16px;
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
-            --md-shape-full: 9999px;
 
-            --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
-            --md-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
-            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.4), 0px 1px 3px 0px rgba(0, 0, 0, 0.6);
+            --md-elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.4), 0px 2px 3px 0px rgba(0, 0, 0, 0.6);
         }
 
-        /* --- THEMES --- */
+        /* --- THEMES (ALL FORCED DARK MODE) --- */
         .theme-blue {
-            --md-sys-color-primary: #0061a4; --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #d1e4ff; --md-sys-color-on-primary-container: #001d36;
-            --md-sys-color-secondary: #535f70; --md-sys-color-on-secondary: #ffffff;
-            --md-sys-color-secondary-container: #d7e3f7; --md-sys-color-on-secondary-container: #101c2b;
-            --md-sys-color-tertiary: #6b5778; --md-sys-color-on-tertiary: #ffffff;
-            --md-sys-color-tertiary-container: #f2daff; --md-sys-color-on-tertiary-container: #251431;
-            --md-sys-color-error: #ba1a1a; --md-sys-color-on-error: #ffffff;
-            --md-sys-color-error-container: #ffdad6; --md-sys-color-on-error-container: #410002;
-            --md-sys-color-success: #146c2e; --md-sys-color-on-success: #ffffff;
-            --md-sys-color-success-container: #9ff7ae; --md-sys-color-on-success-container: #002108;
-            --md-sys-color-background: #fdfcff; --md-sys-color-on-background: #1a1c1e;
-            --md-sys-color-surface: #fdfcff; --md-sys-color-on-surface: #1a1c1e;
-            --md-sys-color-surface-variant: #dfe2eb; --md-sys-color-on-surface-variant: #42474e;
-            --md-sys-color-outline: #73777f; --md-sys-color-outline-variant: #c3c7cf;
-            --md-sys-color-surface-container-lowest: #ffffff;
-            --md-sys-color-surface-container-low: #f7f6f9;
-            --md-sys-color-surface-container: #f1f0f4;
-            --md-sys-color-surface-container-high: #ebeaef;
-            --md-sys-color-surface-container-highest: #e0e0e6;
-        }
-        .dark.theme-blue {
             --md-sys-color-primary: #9ecaeb; --md-sys-color-on-primary: #003258;
             --md-sys-color-primary-container: #00497d; --md-sys-color-on-primary-container: #d1e4ff;
             --md-sys-color-secondary: #bbc7db; --md-sys-color-on-secondary: #253140;
@@ -93,27 +68,6 @@
         }
 
         .theme-green {
-            --md-sys-color-primary: #146c2e; --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #9ff7ae; --md-sys-color-on-primary-container: #002108;
-            --md-sys-color-secondary: #526350; --md-sys-color-on-secondary: #ffffff;
-            --md-sys-color-secondary-container: #d5e8cf; --md-sys-color-on-secondary-container: #101f10;
-            --md-sys-color-tertiary: #39656b; --md-sys-color-on-tertiary: #ffffff;
-            --md-sys-color-tertiary-container: #bcebf1; --md-sys-color-on-tertiary-container: #001f23;
-            --md-sys-color-error: #ba1a1a; --md-sys-color-on-error: #ffffff;
-            --md-sys-color-error-container: #ffdad6; --md-sys-color-on-error-container: #410002;
-            --md-sys-color-success: #006d3a; --md-sys-color-on-success: #ffffff;
-            --md-sys-color-success-container: #92f7b4; --md-sys-color-on-success-container: #00210e;
-            --md-sys-color-background: #fcfdf6; --md-sys-color-on-background: #1a1c19;
-            --md-sys-color-surface: #fcfdf6; --md-sys-color-on-surface: #1a1c19;
-            --md-sys-color-surface-variant: #dee5d8; --md-sys-color-on-surface-variant: #424940;
-            --md-sys-color-outline: #72796f; --md-sys-color-outline-variant: #c2c9bd;
-            --md-sys-color-surface-container-lowest: #ffffff;
-            --md-sys-color-surface-container-low: #f6f8f1;
-            --md-sys-color-surface-container: #f0f2eb;
-            --md-sys-color-surface-container-high: #eaede6;
-            --md-sys-color-surface-container-highest: #e4e7e0;
-        }
-        .dark.theme-green {
             --md-sys-color-primary: #83da93; --md-sys-color-on-primary: #003911;
             --md-sys-color-primary-container: #00531a; --md-sys-color-on-primary-container: #9ff7ae;
             --md-sys-color-secondary: #b9ccb4; --md-sys-color-on-secondary: #253424;
@@ -135,6 +89,94 @@
             --md-sys-color-surface-container-highest: #353632;
         }
 
+        .theme-orange {
+            --md-sys-color-primary: #ffb77c; --md-sys-color-on-primary: #4d2600;
+            --md-sys-color-primary-container: #6d3900; --md-sys-color-on-primary-container: #ffdcc3;
+            --md-sys-color-secondary: #e4bfa7; --md-sys-color-on-secondary: #422b1a;
+            --md-sys-color-secondary-container: #5a422f; --md-sys-color-on-secondary-container: #ffdcbe;
+            --md-sys-color-tertiary: #c6ca93; --md-sys-color-on-tertiary: #2f330b;
+            --md-sys-color-tertiary-container: #45491f; --md-sys-color-on-tertiary-container: #e2e6ad;
+            --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
+            --md-sys-color-success: #94d687; --md-sys-color-on-success: #003a00;
+            --md-sys-color-success-container: #12520f; --md-sys-color-on-success-container: #aff3a1;
+            --md-sys-color-background: #201a17; --md-sys-color-on-background: #ece0da;
+            --md-sys-color-surface: #201a17; --md-sys-color-on-surface: #ece0da;
+            --md-sys-color-surface-variant: #51443b; --md-sys-color-on-surface-variant: #d6c3b6;
+            --md-sys-color-outline: #9e8d82; --md-sys-color-outline-variant: #51443b;
+            --md-sys-color-surface-container-lowest: #140d0a;
+            --md-sys-color-surface-container-low: #201a17;
+            --md-sys-color-surface-container: #241e1b;
+            --md-sys-color-surface-container-high: #2f2825;
+            --md-sys-color-surface-container-highest: #3a332f;
+        }
+
+        .theme-purple {
+            --md-sys-color-primary: #d0bcff; --md-sys-color-on-primary: #381e72;
+            --md-sys-color-primary-container: #4f378b; --md-sys-color-on-primary-container: #eaddff;
+            --md-sys-color-secondary: #cbc2db; --md-sys-color-on-secondary: #332d41;
+            --md-sys-color-secondary-container: #4a4458; --md-sys-color-on-secondary-container: #e8def8;
+            --md-sys-color-tertiary: #efb8c8; --md-sys-color-on-tertiary: #492532;
+            --md-sys-color-tertiary-container: #633b48; --md-sys-color-on-tertiary-container: #ffd8e4;
+            --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
+            --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
+            --md-sys-color-background: #1c1b1f; --md-sys-color-on-background: #e6e1e5;
+            --md-sys-color-surface: #1c1b1f; --md-sys-color-on-surface: #e6e1e5;
+            --md-sys-color-surface-variant: #49454f; --md-sys-color-on-surface-variant: #cac4d0;
+            --md-sys-color-outline: #938f99; --md-sys-color-outline-variant: #49454f;
+            --md-sys-color-surface-container-lowest: #0f0d13;
+            --md-sys-color-surface-container-low: #1d1b20;
+            --md-sys-color-surface-container: #211f26;
+            --md-sys-color-surface-container-high: #2b2930;
+            --md-sys-color-surface-container-highest: #36343b;
+        }
+
+        .theme-red {
+            --md-sys-color-primary: #ffb4ab; --md-sys-color-on-primary: #690005;
+            --md-sys-color-primary-container: #93000a; --md-sys-color-on-primary-container: #ffdad6;
+            --md-sys-color-secondary: #e7bdb8; --md-sys-color-on-secondary: #442926;
+            --md-sys-color-secondary-container: #5d3f3c; --md-sys-color-on-secondary-container: #ffdad6;
+            --md-sys-color-tertiary: #e0c38c; --md-sys-color-on-tertiary: #3e2e04;
+            --md-sys-color-tertiary-container: #564419; --md-sys-color-on-tertiary-container: #fde0a6;
+            --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
+            --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
+            --md-sys-color-background: #201a19; --md-sys-color-on-background: #ede0de;
+            --md-sys-color-surface: #201a19; --md-sys-color-on-surface: #ede0de;
+            --md-sys-color-surface-variant: #534341; --md-sys-color-on-surface-variant: #d8c2bf;
+            --md-sys-color-outline: #a08c8a; --md-sys-color-outline-variant: #534341;
+            --md-sys-color-surface-container-lowest: #140c0b;
+            --md-sys-color-surface-container-low: #201a19;
+            --md-sys-color-surface-container: #251e1d;
+            --md-sys-color-surface-container-high: #2f2827;
+            --md-sys-color-surface-container-highest: #3b3332;
+        }
+
+        .theme-teal {
+            --md-sys-color-primary: #4fd8eb; --md-sys-color-on-primary: #00363d;
+            --md-sys-color-primary-container: #004f58; --md-sys-color-on-primary-container: #99f0ff;
+            --md-sys-color-secondary: #b1cbd0; --md-sys-color-on-secondary: #1c3438;
+            --md-sys-color-secondary-container: #334b4f; --md-sys-color-on-secondary-container: #cde7ec;
+            --md-sys-color-tertiary: #bacbfa; --md-sys-color-on-tertiary: #24304d;
+            --md-sys-color-tertiary-container: #3b4664; --md-sys-color-on-tertiary-container: #dae2ff;
+            --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
+            --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
+            --md-sys-color-background: #191c1d; --md-sys-color-on-background: #e1e3e3;
+            --md-sys-color-surface: #191c1d; --md-sys-color-on-surface: #e1e3e3;
+            --md-sys-color-surface-variant: #3f484a; --md-sys-color-on-surface-variant: #bfc8ca;
+            --md-sys-color-outline: #899294; --md-sys-color-outline-variant: #3f484a;
+            --md-sys-color-surface-container-lowest: #0e1112;
+            --md-sys-color-surface-container-low: #191c1d;
+            --md-sys-color-surface-container: #1d2021;
+            --md-sys-color-surface-container-high: #272a2b;
+            --md-sys-color-surface-container-highest: #323536;
+        }
+
         /* ==========================================================================
            GLOBAL UTILITIES & ANTI-SELECTION
            ========================================================================== */
@@ -151,9 +193,7 @@
         }
 
         /* Re-enable selection ONLY for input fields */
-        input, textarea {
-            -webkit-user-select: auto; user-select: auto;
-        }
+        input, textarea { -webkit-user-select: auto; user-select: auto; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -201,7 +241,7 @@
         }
         @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
 
-        /* 2. TEXT FIELD (FIXED LABEL OVERLAP) */
+        /* 2. TEXT FIELD */
         .m3-text-field {
             position: relative; background-color: var(--md-sys-color-surface-container-highest);
             border-radius: var(--md-shape-xs) var(--md-shape-xs) 0 0;
@@ -226,7 +266,6 @@
         }
         .m3-input.has-icon ~ .m3-label { left: 52px; }
         
-        /* THE FIX: Check for .has-value class added via React instead of relying solely on CSS pseudo */
         .m3-input:focus ~ .m3-label, .m3-input.has-value ~ .m3-label {
             transform: translateY(-8px) scale(0.75);
         }
@@ -238,24 +277,7 @@
         }
         .m3-input:focus ~ .m3-icon { color: var(--md-sys-color-on-surface); }
 
-        /* 3. SWITCH (M3) */
-        .m3-switch-track {
-            width: 52px; height: 32px; border-radius: 16px; border: 2px solid var(--md-sys-color-outline);
-            background-color: var(--md-sys-color-surface-container-highest); display: flex; align-items: center; padding: 2px;
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); cursor: pointer;
-        }
-        .m3-switch-track.active { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
-        .m3-switch-thumb {
-            width: 16px; height: 16px; border-radius: 50%; background-color: var(--md-sys-color-outline);
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); display: flex; justify-content: center; align-items: center;
-        }
-        .m3-switch-track.active .m3-switch-thumb {
-            width: 24px; height: 24px; background-color: var(--md-sys-color-on-primary); transform: translateX(20px);
-        }
-        .m3-switch-icon { font-size: 16px !important; opacity: 0; color: var(--md-sys-color-on-primary-container); transition: 0.2s; }
-        .m3-switch-track.active .m3-switch-icon { opacity: 1; }
-
-        /* 4. SLIDER (M3) */
+        /* 3. SLIDER */
         .m3-slider {
             -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px;
             background: var(--md-sys-color-surface-variant); outline: none;
@@ -264,11 +286,9 @@
             -webkit-appearance: none; appearance: none;
             width: 20px; height: 20px; border-radius: 50%;
             background: var(--md-sys-color-primary); cursor: pointer;
-            box-shadow: 0 0 0 4px var(--md-sys-color-surface);
-            transition: 0.2s;
+            box-shadow: 0 0 0 4px var(--md-sys-color-surface); transition: 0.2s;
         }
-        .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 10px rgba(0, 97, 164, 0.2); }
-
+        .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
 <body class="theme-blue">
@@ -296,7 +316,6 @@
 
         const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
-        // Dummy Data Generator 
         const generateDummyData = () => {
             const data = [];
             const types = ['Servis', 'Sparepart', 'Aksesoris'];
@@ -304,25 +323,18 @@
             const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power', 'Kabel Data Type-C'];
             
             for(let i=0; i<25; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 14)); 
+                const date = new Date(); date.setDate(date.getDate() - Math.floor(Math.random() * 14)); 
                 const type = types[Math.floor(Math.random() * types.length)];
                 const modal = Math.floor(Math.random() * 10) * 15000;
                 const jual = modal + (Math.floor(Math.random() * 5 + 1) * 20000);
                 const jumlah = type === 'Servis' ? 1 : Math.floor(Math.random() * 4) + 1;
                 
                 data.push({
-                    id: generateId() + i,
-                    tanggal: date.toISOString(),
-                    jenis: type,
-                    nama: names[Math.floor(Math.random() * names.length)],
-                    pelanggan: `Pelanggan ${Math.floor(Math.random() * 100)}`,
-                    modal: type === 'Servis' ? (Math.random() > 0.5 ? modal : 0) : modal,
-                    jual: jual,
-                    jumlah: jumlah,
+                    id: generateId() + i, tanggal: date.toISOString(), jenis: type,
+                    nama: names[Math.floor(Math.random() * names.length)], pelanggan: `Pelanggan ${Math.floor(Math.random() * 100)}`,
+                    modal: type === 'Servis' ? (Math.random() > 0.5 ? modal : 0) : modal, jual: jual, jumlah: jumlah,
                     laba: type === 'Servis' ? (jual - (Math.random() > 0.5 ? modal : 0)) * jumlah : (jual - modal) * jumlah,
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    catatan: 'Data contoh otomatis.'
+                    status: statuses[Math.floor(Math.random() * statuses.length)]
                 });
             }
             return data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
@@ -335,25 +347,17 @@
 
         const AppProvider = ({ children }) => {
             const [transactions, setTransactions] = useState([]);
-            const [settings, setSettings] = useState({
-                theme: 'blue',
-                isDark: false,
-                storeName: 'Zona Poncell',
-                ownerName: 'Farhan', // Diubah sesuai request
-                hasStarted: false 
-            });
+            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false });
             const [snackbars, setSnackbars] = useState([]);
 
             // Load Data
             useEffect(() => {
                 const savedDb = localStorage.getItem('zp_m3_data');
                 if (savedDb) {
-                    // Update legacy data yg ga ada jumlah
                     const parsed = JSON.parse(savedDb).map(item => ({...item, jumlah: item.jumlah || 1}));
                     setTransactions(parsed);
                 } else {
-                    const dummy = generateDummyData();
-                    setTransactions(dummy);
+                    const dummy = generateDummyData(); setTransactions(dummy);
                     localStorage.setItem('zp_m3_data', JSON.stringify(dummy));
                 }
 
@@ -372,13 +376,12 @@
                 const body = document.body;
                 body.className = ''; 
                 body.classList.add(`theme-${settings.theme}`);
-                if (settings.isDark) body.classList.add('dark');
 
                 setTimeout(() => {
                     const surfaceColor = getComputedStyle(document.body).getPropertyValue('--md-sys-color-surface').trim();
                     document.getElementById('meta-theme-color').content = surfaceColor;
                 }, 100);
-            }, [settings.theme, settings.isDark]);
+            }, [settings.theme]);
 
             const showSnackbar = (message) => {
                 const id = Date.now();
@@ -412,17 +415,14 @@
                 if (onPointerLeave && e.type === 'pointerleave') onPointerLeave(e);
                 setTimeout(() => setRipples([]), 600); 
             };
-            const handleMove = (e) => {
-                if(onPointerMove) onPointerMove(e);
-            }
+            const handleMove = (e) => { if(onPointerMove) onPointerMove(e); }
 
             return (
                 <div className={`ripple-root ${className}`} style={style}
                      onPointerDown={addRipple} onPointerUp={cleanUp} onPointerLeave={cleanUp} onPointerMove={handleMove} onClick={onClick}>
                     {children}
                     {ripples.map(r => (
-                        <span key={r.id} className="ripple-span"
-                              style={{ top: r.y - r.size/2, left: r.x - r.size/2, width: r.size, height: r.size }} />
+                        <span key={r.id} className="ripple-span" style={{ top: r.y - r.size/2, left: r.x - r.size/2, width: r.size, height: r.size }} />
                     ))}
                 </div>
             );
@@ -431,7 +431,6 @@
         const Button = ({ variant = 'filled', children, icon, className='', onClick, fullWidth }) => {
             let colors = '';
             if (variant === 'filled') colors = 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]';
-            if (variant === 'tonal') colors = 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]';
             if (variant === 'outlined') colors = 'border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)]';
             if (variant === 'text') colors = 'text-[var(--md-sys-color-primary)] bg-transparent';
             if (variant === 'error') colors = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
@@ -444,70 +443,77 @@
             );
         };
 
-        const TextField = ({ label, value, onChange, icon, type="text", inputMode="text", multiline, prefix }) => {
-            // Fix input bug: check string length
+        const TextField = ({ label, value, onChange, icon, type="text", inputMode="text", prefix }) => {
             const hasVal = value !== null && value !== undefined && value.toString().length > 0;
             return (
                 <div className="m3-text-field">
                     {icon && <span className="material-symbols-rounded m3-icon icon-outlined">{icon}</span>}
-                    {multiline ? (
-                        <textarea 
-                            className={`m3-input no-scrollbar resize-none ${icon ? 'has-icon' : ''} ${hasVal ? 'has-value' : ''}`}
-                            value={value} onChange={e => onChange(e.target.value)} placeholder=" " rows="3"
-                        />
-                    ) : (
-                        <input 
-                            type={type} inputMode={inputMode}
-                            className={`m3-input ${icon ? 'has-icon' : ''} ${hasVal ? 'has-value' : ''}`}
-                            value={value} onChange={e => onChange(e.target.value)} placeholder=" "
-                        />
-                    )}
+                    <input type={type} inputMode={inputMode}
+                        className={`m3-input ${icon ? 'has-icon' : ''} ${hasVal ? 'has-value' : ''}`}
+                        value={value} onChange={e => onChange(e.target.value)} placeholder=" "
+                    />
                     <label className="m3-label">{label}</label>
-                    {prefix && value && (
-                        <span className="absolute right-4 top-[24px] text-sm text-[var(--md-sys-color-on-surface-variant)]">{prefix}</span>
-                    )}
+                    {prefix && value && <span className="absolute right-4 top-[24px] text-sm text-[var(--md-sys-color-on-surface-variant)]">{prefix}</span>}
                 </div>
             );
         };
 
+        // INTEGRATED WITH HARDWARE BACK BUTTON API
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
-            useEffect(() => { if (isOpen) setIsClosing(false); }, [isOpen]);
 
-            const handleClose = () => {
+            // Back button handling
+            useEffect(() => {
+                const handlePopState = (e) => {
+                    if (isOpen) {
+                        executeClose();
+                    }
+                };
+                if (isOpen) {
+                    window.history.pushState({ modal: title }, '');
+                    window.addEventListener('popstate', handlePopState);
+                }
+                return () => {
+                    if (isOpen) window.removeEventListener('popstate', handlePopState);
+                };
+            }, [isOpen]);
+
+            const executeClose = () => {
                 setIsClosing(true);
                 setTimeout(() => { onClose(); setIsClosing(false); }, 350); 
+            };
+
+            const handleUIClose = () => {
+                // Remove the history state pushed earlier, which will fire popstate and close it safely
+                if (window.history.state && window.history.state.modal === title) {
+                    window.history.back(); 
+                } else {
+                    executeClose();
+                }
             };
 
             if (!isOpen && !isClosing) return null;
 
             return (
                 <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-                    <div className={`absolute inset-0 bg-black/50 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-opacity duration-300`} onClick={handleClose} />
-                    <div className={`relative w-full max-h-[92vh] flex flex-col rounded-t-[var(--md-shape-xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
-                         style={{ paddingBottom: 'var(--sa-bottom)' }}>
-                        <div className="w-full flex justify-center pt-4 pb-2" onClick={handleClose}>
+                    <div className={`absolute inset-0 bg-black/60 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-opacity duration-300`} onClick={handleUIClose} />
+                    <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
+                         style={{ paddingBottom: 'var(--sa-bottom)', maxHeight: '88vh' }}>
+                        <div className="w-full flex justify-center pt-4 pb-2" onClick={handleUIClose}>
                             <div className="w-8 h-1.5 rounded-full bg-[var(--md-sys-color-outline-variant)] opacity-50" />
                         </div>
                         <div className="px-6 pb-2 flex justify-between items-center shrink-0">
                             <h2 className="text-[22px] font-medium text-[var(--md-sys-color-on-surface)]">{title}</h2>
-                            <button onClick={handleClose} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)]">
+                            <button onClick={handleUIClose} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)]">
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
-                        <div className="px-6 pb-6 overflow-y-auto no-scrollbar">{children}</div>
+                        {/* Diperbaiki: Max-height dan overflow khusus konten, padding bawah ditingkatkan */}
+                        <div className="px-6 pb-24 overflow-y-auto no-scrollbar">{children}</div>
                     </div>
                 </div>
             );
         };
-
-        const Switch = ({ checked, onChange }) => (
-            <div className={`m3-switch-track ${checked ? 'active' : ''}`} onClick={() => onChange(!checked)}>
-                <div className="m3-switch-thumb">
-                    <span className="material-symbols-rounded m3-switch-icon">check</span>
-                </div>
-            </div>
-        );
 
         const SnackbarContainer = () => {
             const { snackbars } = useContext(AppContext);
@@ -526,9 +532,8 @@
         // APP SCREENS
         // ==========================================================================
 
-        // --- SPLASH ---
         const SplashScreen = () => {
-            const { settings, setSettings } = useContext(AppContext);
+            const { setSettings } = useContext(AppContext);
             const startApp = async () => {
                 try { if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); } catch (e) {}
                 setSettings(s => ({...s, hasStarted: true}));
@@ -540,20 +545,18 @@
                     </div>
                     <h1 className="text-4xl font-semibold mb-2 text-center animate-page" style={{animationDelay: '0.1s'}}>Zona Poncell</h1>
                     <p className="text-[var(--md-sys-color-primary-container)] opacity-90 mb-12 text-center text-lg animate-page" style={{animationDelay: '0.2s'}}>Sistem Manajemen Konter Cerdas</p>
-                    
                     <div className="absolute bottom-16 w-full px-6 flex justify-center animate-page" style={{animationDelay: '0.4s'}}>
                         <Ripple className="w-full max-w-xs h-14 bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] rounded-full flex items-center justify-center font-medium text-lg shadow-lg" onClick={startApp}>
-                            Buka Sistem
-                            <span className="material-symbols-rounded ml-3">login</span>
+                            Buka Sistem <span className="material-symbols-rounded ml-3">login</span>
                         </Ripple>
                     </div>
                 </div>
             );
         };
 
-        // --- TAB 1: DASBOR (Scrollable) ---
+        // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, settings } = useContext(AppContext);
+            const { transactions } = useContext(AppContext);
             const cm = new Date().getMonth(); const cy = new Date().getFullYear();
             const pm = cm === 0 ? 11 : cm - 1; const py = cm === 0 ? cy - 1 : cy;
             
@@ -572,18 +575,13 @@
 
             return (
                 <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-end mb-2">
                         <div>
                             <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">{greeting},</p>
-                            <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">{settings.ownerName}</h1>
-                        </div>
-                        <div className="w-14 h-14 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center shadow-sm border-2 border-[var(--md-sys-color-surface)]">
-                            <span className="material-symbols-rounded text-2xl">account_circle</span>
+                            <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">Farhan</h1>
                         </div>
                     </div>
 
-                    {/* Main Card (Hero) */}
                     <div className="p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-xl">
                         <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-bl-full transform translate-x-10 -translate-y-10"></div>
                         <div className="absolute bottom-0 left-0 w-24 h-24 bg-black opacity-10 rounded-tr-full transform -translate-x-5 translate-y-5"></div>
@@ -611,7 +609,6 @@
                         </div>
                     </div>
 
-                    {/* Pintasan Cepat */}
                     <div>
                         <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider mb-3 ml-1">Kinerja Kategori</h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -636,14 +633,13 @@
                         </div>
                     </div>
 
-                    {/* Recent Activity */}
                     <div>
                         <div className="flex justify-between items-center mb-3 ml-1">
                             <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">Aktivitas Terakhir</h3>
                         </div>
                         <div className="space-y-3">
-                            {transactions.slice(0, 5).map((item, index) => (
-                                <ActivityItem key={item.id} item={item} delay={index * 0.05} />
+                            {transactions.slice(0, 5).map((item) => (
+                                <ActivityItem key={item.id} item={item} />
                             ))}
                             {transactions.length === 0 && (
                                 <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-6 bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-xl)]">Belum ada transaksi</p>
@@ -654,8 +650,7 @@
             );
         };
 
-        // --- HELPER: ACTIVITY ITEM (With Long Press Logic) ---
-        const ActivityItem = ({ item, delay = 0, onClick, selectable, selected, onSelect }) => {
+        const ActivityItem = ({ item, onClick, selectable, selected, onSelect }) => {
             const isServis = item.jenis === 'Servis';
             const icon = isServis ? 'build' : item.jenis === 'Sparepart' ? 'memory' : 'headphones';
             
@@ -664,17 +659,16 @@
             if (item.status === 'Proses') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
             if (item.status === 'Batal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
-            // Long Press Logic
             const timerRef = useRef(null);
             const isDragging = useRef(false);
 
             const handlePointerDown = (e) => {
-                if(e.button !== 0 && e.pointerType !== 'touch') return; // Ensure left click or touch
+                if(e.button !== 0 && e.pointerType !== 'touch') return;
                 isDragging.current = false;
                 timerRef.current = setTimeout(() => {
                     if(!isDragging.current && onSelect && !selectable) {
                         onSelect();
-                        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50); // Haptic feedback
+                        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
                     }
                 }, 500);
             };
@@ -690,9 +684,7 @@
             return (
                 <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
                      className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-xl)] shadow-sm ripple-root transition-all duration-200
-                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)] scale-[0.98]' : 'bg-[var(--md-sys-color-surface-container-low)]'}
-                     `} 
-                     style={{ animation: delay !== null ? `staggerFade 0.4s ${delay}s ease forwards` : 'none', opacity: delay !== null ? 0 : 1 }}>
+                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)] scale-[0.98]' : 'bg-[var(--md-sys-color-surface-container-low)]'}`}>
                     
                     {selectable ? (
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
@@ -719,14 +711,13 @@
             );
         }
 
-        // --- TAB 2: RIWAYAT (Multi-Select Enabled) ---
+        // --- TAB 2: RIWAYAT ---
         const TabRiwayat = () => {
             const { transactions, setTransactions, showSnackbar } = useContext(AppContext);
             const [search, setSearch] = useState('');
             const [filterType, setFilterType] = useState('Semua');
             const [selectedItem, setSelectedItem] = useState(null);
             
-            // Selection Mode State
             const [selectedIds, setSelectedIds] = useState([]);
             const isSelectionMode = selectedIds.length > 0;
 
@@ -738,15 +729,29 @@
                 });
             }, [transactions, search, filterType]);
 
-            const toggleSelection = (id) => {
-                setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+            // Setup hardware back button for Selection Mode
+            useEffect(() => {
+                const handlePopState = () => {
+                    if (selectedIds.length > 0) { setSelectedIds([]); }
+                };
+                if (selectedIds.length > 0) {
+                    window.history.pushState({ selectionMode: true }, '');
+                    window.addEventListener('popstate', handlePopState);
+                }
+                return () => { if (selectedIds.length > 0) window.removeEventListener('popstate', handlePopState); };
+            }, [selectedIds]);
+
+            const closeSelectionModeUI = () => {
+                if (window.history.state && window.history.state.selectionMode) { window.history.back(); }
+                else { setSelectedIds([]); }
             };
 
+            const toggleSelection = (id) => { setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]); };
+
             const handleBulkDelete = () => {
-                if(confirm(`Hapus ${selectedIds.length} transaksi?`)) {
+                if(confirm(`Hapus ${selectedIds.length} transaksi permanen?`)) {
                     setTransactions(prev => prev.filter(t => !selectedIds.includes(t.id)));
-                    setSelectedIds([]);
-                    showSnackbar(`${selectedIds.length} item dihapus`);
+                    closeSelectionModeUI(); showSnackbar(`${selectedIds.length} item dihapus`);
                 }
             };
 
@@ -754,40 +759,37 @@
                 const toCopy = transactions.filter(t => selectedIds.includes(t.id));
                 const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: 'Proses' }));
                 setTransactions(prev => [...newItems, ...prev]);
-                setSelectedIds([]);
-                showSnackbar(`${newItems.length} item diduplikasi`);
+                closeSelectionModeUI(); showSnackbar(`${newItems.length} item diduplikasi`);
             };
 
             return (
                 <div className="flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     
-                    {/* Contextual App Bar (Selection Mode) */}
                     {isSelectionMode && (
-                        <div className="absolute top-0 left-0 right-0 z-50 bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-16 flex items-center justify-between px-4 animate-appbar-down shadow-md" style={{ paddingTop: 'var(--sa-top)', height: 'calc(64px + var(--sa-top))' }}>
+                        <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-16 flex items-center justify-between px-4 animate-appbar-down shadow-md" style={{ paddingTop: 'var(--sa-top)', height: 'calc(64px + var(--sa-top))' }}>
                             <div className="flex items-center gap-4">
-                                <button onClick={() => setSelectedIds([])} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                                <button onClick={closeSelectionModeUI} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors">
                                     <span className="material-symbols-rounded">close</span>
                                 </button>
                                 <span className="text-xl font-medium">{selectedIds.length} Terpilih</span>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={handleBulkCopy} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors">
+                                <button onClick={handleBulkCopy} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors">
                                     <span className="material-symbols-rounded">content_copy</span>
                                 </button>
-                                <button onClick={handleBulkDelete} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/10 transition-colors text-[var(--md-sys-color-error)]">
+                                <button onClick={handleBulkDelete} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors text-[var(--md-sys-color-error)]">
                                     <span className="material-symbols-rounded">delete</span>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* Standard Header */}
                     <div className="px-4 space-y-4 pb-2 z-10 bg-[var(--md-sys-color-background)]">
                         <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">Riwayat</h1>
                         
                         <div className="flex items-center h-14 bg-[var(--md-sys-color-surface-container-high)] rounded-full px-4 text-[var(--md-sys-color-on-surface)] shadow-sm focus-within:ring-2 ring-[var(--md-sys-color-primary)] transition-all">
                             <span className="material-symbols-rounded mr-3 opacity-70">search</span>
-                            <input type="text" placeholder="Cari nama, pelanggan..." value={search} onChange={e => setSearch(e.target.value)}
+                            <input type="text" placeholder="Cari data..." value={search} onChange={e => setSearch(e.target.value)}
                                 className="bg-transparent border-none outline-none flex-1 text-base placeholder:text-[var(--md-sys-color-on-surface-variant)]" />
                             {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2" onClick={() => setSearch('')}>close</span>}
                         </div>
@@ -804,21 +806,18 @@
                         </div>
                     </div>
 
-                    {/* List Area */}
+                    {/* Dihilangkan delay animasi per index, karena menyebabkan bug tersembunyi saat di-scroll */}
                     <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-3 pt-2">
                         {filteredData.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-24 text-[var(--md-sys-color-on-surface-variant)]">
                                 <span className="material-symbols-rounded text-6xl mb-4 opacity-40">manage_search</span>
                                 <p className="font-medium text-lg opacity-60">Tidak ada data</p>
-                                <p className="text-sm opacity-50">Coba ubah kata kunci pencarian.</p>
                             </div>
                         ) : (
-                            filteredData.map((item, index) => (
-                                <ActivityItem key={item.id} item={item} delay={search || filterType!=='Semua' ? null : index * 0.05} 
-                                              selectable={isSelectionMode} 
-                                              selected={selectedIds.includes(item.id)}
-                                              onSelect={() => toggleSelection(item.id)}
-                                              onClick={() => setSelectedItem(item)} />
+                            filteredData.map(item => (
+                                <ActivityItem key={item.id} item={item} 
+                                              selectable={isSelectionMode} selected={selectedIds.includes(item.id)}
+                                              onSelect={() => toggleSelection(item.id)} onClick={() => setSelectedItem(item)} />
                             ))
                         )}
                     </div>
@@ -828,7 +827,7 @@
             );
         };
 
-        // --- TAB 3: ANALISIS MENDALAM ---
+        // --- TAB 3: ANALISIS ---
         const TabAnalisis = () => {
             const { transactions, settings } = useContext(AppContext);
             const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
@@ -841,17 +840,15 @@
                     tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
                     error: style.getPropertyValue('--md-sys-color-error').trim(),
                     text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(),
-                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
-                    surface: style.getPropertyValue('--md-sys-color-surface-container').trim()
+                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim()
                 };
-            }, [settings.theme, settings.isDark]);
+            }, [settings.theme]);
 
             useEffect(() => {
                 if (transactions.length === 0) return;
                 const c = getColors();
                 Object.values(inst.current).forEach(chart => chart && chart.destroy());
 
-                // 1. Line Chart (7 Days Revenue)
                 const last7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0]; });
                 const laba7 = last7.map(date => transactions.filter(t => t.tanggal.startsWith(date) && t.status === 'Selesai').reduce((s,i) => s + i.laba, 0));
                 
@@ -861,7 +858,6 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: c.text } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { color: c.text, callback: v => `${v/1000}k` } } } }
                 });
 
-                // 2. Doughnut (Category)
                 const counts = ['Servis', 'Sparepart', 'Aksesoris'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Selesai').length);
                 inst.current.pie = new Chart(refPie.current.getContext('2d'), {
                     type: 'doughnut',
@@ -869,7 +865,6 @@
                     options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: c.text, font: {family: 'Readex Pro', weight: '500'} } } } }
                 });
 
-                // 3. Horizontal Bar (Top Items by Quantity)
                 const itemsMap = {};
                 transactions.filter(t=>t.status==='Selesai' && t.jenis!=='Servis').forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; });
                 const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
@@ -883,7 +878,7 @@
                 }
 
                 return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
-            }, [transactions, settings.theme, settings.isDark, getColors]);
+            }, [transactions, settings.theme, getColors]);
 
             const totalSelesai = transactions.filter(t => t.status === 'Selesai');
             const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
@@ -939,7 +934,8 @@
             const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
 
             const themes = [
-                { id: 'blue', color: '#0061a4', name: 'Blue' }, { id: 'green', color: '#146c2e', name: 'Green' }, { id: 'orange', color: '#8f4c00', name: 'Orange' }
+                { id: 'blue', color: '#9ecaeb' }, { id: 'green', color: '#83da93' }, { id: 'orange', color: '#ffb77c' },
+                { id: 'purple', color: '#d0bcff' }, { id: 'red', color: '#ffb4ab' }, { id: 'teal', color: '#4fd8eb' }
             ];
 
             const handleBackup = () => {
@@ -968,41 +964,23 @@
 
             return (
                 <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4">Seting</h1>
-                    
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 space-y-5 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase">Profil Konter</h3>
-                        <TextField label="Nama Konter" value={settings.storeName} onChange={v => setSettings({...settings, storeName: v})} icon="store" />
-                        <TextField label="Nama Pemilik" value={settings.ownerName} onChange={v => setSettings({...settings, ownerName: v})} icon="person" />
-                    </div>
+                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4">Pengaturan</h1>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 space-y-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase">Personalisasi M3</h3>
-                        
-                        <div className="flex justify-between items-center">
-                            <div className="text-[var(--md-sys-color-on-surface)] pr-4">
-                                <p className="font-semibold text-lg">Mode Gelap</p>
-                                <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] leading-tight mt-1">Gunakan warna gelap untuk menghemat baterai.</p>
-                            </div>
-                            <Switch checked={settings.isDark} onChange={v => setSettings({...settings, isDark: v})} />
-                        </div>
-
-                        <div className="pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
-                            <p className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Warna Tema Dinamis</p>
-                            <div className="flex gap-4">
-                                {themes.map(t => (
-                                    <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
-                                         className={`w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-110 shadow-lg ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-2 ring-offset-[var(--md-sys-color-surface)]' : 'scale-100 hover:scale-105'}`}
-                                         style={{ backgroundColor: t.color }}>
-                                         {settings.theme === t.id && <span className="material-symbols-rounded text-white text-3xl drop-shadow-md">check</span>}
-                                    </div>
-                                ))}
-                            </div>
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Warna Tema (Dark Only)</p>
+                        <div className="grid grid-cols-3 gap-4">
+                            {themes.map(t => (
+                                <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
+                                     className={`h-14 rounded-[var(--md-shape-lg)] flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-105 shadow-lg ring-2 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105'}`}
+                                     style={{ backgroundColor: t.color }}>
+                                     {settings.theme === t.id && <span className="material-symbols-rounded text-black text-2xl opacity-70">check</span>}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-3 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase p-3 ml-1">Database</h3>
+                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase p-3 ml-1">Database Lokal</h3>
                         <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={handleBackup}>
                             <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">download</span></div>
                             <div className="text-left"><p className="font-semibold">Backup Database</p><p className="text-xs opacity-70">Unduh data ke JSON</p></div>
@@ -1029,13 +1007,12 @@
             const [jenis, setJenis] = useState('Servis');
             const [nama, setNama] = useState('');
             const [pelanggan, setPelanggan] = useState('');
-            const [modalStr, setModalStr] = useState('0'); // Default 0
-            const [jualStr, setJualStr] = useState('0');   // Default 0
+            const [modalStr, setModalStr] = useState('0');
+            const [jualStr, setJualStr] = useState('0');
             const [jumlah, setJumlah] = useState(1);
-            const [catatan, setCatatan] = useState('');
 
             useEffect(() => {
-                if (isOpen) { setJenis('Servis'); setNama(''); setPelanggan(''); setModalStr('0'); setJualStr('0'); setJumlah(1); setCatatan(''); }
+                if (isOpen) { setJenis('Servis'); setNama(''); setPelanggan(''); setModalStr('0'); setJualStr('0'); setJumlah(1); }
             }, [isOpen]);
 
             const handleSave = () => {
@@ -1046,7 +1023,7 @@
                     id: generateId(), tanggal: new Date().toISOString(),
                     jenis, nama: nama.trim(), pelanggan: pelanggan.trim() || 'Umum',
                     modal: m, jual: j, jumlah: jumlah,
-                    laba: (j - m) * jumlah, status: 'Proses', catatan: catatan.trim()
+                    laba: (j - m) * jumlah, status: 'Proses'
                 };
 
                 setTransactions(prev => [newData, ...prev]); showSnackbar('Transaksi dicatat'); onClose();
@@ -1056,7 +1033,7 @@
 
             return (
                 <BottomSheet isOpen={isOpen} onClose={onClose} title="Catat Transaksi">
-                    <div className="space-y-6 pt-3 pb-8">
+                    <div className="space-y-6 pt-3">
                         <div className="flex bg-[var(--md-sys-color-surface-container-high)] rounded-full p-1 h-12 shadow-inner">
                             {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
                                 <button key={j} type="button" onClick={() => setJenis(j)}
@@ -1075,9 +1052,8 @@
                             <TextField label="Harga Jual" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
                         </div>
 
-                        {/* Slider Jumlah (Hanya tampil jika bukan Servis) */}
                         {jenis !== 'Servis' && (
-                            <div className="bg-[var(--md-sys-color-surface-container-highest)] p-4 rounded-t-[var(--md-shape-xs)] border-b border-[var(--md-sys-color-on-surface-variant)] relative pt-6">
+                            <div className="bg-[var(--md-sys-color-surface-container-highest)] p-4 rounded-[var(--md-shape-sm)] relative pt-6 mt-2">
                                 <span className="absolute left-4 top-2 text-[12px] font-medium text-[var(--md-sys-color-on-surface-variant)]">Kuantitas (Jumlah)</span>
                                 <div className="flex items-center gap-4 mt-2">
                                     <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" />
@@ -1085,8 +1061,6 @@
                                 </div>
                             </div>
                         )}
-
-                        <TextField label="Catatan Tambahan" value={catatan} onChange={setCatatan} icon="notes" multiline />
 
                         <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-5 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-sm">
                             <div>
@@ -1119,14 +1093,9 @@
                 }
             };
 
-            let statusColor = 'text-[var(--md-sys-color-on-surface-variant)]';
-            if (item.status === 'Selesai') statusColor = 'text-[var(--md-sys-color-success)]';
-            if (item.status === 'Proses') statusColor = 'text-[var(--md-sys-color-primary)]';
-            if (item.status === 'Batal') statusColor = 'text-[var(--md-sys-color-error)]';
-
             return (
                 <BottomSheet isOpen={!!item} onClose={onClose} title="Detail Transaksi">
-                    <div className="space-y-6 pt-3 pb-8">
+                    <div className="space-y-6 pt-3">
                         <div className="text-center bg-[var(--md-sys-color-surface)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                             <h2 className="text-2xl font-semibold text-[var(--md-sys-color-on-surface)] mb-1 leading-tight">{item.nama}</h2>
                             <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm mb-3">{formatDateLong(item.tanggal)}</p>
@@ -1156,13 +1125,6 @@
                                 <span className="text-3xl font-bold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(item.laba)}</span>
                             </div>
                         </div>
-
-                        {item.catatan && (
-                            <div className="bg-[var(--md-sys-color-surface-variant)] p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface-variant)] border-l-4 border-[var(--md-sys-color-primary)]">
-                                <p className="text-xs font-bold uppercase tracking-wider mb-1">Catatan</p>
-                                <p className="text-sm leading-relaxed">{item.catatan}</p>
-                            </div>
-                        )}
 
                         <div>
                             <p className="text-sm font-bold tracking-wider uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-1">Progres Pekerjaan</p>
@@ -1219,7 +1181,7 @@
                     </div>
 
                     {/* Navigation Bar */}
-                    <nav className="absolute bottom-0 w-full h-[88px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                    <nav className="absolute bottom-0 w-full h-[88px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         {tabs.map(t => {
                             const active = activeTab === t.id;
                             return (

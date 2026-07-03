@@ -557,7 +557,7 @@
         const SnackbarContainer = () => {
             const { snackbars } = useContext(AppContext);
             return (
-                <div className="fixed bottom-[110px] left-4 right-4 z-[200] flex flex-col gap-2 pointer-events-none items-center" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                <div className="fixed bottom-[110px] left-4 right-4 md:bottom-[120px] z-[200] flex flex-col gap-2 pointer-events-none items-center" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                     {snackbars.map(snack => (
                         <div key={snack.id} className="w-full max-w-sm bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] px-5 py-4 rounded-[var(--md-shape-lg)] shadow-xl animate-page flex items-center justify-between border border-[var(--md-sys-color-outline-variant)] pointer-events-auto">
                             <span className="text-[15px] font-bold">{snack.message}</span>
@@ -1496,7 +1496,6 @@
 
             if (!settings.hasStarted) return <SplashScreen />;
 
-            // PERUBAHAN DESKTOP: Hapus max-w-lg di sini, biarin full layarnya. Konten di dalamnya yg gw center.
             return (
                 <div className="h-[100dvh] w-full mx-auto flex flex-col relative bg-[var(--md-sys-color-background)] overflow-hidden">
                     
@@ -1517,13 +1516,13 @@
                         ))}
                     </main>
 
-                    {/* PERUBAHAN DESKTOP: Navigasi bawah tetep full lebar, tapi isi tombolnya di-center di tengah (max-w-3xl) */}
-                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-center z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
-                        <div className="w-full max-w-3xl flex justify-around items-center px-2 h-full">
+                    {/* PERUBAHAN DESKTOP KAPSUL (Pill) di baris ini */}
+                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-center z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:bottom-8 md:w-auto md:left-1/2 md:-translate-x-1/2 md:h-[80px] md:rounded-[40px] md:border md:border-[var(--md-sys-color-outline-variant)] md:px-6 transition-all duration-300" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                        <div className="w-full flex justify-around items-center px-2 h-full md:gap-6 md:w-max">
                             {tabsConfig.map(t => {
                                 const active = activeTab === t.id;
                                 return (
-                                    <div key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer active:scale-95 spring-bounce">
+                                    <div key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 md:flex-none md:w-[72px] h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer active:scale-95 spring-bounce">
                                         <div className={`w-14 h-8 rounded-full flex items-center justify-center spring-bounce ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
                                             <span className={`material-symbols-rounded text-2xl spring-bounce ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
                                         </div>
@@ -1545,4 +1544,5 @@
     </script>
 </body>
 </html>
+
 

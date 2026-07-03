@@ -40,9 +40,6 @@
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
             --md-shape-3xl: 40px;
-
-            --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.4), 0px 1px 3px 0px rgba(0, 0, 0, 0.6);
-            --md-elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.4), 0px 2px 3px 0px rgba(0, 0, 0, 0.6);
         }
 
         /* --- THEMES (ALL FORCED DARK MODE) --- */
@@ -317,8 +314,8 @@
             const statuses = ['Beres', 'Beres', 'Beres', 'Jalan', 'Gagal'];
             const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power', 'Kabel Data Type-C'];
             
-            for(let i=0; i<25; i++) {
-                const date = new Date(); date.setDate(date.getDate() - Math.floor(Math.random() * 14)); 
+            for(let i=0; i<80; i++) {
+                const date = new Date(); date.setDate(date.getDate() - Math.floor(Math.random() * 150)); 
                 const type = types[Math.floor(Math.random() * types.length)];
                 const modal = Math.floor(Math.random() * 10) * 15000;
                 const jual = modal + (Math.floor(Math.random() * 5 + 1) * 20000);
@@ -335,6 +332,48 @@
             return data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
         };
 
+        // Filter Logic based on Hari/Minggu/Bulan Format
+        const filterByPeriod = (data, format, offset) => {
+             const target = new Date();
+             if (format === 'Hari') {
+                 target.setDate(target.getDate() + offset);
+                 const y = target.getFullYear(), m = target.getMonth(), d = target.getDate();
+                 return data.filter(item => { const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m && id.getDate() === d; });
+             } else if (format === 'Minggu') {
+                 target.setDate(target.getDate() + (offset * 7));
+                 const day = target.getDay();
+                 const diff = target.getDate() - day + (day === 0 ? -6 : 1);
+                 const monday = new Date(target.setDate(diff)); monday.setHours(0,0,0,0);
+                 const sunday = new Date(monday); sunday.setDate(sunday.getDate() + 6); sunday.setHours(23,59,59,999);
+                 return data.filter(item => { const id = new Date(item.tanggal); return id >= monday && id <= sunday; });
+             } else { // Bulan
+                 target.setMonth(target.getMonth() + offset);
+                 const y = target.getFullYear(), m = target.getMonth();
+                 return data.filter(item => { const id = new Date(item.tanggal); return id.getFullYear() === y && id.getMonth() === m; });
+             }
+        };
+
+        const getPeriodLabel = (format, offset) => {
+             const d = new Date();
+             if (format === 'Hari') {
+                 d.setDate(d.getDate() + offset);
+                 if (offset === 0) return 'Hari Ini';
+                 if (offset === -1) return 'Kemarin';
+                 return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric'}).format(d);
+             } else if (format === 'Minggu') {
+                 d.setDate(d.getDate() + (offset * 7));
+                 const day = d.getDay();
+                 const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                 const monday = new Date(d.setDate(diff));
+                 const sunday = new Date(monday); sunday.setDate(sunday.getDate() + 6);
+                 return `${monday.getDate()} - ${sunday.getDate()} ${new Intl.DateTimeFormat('id-ID', { month: 'short'}).format(sunday)}`;
+             } else {
+                 d.setMonth(d.getMonth() + offset);
+                 if (offset === 0) return 'Bulan Ini';
+                 return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric'}).format(d);
+             }
+        };
+
         // ==========================================================================
         // CONTEXT: GLOBAL STATE
         // ==========================================================================
@@ -343,7 +382,7 @@
         const AppProvider = ({ children }) => {
             const [activeTab, setActiveTab] = useState('dasbor');
             const [transactions, setTransactions] = useState([]);
-            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false });
+            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan' });
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null); // Global detail sheet state
 
@@ -378,7 +417,7 @@
                     const surfaceColor = getComputedStyle(document.body).getPropertyValue('--md-sys-color-surface').trim();
                     document.getElementById('meta-theme-color').content = surfaceColor;
                 }, 100);
-            }, [settings.theme]);
+            }, [settings.theme, settings.periodFormat]);
 
             const showSnackbar = (message) => {
                 const id = Date.now();
@@ -459,17 +498,25 @@
             const [isClosing, setIsClosing] = useState(false);
 
             useEffect(() => {
-                const handlePopState = (e) => {
-                    if (isOpen) {
-                        executeClose();
-                    }
-                };
+                const tabs = document.querySelectorAll('.tab-content-area');
                 if (isOpen) {
+                    // Kunci scroll layar belakang tanpa blur
+                    tabs.forEach(t => t.style.overflow = 'hidden');
                     window.history.pushState({ modal: title }, '');
-                    window.addEventListener('popstate', handlePopState);
+                } else {
+                    tabs.forEach(t => t.style.overflow = 'auto');
                 }
+                
+                const handlePopState = (e) => {
+                    if (isOpen) executeClose();
+                };
+                if (isOpen) window.addEventListener('popstate', handlePopState);
+                
                 return () => {
-                    if (isOpen) window.removeEventListener('popstate', handlePopState);
+                    if (isOpen) {
+                        window.removeEventListener('popstate', handlePopState);
+                        tabs.forEach(t => t.style.overflow = 'auto');
+                    }
                 };
             }, [isOpen]);
 
@@ -490,7 +537,8 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-                    <div className={`absolute inset-0 bg-black/70 backdrop-blur-sm ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} onClick={handleUIClose} />
+                    {/* Hapus background blur, pakai opacity hitam biasa */}
+                    <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} onClick={handleUIClose} />
                     <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
                          style={{ paddingBottom: 'var(--sa-bottom)', maxHeight: '90vh' }}>
                         <div className="w-full flex justify-center pt-5 pb-3" onClick={handleUIClose}>
@@ -549,45 +597,59 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, setSelectedItem, setActiveTab } = useContext(AppContext);
-            const cm = new Date().getMonth(); const cy = new Date().getFullYear();
-            const pm = cm === 0 ? 11 : cm - 1; const py = cm === 0 ? cy - 1 : cy;
-            
-            const monthData = transactions.filter(d => new Date(d.tanggal).getMonth() === cm && new Date(d.tanggal).getFullYear() === cy);
-            const prevMonthData = transactions.filter(d => new Date(d.tanggal).getMonth() === pm && new Date(d.tanggal).getFullYear() === py);
+            const { transactions, settings, setSelectedItem, setActiveTab } = useContext(AppContext);
+            const [periodOffset, setPeriodOffset] = useState(0); // 0 = Current, -1 = Prev, etc
 
-            const laba = monthData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
-            const omset = monthData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.jual * i.jumlah), 0);
+            // Reset offset kalau ganti format di setting
+            useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
+
+            const periodData = filterByPeriod(transactions, settings.periodFormat, periodOffset);
+            const prevPeriodData = filterByPeriod(transactions, settings.periodFormat, periodOffset - 1);
+
+            const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
+            const omset = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.jual * i.jumlah), 0);
             
-            const labaPrev = prevMonthData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
+            const labaPrev = prevPeriodData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
             const growth = labaPrev === 0 ? 100 : Math.round(((laba - labaPrev) / labaPrev) * 100);
             
-            const activeJobs = transactions.filter(d => d.status === 'Jalan').length;
+            const activeJobs = periodData.filter(d => d.status === 'Jalan').length;
             
-            const hour = new Date().getHours();
-            const greeting = hour < 11 ? 'Pagi Bos Farhan' : hour < 15 ? 'Siang Bos Farhan' : hour < 19 ? 'Sore Bos Farhan' : 'Malem Bos Farhan';
+            const handlePrevPeriod = () => setPeriodOffset(prev => prev - 1);
+            const handleNextPeriod = () => { if(periodOffset < 0) setPeriodOffset(prev => prev + 1); };
 
             return (
-                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <div className="flex justify-between items-end mb-2">
                         <div>
-                            <h1 className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">{greeting}</h1>
+                            <h1 className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">Zona Phonecell</h1>
                         </div>
                     </div>
 
                     <div className="p-6 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white opacity-10 rounded-bl-full transform translate-x-12 -translate-y-12"></div>
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-black opacity-10 rounded-tr-full transform -translate-x-8 translate-y-8"></div>
+                        {/* Motif dompet transparan material you di background */}
+                        <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] text-[130px] opacity-10 -rotate-12 pointer-events-none">payments</span>
                         
                         <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-1">
-                                <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni Bulan Ini</p>
-                                <div className={`flex items-center text-sm font-extrabold px-3 py-1 rounded-full ${growth >= 0 ? 'bg-white/25' : 'bg-red-500/40'}`}>
-                                    <span className="material-symbols-rounded text-[16px] mr-1">{growth >= 0 ? 'trending_up' : 'trending_down'}</span>
+                            <div className="flex justify-between items-center mb-1">
+                                <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni ({settings.periodFormat})</p>
+                                <div className="flex items-center gap-1 bg-black/10 rounded-full px-2 py-1">
+                                    <Ripple className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10" onClick={handlePrevPeriod}>
+                                        <span className="material-symbols-rounded text-lg">chevron_left</span>
+                                    </Ripple>
+                                    <span className="text-xs font-bold px-1 min-w-[70px] text-center">{getPeriodLabel(settings.periodFormat, periodOffset)}</span>
+                                    <Ripple className={`w-8 h-8 rounded-full flex items-center justify-center ${periodOffset >= 0 ? 'opacity-30' : 'hover:bg-black/10'}`} onClick={handleNextPeriod}>
+                                        <span className="material-symbols-rounded text-lg">chevron_right</span>
+                                    </Ripple>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-end gap-3 mb-6 mt-2">
+                                <h2 className="text-[40px] font-extrabold tracking-tighter leading-none">Rp{formatRupiah(laba)}</h2>
+                                <div className={`flex items-center text-xs font-extrabold px-2.5 py-1 mb-1 rounded-full ${growth >= 0 ? 'bg-white/25' : 'bg-red-500/40'}`}>
+                                    <span className="material-symbols-rounded text-[14px] mr-1">{growth >= 0 ? 'trending_up' : 'trending_down'}</span>
                                     {Math.abs(growth)}%
                                 </div>
                             </div>
-                            <h2 className="text-[40px] font-extrabold tracking-tighter mb-6">Rp{formatRupiah(laba)}</h2>
                             
                             <div className="flex gap-3">
                                 <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
@@ -611,7 +673,7 @@
                                 </div>
                                 <div>
                                     <h3 className="font-extrabold text-base">Servis</h3>
-                                    <p className="text-xs font-medium opacity-80">{monthData.filter(d=>d.jenis==='Servis' && d.status === 'Beres').length} Beres</p>
+                                    <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis==='Servis' && d.status === 'Beres').length} Beres</p>
                                 </div>
                             </div>
                             <div className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
@@ -620,7 +682,7 @@
                                 </div>
                                 <div>
                                     <h3 className="font-extrabold text-base">Barang</h3>
-                                    <p className="text-xs font-medium opacity-80">{monthData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+i.jumlah,0)} Laku</p>
+                                    <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+i.jumlah,0)} Laku</p>
                                 </div>
                             </div>
                         </div>
@@ -746,15 +808,15 @@
             const laba = (getRawNumber(jualStr) - getRawNumber(modalStr)) * jumlah;
 
             return (
-                <div className="p-4 space-y-4 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="tab-content-area p-4 space-y-4 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Catet Duit Bos.</h1>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Dulu</p>
-                        <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 h-14 shadow-inner">
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-4 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-3 ml-1">Pilih Dulu</p>
+                        <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-lg)] p-1.5 h-14 shadow-inner">
                             {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
                                 <button key={j} type="button" onClick={() => setJenis(j)}
-                                    className={`flex-1 text-[15px] font-bold rounded-[var(--md-shape-lg)] transition-all duration-300 ${
+                                    className={`flex-1 text-[15px] font-bold rounded-[calc(var(--md-shape-lg)-4px)] transition-all duration-300 ${
                                         jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md transform scale-[1.02]' 
                                         : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{j}</button>
@@ -762,12 +824,12 @@
                         </div>
                     </div>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
                         <TextField label="Nama Kerjaan / Barang" value={nama} onChange={setNama} icon={isServis?'build':'shopping_bag'} />
                         <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
                     </div>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <TextField label="Modal Keluar" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
                             <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
@@ -781,7 +843,7 @@
                             </div>
                         </div>
 
-                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] flex justify-between items-center shadow-md">
+                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-md">
                             <div>
                                 <span className="text-sm font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
                                 <span className="text-[11px] opacity-70 font-medium">Udah dikali jumlah</span>
@@ -840,7 +902,7 @@
             };
 
             return (
-                <div className="flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="tab-content-area flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     
                     {isSelectionMode && (
                         <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-20 flex items-center justify-between px-4 animate-appbar-down shadow-lg rounded-b-[var(--md-shape-2xl)] border-b border-[var(--md-sys-color-outline-variant)]" style={{ paddingTop: 'var(--sa-top)', height: 'calc(80px + var(--sa-top))' }}>
@@ -883,7 +945,7 @@
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-3 pt-2">
+                    <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-3 pt-2 no-scrollbar">
                         {filteredData.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-24 text-[var(--md-sys-color-on-surface-variant)]">
                                 <span className="material-symbols-rounded text-[80px] mb-4 opacity-30">manage_search</span>
@@ -921,21 +983,55 @@
                 };
             }, [settings.theme]);
 
+            // Grouping logic for the Line Chart based on periodFormat
+            const getChartData = () => {
+                let labels = []; let dataPoints = [];
+                const format = settings.periodFormat;
+                
+                if (format === 'Hari') {
+                    // 7 Hari Terakhir
+                    labels = [...Array(7)].map((_, i) => { 
+                        const d = new Date(); d.setDate(d.getDate() - (6 - i)); 
+                        return d.toLocaleDateString('id-ID', { weekday:'short'}); 
+                    });
+                    dataPoints = [...Array(7)].map((_, i) => {
+                        const d = new Date(); d.setDate(d.getDate() - (6 - i));
+                        const targetDate = d.toISOString().split('T')[0];
+                        return transactions.filter(t => t.tanggal.startsWith(targetDate) && t.status === 'Beres').reduce((s,i) => s + i.laba, 0);
+                    });
+                } else if (format === 'Minggu') {
+                    // 4 Minggu Terakhir
+                    for (let i = 3; i >= 0; i--) {
+                        labels.push(`M-${i === 0 ? 'Ini' : i}`);
+                        const wData = filterByPeriod(transactions, 'Minggu', -i);
+                        dataPoints.push(wData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0));
+                    }
+                } else {
+                    // 6 Bulan Terakhir
+                    for (let i = 5; i >= 0; i--) {
+                        const d = new Date(); d.setMonth(d.getMonth() - i);
+                        labels.push(d.toLocaleDateString('id-ID', { month: 'short' }));
+                        const mData = filterByPeriod(transactions, 'Bulan', -i);
+                        dataPoints.push(mData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0));
+                    }
+                }
+                return { labels, dataPoints };
+            };
+
             useEffect(() => {
                 if (transactions.length === 0) return;
                 const c = getColors();
                 Object.values(inst.current).forEach(chart => chart && chart.destroy());
-
-                const last7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0]; });
-                const laba7 = last7.map(date => transactions.filter(t => t.tanggal.startsWith(date) && t.status === 'Beres').reduce((s,i) => s + i.laba, 0));
                 
                 Chart.defaults.font.family = "'Readex Pro', sans-serif";
                 Chart.defaults.font.weight = 'bold';
                 Chart.defaults.color = c.text;
 
+                const { labels: lineLabels, dataPoints: lineData } = getChartData();
+
                 inst.current.line = new Chart(refLine.current.getContext('2d'), {
                     type: 'line',
-                    data: { labels: last7.map(d => new Date(d).toLocaleDateString('id-ID', { weekday:'short'})), datasets: [{ label: 'Cuan', data: laba7, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] },
+                    data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } }
                 });
 
@@ -959,15 +1055,33 @@
                 }
 
                 return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
-            }, [transactions, settings.theme, getColors]);
+            }, [transactions, settings.theme, settings.periodFormat, getColors]);
 
             const totalSelesai = transactions.filter(t => t.status === 'Beres');
             const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
             const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
 
+            // Generate monthly grouped data for detailed bottom sheet
+            const groupedByMonth = useMemo(() => {
+                const groups = {};
+                totalSelesai.forEach(t => {
+                    const d = new Date(t.tanggal);
+                    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                    const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    
+                    if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, count: 0, countServis: 0, countBarang: 0 };
+                    
+                    groups[key].totalOmset += (t.jual * t.jumlah);
+                    groups[key].totalLaba += t.laba;
+                    groups[key].count += 1;
+                    if(t.jenis === 'Servis') groups[key].countServis += 1; else groups[key].countBarang += 1;
+                });
+                return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); // Sort latest first
+            }, [totalSelesai]);
+
             return (
-                <div className="p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="tab-content-area p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                     
                     <div className="grid grid-cols-2 gap-4">
@@ -985,7 +1099,7 @@
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Grafik Cuan 7 Hari</h3>
+                            <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Grafik Cuan ({settings.periodFormat})</h3>
                             <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]">
                                 <span className="material-symbols-rounded text-xl">show_chart</span>
                             </div>
@@ -1009,38 +1123,41 @@
                         </div>
                     </div>
                     
-                    {/* Insights Bottom Sheet */}
+                    {/* Insights Bottom Sheet Detailed Grouped List */}
                     <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
-                        {sheetInfo === 'margin' ? (
-                            <div className="space-y-4 pt-4">
-                               <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Margin diitung dari total untung beres dibandingin total semua duit yang masuk ke konter lu bos.</p>
-                               <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                                   <div className="flex justify-between items-center"><span className="font-bold text-[var(--md-sys-color-on-surface-variant)]">Total Duit Masuk</span><span className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(totalOmset)}</span></div>
-                                   <div className="flex justify-between items-center"><span className="font-bold text-[var(--md-sys-color-on-surface-variant)]">Cuan Murni</span><span className="font-extrabold text-lg text-[var(--md-sys-color-primary)]">Rp{formatRupiah(totalLaba)}</span></div>
-                                   <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center mt-2">
-                                       <span className="font-extrabold text-[15px] uppercase tracking-wide">Persentase Untung</span><span className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)]">{margin}%</span>
-                                   </div>
-                               </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-4 pt-4">
-                               <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Ini total seluruh nota yang statusnya udah beres (diambil sama dilunasin pelanggan).</p>
-                               <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                                   {['Servis', 'Sparepart', 'Aksesoris'].map(k => {
-                                       const count = totalSelesai.filter(t => t.jenis === k).length;
-                                       return (
-                                           <div key={k} className="flex justify-between items-center">
-                                               <span className="font-bold text-base text-[var(--md-sys-color-on-surface-variant)]">{k}</span>
-                                               <span className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">{count} Nota</span>
-                                           </div>
-                                       );
-                                   })}
-                                   <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center mt-2">
-                                       <span className="font-extrabold text-[15px] uppercase tracking-wide">Total Keseluruhan</span><span className="text-2xl font-extrabold text-[var(--md-sys-color-primary)]">{totalSelesai.length} Nota</span>
-                                   </div>
-                               </div>
-                            </div>
-                        )}
+                        <div className="space-y-4 pt-4">
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">
+                                {sheetInfo === 'margin' ? 'Berikut rincian margin untung bulanan berdasarkan modal & jual.' : 'Rekap jumlah garapan yang kelar ditarik per-bulannya bos.'}
+                            </p>
+                            
+                            {groupedByMonth.map((grp, idx) => {
+                                const mrg = grp.totalOmset > 0 ? ((grp.totalLaba / grp.totalOmset) * 100).toFixed(1) : 0;
+                                
+                                return (
+                                    <div key={idx} className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-3 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                        <h4 className="font-extrabold text-[var(--md-sys-color-primary)] text-lg mb-2">{grp.label}</h4>
+                                        
+                                        {sheetInfo === 'margin' ? (
+                                            <>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Cuan Murni</span><span className="font-extrabold text-base text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span></div>
+                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-1">
+                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Margin Untung</span><span className="text-xl font-extrabold text-[var(--md-sys-color-on-surface)]">{mrg}%</span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Servis</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countServis} Nota</span></div>
+                                                <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Nota</span></div>
+                                                <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-1">
+                                                    <span className="font-bold text-[13px] uppercase tracking-wide">Total Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Nota</span>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </BottomSheet>
                 </div>
             );
@@ -1080,11 +1197,11 @@
             };
 
             return (
-                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
+                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode)</p>
                         <div className="grid grid-cols-3 gap-4">
                             {themes.map(t => (
                                 <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
@@ -1092,6 +1209,20 @@
                                      style={{ backgroundColor: t.color }}>
                                      {settings.theme === t.id && <span className="material-symbols-rounded text-black text-[32px] opacity-80">check</span>}
                                 </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-2">Format Laporan Dasbor</p>
+                        <p className="text-xs font-medium text-[var(--md-sys-color-on-surface-variant)] mb-5">Berpengaruh ke grafik cuan di tab Dasbor & Ngecek.</p>
+                        <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 shadow-inner">
+                            {['Hari', 'Minggu', 'Bulan'].map(f => (
+                                <button key={f} type="button" onClick={() => setSettings({...settings, periodFormat: f})}
+                                    className={`flex-1 py-3 text-[14px] font-bold rounded-[calc(var(--md-shape-xl)-6px)] transition-all duration-300 ${
+                                        settings.periodFormat === f ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md transform scale-[1.02]' 
+                                        : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
+                                    }`}>{f}</button>
                             ))}
                         </div>
                     </div>

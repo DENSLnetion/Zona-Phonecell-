@@ -218,10 +218,7 @@
         @keyframes pageFadeIn { 0% { opacity: 0; transform: translateY(20px) scale(0.97); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         .animate-page { animation: pageFadeIn 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
 
-        /* BAYANGAN BUAT KEDALAMAN TAB (PHYSICAL STACK) - DIMATIKAN */
-        .tab-layer {
-            will-change: transform, opacity;
-        }
+        .tab-layer { will-change: transform, opacity; }
 
         @keyframes slideUpSheet { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
         .animate-sheet-up { animation: slideUpSheet 0.5s cubic-bezier(0.2, 0, 0, 1) forwards; }
@@ -367,7 +364,6 @@
             return csvContent;
         };
 
-        // URUTAN TAB FIX
         const TABS_ORDER = ['dasbor', 'catet', 'riwayat', 'analisis', 'seting'];
 
         // ==========================================================================
@@ -382,7 +378,6 @@
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
 
-            // ANTI CRASH LOCALSTORAGE SAFEGUARD
             useEffect(() => {
                 try {
                     const savedDb = localStorage.getItem('zp_m3_data');
@@ -557,7 +552,7 @@
         const SnackbarContainer = () => {
             const { snackbars } = useContext(AppContext);
             return (
-                <div className="fixed bottom-[110px] left-4 right-4 md:bottom-[120px] z-[200] flex flex-col gap-2 pointer-events-none items-center" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                <div className="fixed bottom-[110px] left-4 right-4 md:bottom-8 md:left-auto md:right-8 z-[200] flex flex-col gap-2 pointer-events-none items-end" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                     {snackbars.map(snack => (
                         <div key={snack.id} className="w-full max-w-sm bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] px-5 py-4 rounded-[var(--md-shape-lg)] shadow-xl animate-page flex items-center justify-between border border-[var(--md-sys-color-outline-variant)] pointer-events-auto">
                             <span className="text-[15px] font-bold">{snack.message}</span>
@@ -568,7 +563,7 @@
         };
 
         // ==========================================================================
-        // APP SCREENS
+        // APP SCREENS (MODIFIED FOR NATIVE DESKTOP PC GRID)
         // ==========================================================================
 
         const SplashScreen = () => {
@@ -593,7 +588,7 @@
             );
         };
 
-        // --- TAB 1: DASBOR ---
+        // --- TAB 1: DASBOR (NATIVE DESKTOP GRID) ---
         const TabDasbor = () => {
             const { transactions, settings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0);
@@ -615,89 +610,104 @@
             };
 
             return (
-                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <div className="w-full max-w-3xl space-y-6 md:space-y-8">
-                        <div className="flex justify-between items-end mb-2">
+                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    {/* LEBAR PC DIBUKA MAX-W-6XL BIAR LEGA */}
+                    <div className="w-full max-w-3xl md:max-w-6xl">
+                        <div className="flex justify-between items-end mb-6 md:mb-8">
                             <div>
-                                <h1 className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">Zona Phonecell</h1>
+                                <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">Zona Phonecell</h1>
                             </div>
                         </div>
 
-                        <div className="p-6 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
-                            <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] text-[130px] opacity-[0.25] -rotate-12 pointer-events-none">account_balance_wallet</span>
+                        {/* GRID PC: 2 KOLOM */}
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
                             
-                            <div className="relative z-10">
-                                <div className="flex justify-between items-center mb-1">
-                                    <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni</p>
-                                    <div className="flex items-center gap-1 bg-black/10 rounded-full px-2 py-1">
-                                        <Ripple className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10" onClick={handlePrevPeriod}>
-                                            <span className="material-symbols-rounded text-lg">chevron_left</span>
-                                        </Ripple>
-                                        <span className="text-xs font-bold px-1 min-w-[70px] text-center">{getPeriodLabel(settings.periodFormat, periodOffset)}</span>
-                                        <Ripple className={`w-8 h-8 rounded-full flex items-center justify-center ${periodOffset >= 0 ? 'opacity-30' : 'hover:bg-black/10'}`} onClick={handleNextPeriod}>
-                                            <span className="material-symbols-rounded text-lg">chevron_right</span>
-                                        </Ripple>
+                            {/* KOLOM KIRI (KARTU CUAN + STATISTIK) */}
+                            <div className="md:col-span-7 space-y-6 md:space-y-8">
+                                <div className="p-6 md:p-10 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
+                                    <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] md:right-[-40px] md:bottom-[-40px] text-[130px] md:text-[200px] opacity-[0.25] -rotate-12 pointer-events-none">account_balance_wallet</span>
+                                    
+                                    <div className="relative z-10">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni</p>
+                                            <div className="flex items-center gap-1 bg-black/10 rounded-full px-2 py-1">
+                                                <Ripple className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10" onClick={handlePrevPeriod}>
+                                                    <span className="material-symbols-rounded text-lg">chevron_left</span>
+                                                </Ripple>
+                                                <span className="text-xs font-bold px-1 min-w-[70px] text-center">{getPeriodLabel(settings.periodFormat, periodOffset)}</span>
+                                                <Ripple className={`w-8 h-8 rounded-full flex items-center justify-center ${periodOffset >= 0 ? 'opacity-30' : 'hover:bg-black/10'}`} onClick={handleNextPeriod}>
+                                                    <span className="material-symbols-rounded text-lg">chevron_right</span>
+                                                </Ripple>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex items-end gap-3 mb-6 md:mb-10 mt-2">
+                                            <h2 className="text-[40px] md:text-[56px] font-extrabold tracking-tighter leading-none">{formatModeUang(laba, settings.gwBanget, 'cuan')}</h2>
+                                        </div>
+                                        
+                                        <div className="flex gap-3 md:gap-6">
+                                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 md:px-6 py-4 md:py-5 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
+                                                <span className="text-[11px] md:text-[13px] uppercase font-extrabold opacity-70 mb-1">Duit Masuk</span>
+                                                <span className="font-bold text-base md:text-xl">{formatModeUang(omset, settings.gwBanget, 'cuan')}</span>
+                                            </div>
+                                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 md:px-6 py-4 md:py-5 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
+                                                <span className="text-[11px] md:text-[13px] uppercase font-extrabold opacity-70 mb-1">Total Garapan</span>
+                                                <span className="font-bold text-base md:text-xl">{periodData.length} Garapan</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <div className="flex items-end gap-3 mb-6 mt-2">
-                                    <h2 className="text-[40px] md:text-[48px] font-extrabold tracking-tighter leading-none">{formatModeUang(laba, settings.gwBanget, 'cuan')}</h2>
-                                </div>
-                                
-                                <div className="flex gap-3">
-                                    <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
-                                        <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Duit Masuk</span>
-                                        <span className="font-bold text-base md:text-lg">{formatModeUang(omset, settings.gwBanget, 'cuan')}</span>
-                                    </div>
-                                    <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
-                                        <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Total Garapan</span>
-                                        <span className="font-bold text-base md:text-lg">{periodData.length} Garapan</span>
+
+                                <div>
+                                    <h3 className="text-sm md:text-base font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest mb-4 ml-2">Statistik Kilat</h3>
+                                    <div className="grid grid-cols-2 gap-4 md:gap-6">
+                                        <Ripple onClick={() => setShowProgres(true)} className="p-5 md:p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
+                                                <span className="material-symbols-rounded text-[24px] md:text-[32px]">pending_actions</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-extrabold text-base md:text-xl">Progres</h3>
+                                                <p className="text-xs md:text-sm font-medium opacity-80">{pendingJobs.length} PR</p>
+                                            </div>
+                                        </Ripple>
+                                        <div className="p-5 md:p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
+                                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
+                                                <span className="material-symbols-rounded text-[24px] md:text-[32px]">inventory_2</span>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-extrabold text-base md:text-xl">Barang</h3>
+                                                <p className="text-xs md:text-sm font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Laku</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest mb-4 ml-2">Statistik Kilat</h3>
-                            <div className="grid grid-cols-2 gap-4 md:gap-6">
-                                <Ripple onClick={() => setShowProgres(true)} className="p-5 md:p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)] cursor-pointer">
-                                    <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-rounded text-[24px]">pending_actions</span>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-extrabold text-base md:text-lg">Progres</h3>
-                                        <p className="text-xs font-medium opacity-80">{pendingJobs.length} PR</p>
-                                    </div>
+                            {/* KOLOM KANAN (AKSI & RIWAYAT SINGKAT) */}
+                            <div className="md:col-span-5 space-y-6 md:space-y-8 flex flex-col">
+                                <Ripple onClick={() => setActiveTab('catet')} className="w-full h-16 md:h-20 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] md:rounded-[var(--md-shape-3xl)] flex items-center justify-center font-extrabold text-[16px] md:text-lg shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)] transition-colors">
+                                    <span className="material-symbols-rounded mr-3 text-[24px] md:text-[32px]">add_circle</span>
+                                    Catet Transaksi Baru
                                 </Ripple>
-                                <div className="p-5 md:p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
-                                    <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-rounded text-[24px]">inventory_2</span>
+
+                                <div className="flex-1 bg-[var(--md-sys-color-surface-container-low)] md:p-6 md:rounded-[var(--md-shape-3xl)] md:border md:border-[var(--md-sys-color-outline-variant)]">
+                                    <div className="flex justify-between items-center mb-4 ml-2 md:ml-0 mt-4 md:mt-0">
+                                        <h3 className="text-sm md:text-base font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">Transaksi Barusan</h3>
                                     </div>
-                                    <div>
-                                        <h3 className="font-extrabold text-base md:text-lg">Barang</h3>
-                                        <p className="text-xs font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Laku</p>
+                                    <div className="space-y-3">
+                                        {transactions.slice(0, 5).map((item) => (
+                                            <ActivityItem key={item.id} item={item} onClick={() => setSelectedItem(item)} />
+                                        ))}
+                                        {transactions.length === 0 && (
+                                            <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-8 font-bold border border-dashed border-[var(--md-sys-color-outline-variant)] rounded-[var(--md-shape-2xl)]">Belom dapet pelanggan nih bos</p>
+                                        )}
                                     </div>
+                                    {transactions.length > 0 && (
+                                        <Button variant="text" className="w-full mt-4" onClick={() => setActiveTab('riwayat')}>Liat Semua Riwayat</Button>
+                                    )}
                                 </div>
                             </div>
 
-                            <Ripple onClick={() => setActiveTab('catet')} className="w-full mt-6 h-16 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] flex items-center justify-center font-extrabold text-[16px] shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)] transition-colors">
-                                <span className="material-symbols-rounded mr-2 text-[24px]">add_circle</span>
-                                Catet Transaksi Baru
-                            </Ripple>
-                        </div>
-
-                        <div>
-                            <div className="flex justify-between items-center mb-4 ml-2 mt-4">
-                                <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">Transaksi Barusan</h3>
-                            </div>
-                            <div className="space-y-3">
-                                {transactions.slice(0, 5).map((item) => (
-                                    <ActivityItem key={item.id} item={item} onClick={() => setSelectedItem(item)} />
-                                ))}
-                                {transactions.length === 0 && (
-                                    <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-8 font-bold bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)]">Belom dapet pelanggan nih bos</p>
-                                )}
-                            </div>
                         </div>
                     </div>
                     
@@ -763,21 +773,21 @@
 
             return (
                 <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
-                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root spring-bounce border border-[var(--md-sys-color-outline-variant)] cursor-pointer active:scale-[0.98]
-                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)]' : 'bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-on-surface)]'}`}>
+                     className={`flex items-center gap-4 p-4 md:p-5 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root spring-bounce border border-[var(--md-sys-color-outline-variant)] cursor-pointer active:scale-[0.98]
+                     ${selected ? 'bg-[var(--md-sys-color-secondary-container)]' : 'bg-[var(--md-sys-color-surface-container-low)] hover:border-[var(--md-sys-color-on-surface)] md:hover:bg-[var(--md-sys-color-surface-container)]'}`}>
                     
                     {selectable ? (
                         <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 spring-bounce ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] scale-110' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] scale-100'}`}>
                             <span className="material-symbols-rounded text-2xl">{selected ? 'check' : 'circle'}</span>
                         </div>
                     ) : (
-                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 ${statusColor}`}>
-                            <span className="material-symbols-rounded text-2xl">{icon}</span>
+                        <div className={`w-14 h-14 md:w-12 md:h-12 rounded-[20px] md:rounded-[16px] flex items-center justify-center shrink-0 ${statusColor}`}>
+                            <span className="material-symbols-rounded text-2xl md:text-xl">{icon}</span>
                         </div>
                     )}
                     
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base md:text-lg">{item?.nama || 'Tanpa Nama'}</h4>
+                        <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base md:text-[17px]">{item?.nama || 'Tanpa Nama'}</h4>
                         <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{formatDateShort(item?.tanggal)} • {item?.pelanggan || 'Hamba Allah'}</p>
                     </div>
                     <div className="text-right shrink-0">
@@ -793,7 +803,7 @@
             );
         }
 
-        // --- TAB 2: CATET (FORM BARU) ---
+        // --- TAB 2: CATET (FORM PC DIPERLEBAR) ---
         const TabCatet = () => {
             const { setTransactions, showSnackbar } = useContext(AppContext);
             
@@ -831,16 +841,17 @@
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'phone_iphone' };
 
             return (
-                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <div className="w-full max-w-3xl space-y-5">
-                        <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Catet Duit Bos.</h1>
+                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    {/* LEBAR PC PAS BUAT FORM (max-w-4xl) */}
+                    <div className="w-full max-w-3xl md:max-w-4xl space-y-5 md:space-y-6">
+                        <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 md:mb-6 px-2">Catet Duit Bos.</h1>
 
                         <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori Dulu</p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                                 {['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => (
                                     <button key={j} type="button" onClick={() => setJenis(j)}
-                                        className={`py-4 px-3 text-[15px] font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 ${
+                                        className={`py-4 md:py-5 px-3 text-[15px] md:text-base font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 ${
                                             jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
                                             : 'bg-black/20 text-[var(--md-sys-color-on-surface-variant)] border border-transparent hover:bg-black/30'
                                         }`}>{j}</button>
@@ -850,60 +861,64 @@
                         
                         {isTopUp && (
                             <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
-                                <div>
-                                    <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
-                                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                                        {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
-                                            <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
-                                        ))}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
+                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                                            {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
+                                                <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
-                                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                                        {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
-                                            <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
-                                        ))}
+                                    <div>
+                                        <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
+                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                                            {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
+                                                <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
-                            <TextField label={isTopUp ? 'Nomor Tujuan / Ket' : 'Nama Kerjaan / Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
-                            <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <TextField label={isTopUp ? 'Nomor Tujuan / Ket' : 'Nama Kerjaan / Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
+                                <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                            </div>
                         </div>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
+                            <div className="grid grid-cols-2 gap-4 md:gap-6">
                                 <TextField label="Modal Keluar" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
                                 <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
                             </div>
 
-                            <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 rounded-[var(--md-shape-2xl)] relative pt-8 mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                                <span className="absolute left-5 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
-                                <div className="flex items-center gap-5 mt-2">
+                            <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                                <span className="absolute left-5 md:left-6 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
+                                <div className="flex items-center gap-5 mt-2 md:mt-4">
                                     <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
-                                    <span className="w-12 text-center font-extrabold text-2xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                    <span className="w-12 text-center font-extrabold text-2xl md:text-3xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
                                 </div>
                             </div>
 
-                            <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-md mt-4">
+                            <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-md mt-4 md:mt-6">
                                 <div>
-                                    <span className="text-sm font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
-                                    <span className="text-[11px] opacity-70 font-medium">Udah dikali jumlah</span>
+                                    <span className="text-sm md:text-base font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
+                                    <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikali jumlah</span>
                                 </div>
-                                <span className="text-3xl md:text-4xl font-extrabold">Rp{formatRupiah(laba)}</span>
+                                <span className="text-3xl md:text-5xl font-extrabold">Rp{formatRupiah(laba)}</span>
                             </div>
                         </div>
 
-                        <Button onClick={handleSave} icon="local_atm" fullWidth className="mt-8 h-16 text-lg shadow-[var(--md-elevation-3)] mb-4">Sikat Bos! Catet</Button>
+                        <Button onClick={handleSave} icon="local_atm" fullWidth className="mt-8 h-16 md:h-20 text-lg md:text-xl shadow-[var(--md-elevation-3)] mb-4">Sikat Bos! Catet</Button>
                     </div>
                 </div>
             );
         };
 
-        // --- TAB 3: RIWAYAT ---
+        // --- TAB 3: RIWAYAT (GRID PC DIPERLEBAR) ---
         const TabRiwayat = () => {
             const { transactions, setTransactions, showSnackbar, setSelectedItem } = useContext(AppContext);
             const [search, setSearch] = useState('');
@@ -949,7 +964,7 @@
                     
                     {isSelectionMode && (
                         <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-20 flex items-center justify-center px-4 animate-appbar-down shadow-lg border-b border-[var(--md-sys-color-outline-variant)]" style={{ paddingTop: 'var(--sa-top)', height: 'calc(80px + var(--sa-top))' }}>
-                            <div className="w-full max-w-3xl flex justify-between items-center">
+                            <div className="w-full max-w-3xl md:max-w-6xl flex justify-between items-center">
                                 <div className="flex items-center gap-4">
                                     <button onClick={closeSelectionModeUI} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 spring-bounce active:scale-90">
                                         <span className="material-symbols-rounded text-2xl">close</span>
@@ -964,18 +979,21 @@
                         </div>
                     )}
 
-                    <div className="px-4 md:px-8 lg:px-12 w-full flex justify-center pb-2 z-10 bg-[var(--md-sys-color-background)] shrink-0">
-                        <div className="w-full max-w-3xl space-y-5">
-                            <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Catetan Lama.</h1>
+                    <div className="px-4 md:px-8 lg:px-12 w-full flex justify-center pb-4 md:pb-6 z-10 bg-[var(--md-sys-color-background)] shrink-0">
+                        {/* PC MAX-W-6XL */}
+                        <div className="w-full max-w-3xl md:max-w-6xl space-y-5">
+                            <div className="flex justify-between items-end md:mb-2">
+                                <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Catetan Lama.</h1>
+                            </div>
                             
                             <div className="flex items-center h-16 md:h-18 bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-2xl)] px-5 text-[var(--md-sys-color-on-surface)] shadow-inner focus-within:ring-2 ring-[var(--md-sys-color-primary)] spring-bounce">
                                 <span className="material-symbols-rounded mr-4 opacity-70 text-[24px]">search</span>
                                 <input type="text" placeholder="Nyari kerjaan siapa bos?..." value={search} onChange={e => setSearch(e.target.value)}
-                                    className="bg-transparent border-none outline-none flex-1 text-[16px] font-bold placeholder:text-[var(--md-sys-color-on-surface-variant)]/60 placeholder:font-medium" />
+                                    className="bg-transparent border-none outline-none flex-1 text-[16px] md:text-lg font-bold placeholder:text-[var(--md-sys-color-on-surface-variant)]/60 placeholder:font-medium" />
                                 {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2 p-1 bg-black/20 rounded-full" onClick={() => setSearch('')}>close</span>}
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1">
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1 md:flex-wrap">
                                 {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(f => (
                                     <button key={f} onClick={() => setFilterType(f)}
                                         className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 ${
@@ -987,17 +1005,20 @@
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 w-full flex flex-col items-center pb-32 pt-2 no-scrollbar">
-                        <div className="w-full max-w-3xl space-y-3">
+                    <div className="flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 w-full flex flex-col items-center pb-32 md:pb-12 pt-2 no-scrollbar">
+                        <div className="w-full max-w-3xl md:max-w-6xl">
                             {filteredData.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-24 text-[var(--md-sys-color-on-surface-variant)]">
-                                    <span className="material-symbols-rounded text-[80px] mb-4 opacity-30">manage_search</span>
-                                    <p className="font-bold text-xl opacity-60">Kosong melompong bos</p>
+                                    <span className="material-symbols-rounded text-[80px] md:text-[120px] mb-4 opacity-30">manage_search</span>
+                                    <p className="font-bold text-xl md:text-2xl opacity-60">Kosong melompong bos</p>
                                 </div>
                             ) : (
-                                filteredData.map(item => (
-                                    <ActivityItem key={item.id} item={item} selectable={isSelectionMode} selected={selectedIds.includes(item.id)} onSelect={() => toggleSelection(item.id)} onClick={() => setSelectedItem(item)} />
-                                ))
+                                /* DI PC JADI GRID 2 KOLOM */
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                                    {filteredData.map(item => (
+                                        <ActivityItem key={item.id} item={item} selectable={isSelectionMode} selected={selectedIds.includes(item.id)} onSelect={() => toggleSelection(item.id)} onClick={() => setSelectedItem(item)} />
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -1005,7 +1026,7 @@
             );
         };
 
-        // --- TAB 4: ANALISIS ---
+        // --- TAB 4: ANALISIS (GRID PC LEBAR) ---
         const TabAnalisis = () => {
             const { transactions, settings } = useContext(AppContext);
             const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
@@ -1087,41 +1108,51 @@
             }, [totalSelesai]);
 
             return (
-                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <div className="w-full max-w-3xl space-y-6 md:space-y-8">
-                        <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
+                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    {/* LEBAR PC MAX-W-6XL */}
+                    <div className="w-full max-w-3xl md:max-w-6xl space-y-6 md:space-y-8">
+                        <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                         
-                        <div className="grid grid-cols-2 gap-4 md:gap-6">
-                            <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
-                                <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px]">percent</span></div>
-                                <p className="text-xs md:text-sm font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
-                                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter">{margin}%</h2>
-                            </Ripple>
-                            <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
-                                <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px]">done_all</span></div>
-                                <p className="text-xs md:text-sm font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
-                                <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base font-bold">Nota</span></h2>
-                            </Ripple>
-                        </div>
+                        {/* GRID PC 3 KOLOM */}
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+                            
+                            {/* KIRI: GRAFIK UTAMA */}
+                            <div className="md:col-span-8 space-y-6 md:space-y-8">
+                                <div className="grid grid-cols-2 gap-4 md:gap-6">
+                                    <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
+                                        <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px]">percent</span></div>
+                                        <p className="text-xs md:text-sm font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
+                                        <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter">{margin}%</h2>
+                                    </Ripple>
+                                    <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
+                                        <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px]">done_all</span></div>
+                                        <p className="text-xs md:text-sm font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
+                                        <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base font-bold">Nota</span></h2>
+                                    </Ripple>
+                                </div>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-extrabold text-lg md:text-xl text-[var(--md-sys-color-on-surface)]">Grafik Cuan ({settings.periodFormat})</h3>
-                                <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]"><span className="material-symbols-rounded text-xl">show_chart</span></div>
-                            </div>
-                            <div className="h-[250px] relative">{transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-24 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}</div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                                <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Dari Mana Aja?</h3>
-                                <div className="h-[200px] relative">{transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}</div>
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="font-extrabold text-lg md:text-xl text-[var(--md-sys-color-on-surface)]">Grafik Cuan ({settings.periodFormat})</h3>
+                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]"><span className="material-symbols-rounded text-xl md:text-2xl">show_chart</span></div>
+                                    </div>
+                                    <div className="h-[250px] md:h-[350px] relative">{transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-24 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}</div>
+                                </div>
                             </div>
 
-                            <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                                <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Barang Paling Laku</h3>
-                                <div className="h-[200px] relative">{transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}</div>
+                            {/* KANAN: GRAFIK KECIL */}
+                            <div className="md:col-span-4 flex flex-col gap-6 md:gap-8">
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] flex-1">
+                                    <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Dari Mana Aja?</h3>
+                                    <div className="h-[200px] md:h-[220px] relative">{transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}</div>
+                                </div>
+
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] flex-1">
+                                    <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Barang Paling Laku</h3>
+                                    <div className="h-[200px] md:h-[220px] relative">{transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}</div>
+                                </div>
                             </div>
+
                         </div>
                         
                         <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
@@ -1164,7 +1195,7 @@
             );
         };
 
-        // --- TAB 5: SETING ---
+        // --- TAB 5: SETING (GRID PC LEBAR) ---
         const TabSeting = () => {
             const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
             const [showPasteModal, setShowPasteModal] = useState(false);
@@ -1206,82 +1237,90 @@
             const handleClear = () => { if(confirm('WOI PERINGATAN! Ini bakal hapus SEMUA data lo secara permanen. Lanjutin bakar data?')) { setTransactions([]); showSnackbar('BUM! Semua data udah hangus 🔥'); } };
 
             return (
-                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <div className="w-full max-w-3xl space-y-6">
-                        <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
+                <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    {/* LEBAR PC MAX-W-5XL */}
+                    <div className="w-full max-w-3xl md:max-w-5xl space-y-6">
+                        <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
-                            <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-                                {themes.map(t => (
-                                    <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
-                                         className={`h-16 rounded-[var(--md-shape-2xl)] flex items-center justify-center cursor-pointer spring-bounce active:scale-90 ${settings.theme === t.id ? 'scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105 opacity-80'}`}
-                                         style={{ backgroundColor: t.color }}>
-                                         {settings.theme === t.id && <span className="material-symbols-rounded text-black text-[32px] opacity-80">check</span>}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
+                                <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
+                                    {themes.map(t => (
+                                        <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
+                                             className={`h-16 rounded-[var(--md-shape-2xl)] flex items-center justify-center cursor-pointer spring-bounce active:scale-90 ${settings.theme === t.id ? 'scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105 opacity-80'}`}
+                                             style={{ backgroundColor: t.color }}>
+                                             {settings.theme === t.id && <span className="material-symbols-rounded text-black text-[32px] opacity-80">check</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 flex flex-col">
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)] flex-1">
+                                    <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-2">Format Laporan Dasbor</p>
+                                    <p className="text-xs md:text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] mb-5">Berpengaruh ke grafik cuan di tab Dasbor & Ngecek.</p>
+                                    <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 md:p-2 shadow-inner">
+                                        {['Hari', 'Minggu', 'Bulan'].map(f => (
+                                            <button key={f} type="button" onClick={() => setSettings({...settings, periodFormat: f})}
+                                                className={`flex-1 py-3 text-[14px] md:text-base font-bold rounded-[calc(var(--md-shape-xl)-6px)] spring-bounce active:scale-95 ${
+                                                    settings.periodFormat === f ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
+                                                    : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
+                                                }`}>{f}</button>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
+
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)] flex justify-between items-center cursor-pointer active:scale-[0.98] spring-bounce" 
+                                     onClick={() => setSettings({...settings, gwBanget: !settings.gwBanget})}>
+                                    <div>
+                                        <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-1">Mode "Gw Banget"</p>
+                                        <p className="text-xs md:text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Ceban, gocap, pego.. asik bet dah!</p>
+                                    </div>
+                                    <div className={`w-14 md:w-16 h-8 md:h-10 rounded-full flex items-center p-1 transition-colors duration-300 ${settings.gwBanget ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                        <div className={`w-6 md:w-8 h-6 md:h-8 rounded-full bg-[var(--md-sys-color-surface)] shadow-sm transition-transform duration-300 ${settings.gwBanget ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-2">Format Laporan Dasbor</p>
-                            <p className="text-xs md:text-sm font-medium text-[var(--md-sys-color-on-surface-variant)] mb-5">Berpengaruh ke grafik cuan di tab Dasbor & Ngecek.</p>
-                            <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 md:p-2 shadow-inner">
-                                {['Hari', 'Minggu', 'Bulan'].map(f => (
-                                    <button key={f} type="button" onClick={() => setSettings({...settings, periodFormat: f})}
-                                        className={`flex-1 py-3 text-[14px] md:text-base font-bold rounded-[calc(var(--md-shape-xl)-6px)] spring-bounce active:scale-95 ${
-                                            settings.periodFormat === f ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
-                                            : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
-                                        }`}>{f}</button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)] flex justify-between items-center cursor-pointer active:scale-[0.98] spring-bounce" 
-                             onClick={() => setSettings({...settings, gwBanget: !settings.gwBanget})}>
-                            <div>
-                                <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-1">Mode "Gw Banget"</p>
-                                <p className="text-xs md:text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Ceban, gocap, pego.. asik bet dah!</p>
-                            </div>
-                            <div className={`w-14 md:w-16 h-8 md:h-10 rounded-full flex items-center p-1 transition-colors duration-300 ${settings.gwBanget ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-variant)]'}`}>
-                                <div className={`w-6 md:w-8 h-6 md:h-8 rounded-full bg-[var(--md-sys-color-surface)] shadow-sm transition-transform duration-300 ${settings.gwBanget ? 'translate-x-6' : 'translate-x-0'}`}></div>
-                            </div>
-                        </div>
-
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-4 md:p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <h3 className="text-[13px] font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2">Ngatur Database (Support APK)</h3>
+                        <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-4 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                            <h3 className="text-[13px] md:text-sm font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2 md:mb-2">Ngatur Database (Support APK)</h3>
                             
-                            <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors mt-2" onClick={() => handleExportFile('csv')}>
-                                <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-success)]/20 text-[var(--md-sys-color-success)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">table_view</span></div>
-                                <div className="text-left"><p className="font-bold text-base">Export ke Excel/CSV</p><p className="text-[13px] font-medium opacity-70">Laporan rapih buat bos</p></div>
-                            </Ripple>
+                            {/* BIKIN GRID DI PC UNTUK TOMBOL Aksi */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+                                <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors mt-2 md:mt-0" onClick={() => handleExportFile('csv')}>
+                                    <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-success)]/20 text-[var(--md-sys-color-success)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">table_view</span></div>
+                                    <div className="text-left"><p className="font-bold text-base">Export ke Excel/CSV</p><p className="text-[13px] font-medium opacity-70">Laporan rapih buat bos</p></div>
+                                </Ripple>
 
-                            <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => handleExportFile('json')}>
-                                <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">save</span></div>
-                                <div className="text-left"><p className="font-bold text-base">Backup Mentahan (JSON)</p><p className="text-[13px] font-medium opacity-70">Wajib rutin di-backup</p></div>
-                            </Ripple>
+                                <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => handleExportFile('json')}>
+                                    <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">save</span></div>
+                                    <div className="text-left"><p className="font-bold text-base">Backup Mentahan (JSON)</p><p className="text-[13px] font-medium opacity-70">Wajib rutin di-backup</p></div>
+                                </Ripple>
 
-                            <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
+                                <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 md:my-4 opacity-50 md:col-span-2"></div>
 
-                            <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer active:scale-[0.98] spring-bounce">
-                                <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload_file</span></div>
-                                <div className="text-left"><p className="font-bold text-base">Restore Data (Pilih File)</p><p className="text-[13px] font-medium opacity-70">Tarik file backup JSON</p></div>
-                                <input type="file" accept=".json" className="hidden" onChange={handleRestoreFile} />
-                            </label>
-                            
-                            <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => setShowPasteModal(true)}>
-                                <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">content_paste</span></div>
-                                <div className="text-left"><p className="font-bold text-base">Restore Data (Paste Teks)</p><p className="text-[13px] font-medium opacity-70">Alternatif kalo pilih file gagal</p></div>
-                            </Ripple>
+                                <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer active:scale-[0.98] spring-bounce">
+                                    <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload_file</span></div>
+                                    <div className="text-left"><p className="font-bold text-base">Restore Data (Pilih File)</p><p className="text-[13px] font-medium opacity-70">Tarik file backup JSON</p></div>
+                                    <input type="file" accept=".json" className="hidden" onChange={handleRestoreFile} />
+                                </label>
+                                
+                                <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => setShowPasteModal(true)}>
+                                    <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">content_paste</span></div>
+                                    <div className="text-left"><p className="font-bold text-base">Restore Data (Paste)</p><p className="text-[13px] font-medium opacity-70">Alternatif gagal upload</p></div>
+                                </Ripple>
 
-                            <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
-                            
-                            <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] hover:text-[var(--md-sys-color-on-error-container)] transition-colors group" onClick={handleClear}>
-                                <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-error)]/20 text-[var(--md-sys-color-error)] group-hover:bg-[var(--md-sys-color-error)] group-hover:text-[var(--md-sys-color-on-error)] flex items-center justify-center mr-5 shrink-0 transition-colors"><span className="material-symbols-rounded text-[24px]">local_fire_department</span></div>
-                                <div className="text-left"><p className="font-extrabold text-base">Bakar Semua Data</p><p className="text-[13px] font-medium opacity-80">Reset pabrik aplikasi</p></div>
-                            </Ripple>
+                                <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 md:my-4 opacity-50 md:col-span-2"></div>
+                                
+                                <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] hover:text-[var(--md-sys-color-on-error-container)] transition-colors group md:col-span-2" onClick={handleClear}>
+                                    <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-error)]/20 text-[var(--md-sys-color-error)] group-hover:bg-[var(--md-sys-color-error)] group-hover:text-[var(--md-sys-color-on-error)] flex items-center justify-center mr-5 shrink-0 transition-colors"><span className="material-symbols-rounded text-[24px]">local_fire_department</span></div>
+                                    <div className="text-left"><p className="font-extrabold text-base">Bakar Semua Data</p><p className="text-[13px] font-medium opacity-80">Reset pabrik aplikasi</p></div>
+                                </Ripple>
+                            </div>
                         </div>
-                        <p className="text-center text-[12px] text-[var(--md-sys-color-on-surface-variant)] pt-4 pb-6 tracking-widest uppercase font-extrabold opacity-50">Zona Poncell M3 Pro • Bos Edition</p>
+                        <p className="text-center text-[12px] md:text-[14px] text-[var(--md-sys-color-on-surface-variant)] pt-4 pb-6 tracking-widest uppercase font-extrabold opacity-50">Zona Poncell M3 Pro • Bos Edition</p>
 
                         <BottomSheet isOpen={showPasteModal} onClose={() => { setShowPasteModal(false); setPasteText(''); }} title="Paste Data Backup">
                             <div className="space-y-4 pt-2 flex flex-col h-full">
@@ -1341,7 +1380,7 @@
         };
 
         // ==========================================================================
-        // APP SHELL (WITH REAL PHYSICAL PHYSICS STACK SWIPE)
+        // APP SHELL (NATIVE DESKTOP RAIL + MOBILE BOTTOM BAR)
         // ==========================================================================
         const MainApp = () => {
             const { settings, activeTab, setActiveTab } = useContext(AppContext);
@@ -1380,7 +1419,7 @@
                 });
             }, [activeIndex, settings.hasStarted]);
 
-            // Fisika geseran jari murni
+            // Fisika geseran jari murni (di PC pake mouse tetep bisa tapi ga bakal terganggu)
             useEffect(() => {
                 if (!settings.hasStarted) return;
                 const container = containerRef.current;
@@ -1424,7 +1463,6 @@
                     const nextTab = tabsRef.current[activeIndex + 1];
                     const prevTab = tabsRef.current[activeIndex - 1];
 
-                    // Swipe Kiri (Narik layer baru)
                     if (deltaX < 0) {
                         if (nextTab) {
                             nextTab.style.transform = `translate3d(${sw + deltaX}px, 0, 0)`;
@@ -1432,10 +1470,9 @@
                             currentTab.style.transform = `translate3d(${deltaX * 0.25}px, 0, 0) scale(${1 - progress * 0.05})`;
                             currentTab.style.opacity = 1 - progress;
                         } else {
-                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok
+                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; 
                         }
                     }
-                    // Swipe Kanan (Mbuang layer sekarang)
                     else if (deltaX > 0) {
                         if (prevTab) {
                             currentTab.style.transform = `translate3d(${deltaX}px, 0, 0)`;
@@ -1443,7 +1480,7 @@
                             prevTab.style.transform = `translate3d(${-sw * 0.25 * (1 - progress)}px, 0, 0) scale(${0.95 + progress * 0.05})`;
                             prevTab.style.opacity = progress;
                         } else {
-                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`; // Mentok
+                            currentTab.style.transform = `translate3d(${deltaX * 0.2}px, 0, 0)`;
                         }
                     }
                 };
@@ -1497,8 +1534,31 @@
             if (!settings.hasStarted) return <SplashScreen />;
 
             return (
-                <div className="h-[100dvh] w-full mx-auto flex flex-col relative bg-[var(--md-sys-color-background)] overflow-hidden">
+                /* DESKTOP MERUBAH JADI FLEX-ROW BIAR NAVIGASI ADA DI SAMPING KIRI */
+                <div className="h-[100dvh] w-full mx-auto flex flex-col md:flex-row relative bg-[var(--md-sys-color-background)] overflow-hidden">
                     
+                    {/* --- DESKTOP SIDE NAVIGATION RAIL (KIRI) --- */}
+                    <nav className="hidden md:flex flex-col w-[110px] shrink-0 h-full bg-[var(--md-sys-color-surface-container)] items-center pt-8 pb-4 z-50 border-r border-[var(--md-sys-color-outline-variant)] overflow-y-auto no-scrollbar">
+                        <div className="mb-8 w-14 h-14 rounded-[20px] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] flex items-center justify-center shadow-lg">
+                            <span className="material-symbols-rounded text-3xl font-extrabold">smartphone</span>
+                        </div>
+                        
+                        <div className="flex flex-col gap-6 w-full px-2 mt-4">
+                            {tabsConfig.map(t => {
+                                const active = activeTab === t.id;
+                                return (
+                                    <div key={t.id} onClick={() => setActiveTab(t.id)} className="w-full flex flex-col items-center justify-center relative group cursor-pointer active:scale-95 spring-bounce">
+                                        <div className={`w-16 h-10 rounded-full flex items-center justify-center spring-bounce ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-md' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                            <span className={`material-symbols-rounded text-2xl spring-bounce ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                        </div>
+                                        <span className={`text-[12px] font-extrabold mt-2 spring-bounce tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </nav>
+
+                    {/* --- AREA KONTEN UTAMA --- */}
                     <main ref={containerRef} className="flex-1 relative overflow-hidden bg-black touch-none">
                         {TABS_ORDER.map((tabId, index) => (
                             <div 
@@ -1516,13 +1576,13 @@
                         ))}
                     </main>
 
-                    {/* PERUBAHAN DESKTOP KAPSUL (Pill) di baris ini */}
-                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-center z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] md:bottom-8 md:w-auto md:left-1/2 md:-translate-x-1/2 md:h-[80px] md:rounded-[40px] md:border md:border-[var(--md-sys-color-outline-variant)] md:px-6 transition-all duration-300" style={{ paddingBottom: 'var(--sa-bottom)' }}>
-                        <div className="w-full flex justify-around items-center px-2 h-full md:gap-6 md:w-max">
+                    {/* --- MOBILE BOTTOM NAVIGATION (BAWAH) --- */}
+                    <nav className="md:hidden absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-center z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] transition-all duration-300" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                        <div className="w-full flex justify-around items-center px-2 h-full">
                             {tabsConfig.map(t => {
                                 const active = activeTab === t.id;
                                 return (
-                                    <div key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 md:flex-none md:w-[72px] h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer active:scale-95 spring-bounce">
+                                    <div key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer active:scale-95 spring-bounce">
                                         <div className={`w-14 h-8 rounded-full flex items-center justify-center spring-bounce ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
                                             <span className={`material-symbols-rounded text-2xl spring-bounce ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
                                         </div>

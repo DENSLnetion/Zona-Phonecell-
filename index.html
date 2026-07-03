@@ -1244,7 +1244,7 @@
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                                <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
+                                <p className="font-extrabold text-base md:text-lg text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna</p>
                                 <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
                                     {themes.map(t => (
                                         <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
@@ -1285,7 +1285,7 @@
                         </div>
 
                         <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-4 md:p-8 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <h3 className="text-[13px] md:text-sm font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2 md:mb-2">Ngatur Database (Support APK)</h3>
+                            <h3 className="text-[13px] md:text-sm font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2 md:mb-2">Ngatur Database</h3>
                             
                             {/* BIKIN GRID DI PC UNTUK TOMBOL Aksi */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
@@ -1539,10 +1539,6 @@
                     
                     {/* --- DESKTOP SIDE NAVIGATION RAIL (KIRI) --- */}
                     <nav className="hidden md:flex flex-col w-[110px] shrink-0 h-full bg-[var(--md-sys-color-surface-container)] items-center pt-8 pb-4 z-50 border-r border-[var(--md-sys-color-outline-variant)] overflow-y-auto no-scrollbar">
-                        <div className="mb-8 w-14 h-14 rounded-[20px] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] flex items-center justify-center shadow-lg">
-                            <span className="material-symbols-rounded text-3xl font-extrabold">smartphone</span>
-                        </div>
-                        
                         <div className="flex flex-col gap-6 w-full px-2 mt-4">
                             {tabsConfig.map(t => {
                                 const active = activeTab === t.id;
@@ -1604,5 +1600,4 @@
     </script>
 </body>
 </html>
-
 

@@ -935,77 +935,89 @@
 
             return (
                 <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    {/* LEBAR PC PAS BUAT FORM (max-w-4xl) */}
-                    <div className="w-full max-w-3xl md:max-w-4xl space-y-5 md:space-y-6">
-                        <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 md:mb-6 px-2">Catet Duit Bos.</h1>
+                    {/* LEBAR PC DIBUKA MAX-W-6XL + 2 KOLOM BIAR DESKTOP BANGET */}
+                    <div className="w-full max-w-3xl md:max-w-6xl">
+                        <h1 className="text-3xl md:text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 md:mb-8 px-2">Catet Duit Bos.</h1>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori</p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                                {['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => (
-                                    <button key={j} type="button" onClick={() => setJenis(j)}
-                                        className={`py-4 md:py-5 px-3 text-[15px] md:text-base font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 ${
-                                            jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
-                                            : 'bg-black/20 text-[var(--md-sys-color-on-surface-variant)] border border-transparent hover:bg-black/30'
-                                        }`}>{j}</button>
-                                ))}
-                            </div>
-                        </div>
-                        
-                        {isTopUp && (
-                            <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
-                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
-                                            {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
-                                                <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
-                                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
-                                            {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
-                                                <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
-                                            ))}
-                                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8">
+
+                            {/* KOLOM KIRI: FORM */}
+                            <div className="md:col-span-7 space-y-5 md:space-y-6">
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                    <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori</p>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                                        {['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => (
+                                            <button key={j} type="button" onClick={() => setJenis(j)}
+                                                className={`py-4 md:py-5 px-3 text-[15px] md:text-base font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 ${
+                                                    jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02]' 
+                                                    : 'bg-black/20 text-[var(--md-sys-color-on-surface-variant)] border border-transparent hover:bg-black/30'
+                                                }`}>{j}</button>
+                                        ))}
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                                
+                                {isTopUp && (
+                                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Top Up Apa?</p>
+                                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
+                                                    {['Pulsa', 'Token Listrik', 'Game', 'E-Wallet', 'Paket Data'].map(sub => (
+                                                        <button key={sub} onClick={() => setSubTopUp(sub)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${subTopUp === sub ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{sub}</button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 uppercase tracking-wide">Via Apa (Jalurnya)?</p>
+                                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 hscroll-x">
+                                                    {['Bank', 'Gopay', 'ShopeePay', 'Dana', 'OVO', 'Saldo Konter'].map(via => (
+                                                        <button key={via} onClick={() => setViaTopUp(via)} className={`shrink-0 px-5 py-2.5 rounded-[var(--md-shape-lg)] font-bold text-[13px] transition-colors border ${viaTopUp === via ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent' : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]'}`}>{via}</button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                <TextField label={isTopUp ? 'Nomor Tujuan / Ket' : 'Nama Kerjaan / Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
-                                <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
-                            </div>
-                        </div>
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                        <TextField label={isTopUp ? 'Nomor Tujuan / Ket' : 'Nama Kerjaan / Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
+                                        <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                                    </div>
+                                </div>
 
-                        <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
-                            <div className="grid grid-cols-2 gap-4 md:gap-6">
-                                <TextField label="Modal Keluar" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
-                                <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
-                            </div>
+                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
+                                    <div className="grid grid-cols-2 gap-4 md:gap-6">
+                                        <TextField label="Modal Keluar" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
+                                        <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
+                                    </div>
 
-                            <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                                <span className="absolute left-5 md:left-6 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
-                                <div className="flex items-center gap-5 mt-2 md:mt-4 no-tab-swipe">
-                                    <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
-                                    <span className="w-12 text-center font-extrabold text-2xl md:text-3xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                    <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                                        <span className="absolute left-5 md:left-6 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
+                                        <div className="flex items-center gap-5 mt-2 md:mt-4 no-tab-swipe">
+                                            <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
+                                            <span className="w-12 text-center font-extrabold text-2xl md:text-3xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-md mt-4 md:mt-6">
-                                <div>
-                                    <span className="text-sm md:text-base font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
-                                    <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikali jumlah</span>
-                                </div>
-                                <span className="text-3xl md:text-5xl font-extrabold">Rp{formatRupiah(laba)}</span>
-                            </div>
-                        </div>
+                            {/* KOLOM KANAN: PREVIEW CUAN + TOMBOL SIMPAN (NEMPEL DI DESKTOP) */}
+                            <div className="md:col-span-5">
+                                <div className="md:sticky md:top-4 space-y-5 md:space-y-6 mt-5 md:mt-0">
+                                    <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-10 rounded-[var(--md-shape-2xl)] md:rounded-[var(--md-shape-3xl)] flex md:flex-col justify-between md:justify-center items-center md:items-start shadow-md">
+                                        <div>
+                                            <span className="text-sm md:text-base font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
+                                            <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikali jumlah</span>
+                                        </div>
+                                        <span className="text-3xl md:text-5xl font-extrabold md:mt-6">Rp{formatRupiah(laba)}</span>
+                                    </div>
 
-                        <Button onClick={handleSave} icon="local_atm" fullWidth className="mt-8 h-16 md:h-20 text-lg md:text-xl shadow-[var(--md-elevation-3)] mb-4">Sikat Bos! Catet</Button>
+                                    <Button onClick={handleSave} icon="local_atm" fullWidth className="h-16 md:h-20 text-lg md:text-xl shadow-[var(--md-elevation-3)]">Sikat Bos! Catet</Button>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             );

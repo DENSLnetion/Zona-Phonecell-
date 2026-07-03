@@ -1480,6 +1480,15 @@
             const containerRef = useRef(null);
             const tabsRef = useRef([]);
 
+            // Deteksi mode desktop (sama kaya breakpoint md: yg dipake buat munculin side nav)
+            const [isDesktopLayout, setIsDesktopLayout] = useState(() => (typeof window !== 'undefined' ? window.matchMedia('(min-width: 768px)').matches : false));
+            useEffect(() => {
+                const mq = window.matchMedia('(min-width: 768px)');
+                const handler = (e) => setIsDesktopLayout(e.matches);
+                if (mq.addEventListener) mq.addEventListener('change', handler); else mq.addListener(handler);
+                return () => { if (mq.removeEventListener) mq.removeEventListener('change', handler); else mq.removeListener(handler); };
+            }, []);
+
             const tabsConfig = [
                 { id: 'dasbor', icon: 'home', label: 'Beranda' },
                 { id: 'catet', icon: 'add_circle', label: 'Catet' },
@@ -1497,7 +1506,7 @@
                     el.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease';
 
                     if (i < activeIndex) {
-                        el.style.transform = 'translate3d(-25%, 0, 0) scale(0.95)';
+                        el.style.transform = isDesktopLayout ? 'translate3d(0, -25%, 0) scale(0.95)' : 'translate3d(-25%, 0, 0) scale(0.95)';
                         el.style.opacity = '0';
                         el.style.pointerEvents = 'none';
                     } else if (i === activeIndex) {
@@ -1505,12 +1514,12 @@
                         el.style.opacity = '1';
                         el.style.pointerEvents = 'auto';
                     } else {
-                        el.style.transform = 'translate3d(100%, 0, 0) scale(1)';
+                        el.style.transform = isDesktopLayout ? 'translate3d(0, 100%, 0) scale(1)' : 'translate3d(100%, 0, 0) scale(1)';
                         el.style.opacity = '1';
                         el.style.pointerEvents = 'none';
                     }
                 });
-            }, [activeIndex, settings.hasStarted]);
+            }, [activeIndex, settings.hasStarted, isDesktopLayout]);
 
             // Fisika geseran jari murni (di PC pake mouse tetep bisa tapi ga bakal terganggu)
             useEffect(() => {

@@ -990,7 +990,7 @@
 
                             <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                                 <span className="absolute left-5 md:left-6 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
-                                <div className="flex items-center gap-5 mt-2 md:mt-4">
+                                <div className="flex items-center gap-5 mt-2 md:mt-4 no-tab-swipe">
                                     <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
                                     <span className="w-12 text-center font-extrabold text-2xl md:text-3xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
                                 </div>
@@ -1526,6 +1526,13 @@
 
                 const onStart = (e) => {
                     if (e.touches.length > 1) return;
+
+                    // Kalo jari mulai dari slider bawaan (input range) atau elemen yg ditandain no-tab-swipe,
+                    // jangan diapa-apain sama sekali, biar browser & elemen itu yg urus sendiri.
+                    const isNativeSlider = e.target && e.target.tagName === 'INPUT' && e.target.type === 'range';
+                    const isExempt = isNativeSlider || (e.target.closest && e.target.closest('.no-tab-swipe'));
+                    if (isExempt) { isDragging = false; hScrollEl = null; return; }
+
                     startX = e.touches[0].clientX;
                     startY = e.touches[0].clientY;
                     startTime = Date.now();

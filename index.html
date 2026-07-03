@@ -341,6 +341,7 @@
         const AppContext = createContext();
 
         const AppProvider = ({ children }) => {
+            const [activeTab, setActiveTab] = useState('dasbor');
             const [transactions, setTransactions] = useState([]);
             const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false });
             const [snackbars, setSnackbars] = useState([]);
@@ -386,7 +387,7 @@
             };
 
             return (
-                <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, selectedItem, setSelectedItem }}>
+                <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, selectedItem, setSelectedItem, activeTab, setActiveTab }}>
                     {children}
                 </AppContext.Provider>
             );
@@ -548,7 +549,7 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, setSelectedItem } = useContext(AppContext);
+            const { transactions, setSelectedItem, setActiveTab } = useContext(AppContext);
             const cm = new Date().getMonth(); const cy = new Date().getFullYear();
             const pm = cm === 0 ? 11 : cm - 1; const py = cm === 0 ? cy - 1 : cy;
             
@@ -562,15 +563,15 @@
             const growth = labaPrev === 0 ? 100 : Math.round(((laba - labaPrev) / labaPrev) * 100);
             
             const activeJobs = transactions.filter(d => d.status === 'Jalan').length;
+            
             const hour = new Date().getHours();
-            const greeting = hour < 11 ? 'Pagi Bos' : hour < 15 ? 'Siang Bos' : hour < 19 ? 'Sore Bos' : 'Malem Bos';
+            const greeting = hour < 11 ? 'Pagi Bos Farhan' : hour < 15 ? 'Siang Bos Farhan' : hour < 19 ? 'Sore Bos Farhan' : 'Malem Bos Farhan';
 
             return (
                 <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <div className="flex justify-between items-end mb-2">
                         <div>
-                            <p className="text-base font-medium text-[var(--md-sys-color-on-surface-variant)]">{greeting},</p>
-                            <h1 className="text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Hari Ini.</h1>
+                            <h1 className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">{greeting}</h1>
                         </div>
                     </div>
 
@@ -623,6 +624,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        {/* Tombol Jalan Pintas ke Tab Catet */}
+                        <Ripple onClick={() => setActiveTab('catet')} className="w-full mt-4 h-16 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] flex items-center justify-center font-extrabold text-[16px] shadow-sm border border-[var(--md-sys-color-outline-variant)] hover:bg-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-on-primary)] transition-colors">
+                            <span className="material-symbols-rounded mr-2 text-[24px]">add_circle</span>
+                            Catet Transaksi Baru
+                        </Ripple>
                     </div>
 
                     <div>
@@ -716,7 +723,6 @@
 
             const isServis = jenis === 'Servis';
 
-            // Auto set quantity to 1 if user switches back to Servis
             useEffect(() => { if(isServis) setJumlah(1); }, [isServis]);
 
             const handleSave = () => {
@@ -728,13 +734,12 @@
                     id: generateId(), tanggal: new Date().toISOString(),
                     jenis, nama: nama.trim(), pelanggan: pelanggan.trim() || 'Hamba Allah',
                     modal: m, jual: j, jumlah: jumlah,
-                    laba: (j - m) * jumlah, status: 'Beres' // Default ke Beres aja biar cepet dapet cuan
+                    laba: (j - m) * jumlah, status: 'Beres'
                 };
 
                 setTransactions(prev => [newData, ...prev]); 
                 showSnackbar('Mantap! Duit dicatet 🤑'); 
                 
-                // Reset Form
                 setNama(''); setPelanggan(''); setModalStr(''); setJualStr(''); setJumlah(1);
             };
 
@@ -768,9 +773,8 @@
                             <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
                         </div>
 
-                        {/* Slider Kuantitas Terkunci/Aktif */}
                         <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 rounded-[var(--md-shape-2xl)] relative pt-8 mt-2 transition-all duration-500 ${isServis ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                            <span className="absolute left-5 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Berapa Biji Laku? (Qty)</span>
+                            <span className="absolute left-5 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
                             <div className="flex items-center gap-5 mt-2">
                                 <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis} />
                                 <span className="w-12 text-center font-extrabold text-2xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
@@ -902,6 +906,8 @@
             const { transactions, settings } = useContext(AppContext);
             const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
             const inst = useRef({ line: null, pie: null, bar: null });
+            
+            const [sheetInfo, setSheetInfo] = useState(null); // 'margin' | 'beres' | null
 
             const getColors = useCallback(() => {
                 const style = getComputedStyle(document.body);
@@ -965,16 +971,16 @@
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden">
+                        <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
                             <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">percent</span></div>
                             <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
                             <h2 className="text-4xl font-extrabold tracking-tighter">{margin}%</h2>
-                        </div>
-                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden">
+                        </Ripple>
+                        <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
                             <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">done_all</span></div>
                             <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
                             <h2 className="text-4xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base font-bold">Nota</span></h2>
-                        </div>
+                        </Ripple>
                     </div>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
@@ -1002,6 +1008,40 @@
                             {transactions.filter(t=>t.jenis!=='Servis' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}
                         </div>
                     </div>
+                    
+                    {/* Insights Bottom Sheet */}
+                    <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
+                        {sheetInfo === 'margin' ? (
+                            <div className="space-y-4 pt-4">
+                               <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Margin diitung dari total untung beres dibandingin total semua duit yang masuk ke konter lu bos.</p>
+                               <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                   <div className="flex justify-between items-center"><span className="font-bold text-[var(--md-sys-color-on-surface-variant)]">Total Duit Masuk</span><span className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(totalOmset)}</span></div>
+                                   <div className="flex justify-between items-center"><span className="font-bold text-[var(--md-sys-color-on-surface-variant)]">Cuan Murni</span><span className="font-extrabold text-lg text-[var(--md-sys-color-primary)]">Rp{formatRupiah(totalLaba)}</span></div>
+                                   <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center mt-2">
+                                       <span className="font-extrabold text-[15px] uppercase tracking-wide">Persentase Untung</span><span className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)]">{margin}%</span>
+                                   </div>
+                               </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 pt-4">
+                               <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Ini total seluruh nota yang statusnya udah beres (diambil sama dilunasin pelanggan).</p>
+                               <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                                   {['Servis', 'Sparepart', 'Aksesoris'].map(k => {
+                                       const count = totalSelesai.filter(t => t.jenis === k).length;
+                                       return (
+                                           <div key={k} className="flex justify-between items-center">
+                                               <span className="font-bold text-base text-[var(--md-sys-color-on-surface-variant)]">{k}</span>
+                                               <span className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">{count} Nota</span>
+                                           </div>
+                                       );
+                                   })}
+                                   <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center mt-2">
+                                       <span className="font-extrabold text-[15px] uppercase tracking-wide">Total Keseluruhan</span><span className="text-2xl font-extrabold text-[var(--md-sys-color-primary)]">{totalSelesai.length} Nota</span>
+                                   </div>
+                               </div>
+                            </div>
+                        )}
+                    </BottomSheet>
                 </div>
             );
         };
@@ -1086,7 +1126,6 @@
 
             if (!item) return null;
 
-            // Pastikan data item up-to-date kalau abis diubah statusnya
             const currentItem = transactions.find(t => t.id === item.id) || item;
 
             const updateStatus = (newStatus) => {
@@ -1117,7 +1156,7 @@
 
                         <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-3xl)] p-6 shadow-md border border-[var(--md-sys-color-outline-variant)]">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Berapa Biji (Qty)</span>
+                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span>
                                 <span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem.jumlah}x</span>
                             </div>
                             <div className="flex justify-between items-center mb-4">
@@ -1131,7 +1170,6 @@
                             <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center">
                                 <div>
                                     <span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span>
-                                    <span className="text-[11px] font-medium text-[var(--md-sys-color-on-surface-variant)]">Total = (Jual - Modal) × {currentItem.jumlah}</span>
                                 </div>
                                 <span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem.laba)}</span>
                             </div>
@@ -1161,16 +1199,15 @@
         // APP SHELL
         // ==========================================================================
         const MainApp = () => {
-            const { settings } = useContext(AppContext);
-            const [activeTab, setActiveTab] = useState('dasbor');
+            const { settings, activeTab, setActiveTab } = useContext(AppContext);
 
             if (!settings.hasStarted) return <SplashScreen />;
 
             const tabs = [
                 { id: 'dasbor', icon: 'home', label: 'Beranda' },
-                { id: 'catet', icon: 'add_circle', label: 'Catet' }, // Added Catet tab
+                { id: 'catet', icon: 'add_circle', label: 'Catet' },
                 { id: 'riwayat', icon: 'history', label: 'Riwayat' },
-                { id: 'analisis', icon: 'monitoring', label: 'Ngecek' }, // Updated label & icon
+                { id: 'analisis', icon: 'monitoring', label: 'Ngecek' },
                 { id: 'seting', icon: 'tune', label: 'Seting' }
             ];
 
@@ -1185,24 +1222,15 @@
                     </main>
 
                     {/* Navigation Bar */}
-                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] border-t border-[var(--md-sys-color-outline-variant)]/30" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         {tabs.map(t => {
                             const active = activeTab === t.id;
-                            const isCatet = t.id === 'catet';
                             
                             return (
                                 <Ripple key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer">
-                                    {isCatet ? (
-                                        // Special styling for the "Catet" tab icon
-                                        <div className={`w-14 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] scale-110 shadow-lg' : 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] scale-100 group-hover:scale-105'}`}>
-                                            <span className={`material-symbols-rounded text-[28px] transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
-                                        </div>
-                                    ) : (
-                                        // Normal styling for other tabs
-                                        <div className={`w-14 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
-                                            <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
-                                        </div>
-                                    )}
+                                    <div className={`w-14 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                        <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                    </div>
                                     <span className={`text-[12px] font-extrabold mt-1.5 transition-colors tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
                                 </Ripple>
                             );

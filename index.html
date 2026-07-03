@@ -1521,9 +1521,10 @@
                 });
             }, [activeIndex, settings.hasStarted, isDesktopLayout]);
 
-            // Fisika geseran jari murni (di PC pake mouse tetep bisa tapi ga bakal terganggu)
+            // Fisika geseran jari murni (khusus mode mobile; di layout desktop gesture ini dimatiin biar ga bentrok sama scroll konten)
             useEffect(() => {
                 if (!settings.hasStarted) return;
+                if (isDesktopLayout) return; // layout desktop: pindah tab cuma lewat klik sidebar, ga ada swipe
                 const container = containerRef.current;
                 if (!container) return;
 
@@ -1656,7 +1657,7 @@
                     container.removeEventListener('touchmove', onMove);
                     container.removeEventListener('touchend', onEnd);
                 };
-            }, [activeIndex, setActiveTab, settings.hasStarted]);
+            }, [activeIndex, setActiveTab, settings.hasStarted, isDesktopLayout]);
 
 
             if (!settings.hasStarted) return <SplashScreen />;

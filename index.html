@@ -609,8 +609,20 @@
             const [mounted, setMounted] = useState(false);
             const [dragClosing, setDragClosing] = useState(false);
             const [entering, setEntering] = useState(false);
+            const [prevIsOpen, setPrevIsOpen] = useState(false);
             const sheetRef = useRef(null);
             const contentRef = useRef(null);
+
+            // Tentuin "entering" LANGSUNG PAS RENDER (bukan lewat useEffect).
+            // Kalo lewat useEffect, ada delay 1 frame setelah commit pertama --
+            // sheet keburu ke-render dulu di posisi diam (tanpa animasi), baru
+            // detik kemudian animasinya nyala. Itu yang keliatan kayak flicker/
+            // "film" cepet pas sheet baru muncul. Dengan cara ini, class animasi
+            // masuknya udah aktif dari frame pertama, jadi ga ada kedipan.
+            if (isOpen !== prevIsOpen) {
+                setPrevIsOpen(isOpen);
+                if (isOpen) setEntering(true);
+            }
 
             useEffect(() => { setMounted(true); }, []);
 
@@ -623,16 +635,11 @@
             }, [isOpen, title]);
 
             // Reset drag/transform state setiap kali sheet dibuka ulang.
-            // "entering" cuma true sebentar buat mainin animasi masuk -- begitu
-            // animasinya kelar (onAnimationEnd di bawah), langsung dicabut. Ini
-            // penting biar class CSS animasinya (yang pakai fill-mode forwards)
-            // ga terus nempel & rebutan kontrol `transform` sama drag manual.
             useEffect(() => {
                 if (isOpen && sheetRef.current) {
                     sheetRef.current.style.transition = '';
                     sheetRef.current.style.transform = '';
                     setDragClosing(false);
-                    setEntering(true);
                 }
             }, [isOpen]);
 

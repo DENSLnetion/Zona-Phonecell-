@@ -39,6 +39,7 @@
             --md-shape-lg: 16px;
             --md-shape-xl: 28px;
             --md-shape-2xl: 32px;
+            --md-shape-3xl: 40px;
 
             --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.4), 0px 1px 3px 0px rgba(0, 0, 0, 0.6);
             --md-elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.4), 0px 2px 3px 0px rgba(0, 0, 0, 0.6);
@@ -187,12 +188,10 @@
             margin: 0; padding: 0; overflow: hidden;
             transition: background-color 0.4s cubic-bezier(0.2, 0, 0, 1), color 0.4s ease;
             
-            /* GLOBAL NATIVE APP FEEL - DISABLE TEXT SELECTION */
             -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Re-enable selection ONLY for input fields */
         input, textarea { -webkit-user-select: auto; user-select: auto; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -205,7 +204,7 @@
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
         /* ==========================================================================
-           ANIMATIONS (M3 Emphasized Decelerate)
+           ANIMATIONS
            ========================================================================== */
         @keyframes pageFadeIn {
             0% { opacity: 0; transform: translateY(12px) scale(0.98); }
@@ -224,9 +223,6 @@
 
         @keyframes fadeInOverlay { 0% { opacity: 0; } 100% { opacity: 1; } }
         .animate-overlay-in { animation: fadeInOverlay 0.4s ease forwards; }
-        
-        @keyframes fabPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-fab { animation: fabPop 0.5s cubic-bezier(0.2, 0, 0, 1) forwards; }
 
         /* ==========================================================================
            CUSTOM COMPONENTS STYLES
@@ -241,54 +237,53 @@
         }
         @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
 
-        /* 2. TEXT FIELD */
+        /* 2. TEXT FIELD EXPRESSIVE (M3) */
         .m3-text-field {
             position: relative; background-color: var(--md-sys-color-surface-container-highest);
-            border-radius: var(--md-shape-xs) var(--md-shape-xs) 0 0;
-            display: flex; flex-direction: column; min-height: 56px; transition: 0.2s;
+            border-radius: var(--md-shape-lg);
+            display: flex; flex-direction: column; min-height: 64px; transition: 0.2s;
+            border: 2px solid transparent;
         }
-        .m3-text-field:hover { background-color: var(--md-sys-color-surface-variant); }
-        .m3-text-field::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-            background-color: var(--md-sys-color-on-surface-variant); transition: 0.2s;
+        .m3-text-field:focus-within {
+            background-color: var(--md-sys-color-surface-container);
+            border-color: var(--md-sys-color-primary);
         }
-        .m3-text-field:focus-within::after { height: 2px; background-color: var(--md-sys-color-primary); }
         .m3-input {
             width: 100%; border: none; outline: none; background: transparent;
-            padding: 24px 16px 8px 16px; font-size: 16px;
+            padding: 28px 16px 12px 16px; font-size: 16px; font-weight: 600;
             color: var(--md-sys-color-on-surface); font-family: inherit;
         }
-        .m3-input.has-icon { padding-left: 52px; }
+        .m3-input.has-icon { padding-left: 56px; }
         .m3-label {
-            position: absolute; left: 16px; top: 16px; pointer-events: none;
-            color: var(--md-sys-color-on-surface-variant); font-size: 16px;
+            position: absolute; left: 16px; top: 20px; pointer-events: none;
+            color: var(--md-sys-color-on-surface-variant); font-size: 16px; font-weight: 500;
             transition: 0.2s cubic-bezier(0.2, 0, 0, 1); transform-origin: left top;
         }
-        .m3-input.has-icon ~ .m3-label { left: 52px; }
+        .m3-input.has-icon ~ .m3-label { left: 56px; }
         
         .m3-input:focus ~ .m3-label, .m3-input.has-value ~ .m3-label {
-            transform: translateY(-8px) scale(0.75);
+            transform: translateY(-12px) scale(0.75); color: var(--md-sys-color-primary);
         }
-        .m3-input:focus ~ .m3-label { color: var(--md-sys-color-primary); }
+        .m3-input.has-value:not(:focus) ~ .m3-label { color: var(--md-sys-color-on-surface-variant); }
         
         .m3-icon {
-            position: absolute; left: 16px; top: 16px; pointer-events: none;
+            position: absolute; left: 16px; top: 20px; pointer-events: none;
             color: var(--md-sys-color-on-surface-variant);
         }
-        .m3-input:focus ~ .m3-icon { color: var(--md-sys-color-on-surface); }
+        .m3-input:focus ~ .m3-icon { color: var(--md-sys-color-primary); }
 
         /* 3. SLIDER */
         .m3-slider {
-            -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px;
+            -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px;
             background: var(--md-sys-color-surface-variant); outline: none;
         }
         .m3-slider::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
-            width: 20px; height: 20px; border-radius: 50%;
+            width: 24px; height: 24px; border-radius: 50%;
             background: var(--md-sys-color-primary); cursor: pointer;
-            box-shadow: 0 0 0 4px var(--md-sys-color-surface); transition: 0.2s;
+            box-shadow: 0 0 0 6px var(--md-sys-color-surface); transition: 0.2s;
         }
-        .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.2); }
+        .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 12px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
 <body class="theme-blue">
@@ -319,7 +314,7 @@
         const generateDummyData = () => {
             const data = [];
             const types = ['Servis', 'Sparepart', 'Aksesoris'];
-            const statuses = ['Selesai', 'Selesai', 'Selesai', 'Proses', 'Batal'];
+            const statuses = ['Beres', 'Beres', 'Beres', 'Jalan', 'Gagal'];
             const names = ['Ganti LCD Samsung', 'Softcase iPhone 13', 'Baterai Xiaomi', 'Tempered Glass', 'Servis IC Power', 'Kabel Data Type-C'];
             
             for(let i=0; i<25; i++) {
@@ -331,7 +326,7 @@
                 
                 data.push({
                     id: generateId() + i, tanggal: date.toISOString(), jenis: type,
-                    nama: names[Math.floor(Math.random() * names.length)], pelanggan: `Pelanggan ${Math.floor(Math.random() * 100)}`,
+                    nama: names[Math.floor(Math.random() * names.length)], pelanggan: `Klien ${Math.floor(Math.random() * 100)}`,
                     modal: type === 'Servis' ? (Math.random() > 0.5 ? modal : 0) : modal, jual: jual, jumlah: jumlah,
                     laba: type === 'Servis' ? (jual - (Math.random() > 0.5 ? modal : 0)) * jumlah : (jual - modal) * jumlah,
                     status: statuses[Math.floor(Math.random() * statuses.length)]
@@ -349,6 +344,7 @@
             const [transactions, setTransactions] = useState([]);
             const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false });
             const [snackbars, setSnackbars] = useState([]);
+            const [selectedItem, setSelectedItem] = useState(null); // Global detail sheet state
 
             // Load Data
             useEffect(() => {
@@ -390,7 +386,7 @@
             };
 
             return (
-                <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar }}>
+                <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, selectedItem, setSelectedItem }}>
                     {children}
                 </AppContext.Provider>
             );
@@ -436,8 +432,8 @@
             if (variant === 'error') colors = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
             return (
-                <Ripple className={`h-12 px-6 rounded-full flex items-center justify-center font-medium text-sm transition-shadow ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
-                    {icon && <span className="material-symbols-rounded mr-2 text-[20px]">{icon}</span>}
+                <Ripple className={`h-14 px-8 rounded-full flex items-center justify-center font-bold text-[15px] transition-shadow shadow-md ${fullWidth ? 'w-full' : ''} ${colors} ${className}`} onClick={onClick}>
+                    {icon && <span className="material-symbols-rounded mr-2 text-[22px]">{icon}</span>}
                     {children}
                 </Ripple>
             );
@@ -453,16 +449,14 @@
                         value={value} onChange={e => onChange(e.target.value)} placeholder=" "
                     />
                     <label className="m3-label">{label}</label>
-                    {prefix && value && <span className="absolute right-4 top-[24px] text-sm text-[var(--md-sys-color-on-surface-variant)]">{prefix}</span>}
+                    {prefix && value && <span className="absolute right-4 top-[28px] text-sm font-bold text-[var(--md-sys-color-primary)]">{prefix}</span>}
                 </div>
             );
         };
 
-        // INTEGRATED WITH HARDWARE BACK BUTTON API
         const BottomSheet = ({ isOpen, onClose, title, children }) => {
             const [isClosing, setIsClosing] = useState(false);
 
-            // Back button handling
             useEffect(() => {
                 const handlePopState = (e) => {
                     if (isOpen) {
@@ -484,7 +478,6 @@
             };
 
             const handleUIClose = () => {
-                // Remove the history state pushed earlier, which will fire popstate and close it safely
                 if (window.history.state && window.history.state.modal === title) {
                     window.history.back(); 
                 } else {
@@ -496,19 +489,18 @@
 
             return (
                 <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-                    <div className={`absolute inset-0 bg-black/60 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-opacity duration-300`} onClick={handleUIClose} />
-                    <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
-                         style={{ paddingBottom: 'var(--sa-bottom)', maxHeight: '88vh' }}>
-                        <div className="w-full flex justify-center pt-4 pb-2" onClick={handleUIClose}>
-                            <div className="w-8 h-1.5 rounded-full bg-[var(--md-sys-color-outline-variant)] opacity-50" />
+                    <div className={`absolute inset-0 bg-black/70 backdrop-blur-sm ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} onClick={handleUIClose} />
+                    <div className={`relative w-full flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl ${isClosing ? 'animate-sheet-down' : 'animate-sheet-up'}`}
+                         style={{ paddingBottom: 'var(--sa-bottom)', maxHeight: '90vh' }}>
+                        <div className="w-full flex justify-center pt-5 pb-3" onClick={handleUIClose}>
+                            <div className="w-12 h-1.5 rounded-full bg-[var(--md-sys-color-outline)] opacity-50" />
                         </div>
                         <div className="px-6 pb-2 flex justify-between items-center shrink-0">
-                            <h2 className="text-[22px] font-medium text-[var(--md-sys-color-on-surface)]">{title}</h2>
-                            <button onClick={handleUIClose} className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)]">
+                            <h2 className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">{title}</h2>
+                            <button onClick={handleUIClose} className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-highest)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors">
                                 <span className="material-symbols-rounded text-xl">close</span>
                             </button>
                         </div>
-                        {/* Diperbaiki: Max-height dan overflow khusus konten, padding bawah ditingkatkan */}
                         <div className="px-6 pb-24 overflow-y-auto no-scrollbar">{children}</div>
                     </div>
                 </div>
@@ -520,8 +512,8 @@
             return (
                 <div className="fixed bottom-[110px] left-4 right-4 z-[200] flex flex-col gap-2 pointer-events-none" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                     {snackbars.map(snack => (
-                        <div key={snack.id} className="bg-[var(--md-sys-color-on-surface)] text-[var(--md-sys-color-surface)] px-4 py-3 rounded-[var(--md-shape-sm)] shadow-lg animate-page flex items-center justify-between">
-                            <span className="text-sm font-medium">{snack.message}</span>
+                        <div key={snack.id} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] px-5 py-4 rounded-[var(--md-shape-lg)] shadow-xl animate-page flex items-center justify-between border border-[var(--md-sys-color-outline-variant)]">
+                            <span className="text-[15px] font-bold">{snack.message}</span>
                         </div>
                     ))}
                 </div>
@@ -540,14 +532,14 @@
             };
             return (
                 <div className="h-[100dvh] w-full flex flex-col items-center justify-center bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] p-6 relative">
-                    <div className="w-28 h-28 rounded-[36px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl animate-fab">
-                        <span className="material-symbols-rounded text-[56px]">smartphone</span>
+                    <div className="w-32 h-32 rounded-[40px] bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] flex items-center justify-center mb-8 shadow-2xl animate-fab">
+                        <span className="material-symbols-rounded text-[64px]">smartphone</span>
                     </div>
-                    <h1 className="text-4xl font-semibold mb-2 text-center animate-page" style={{animationDelay: '0.1s'}}>Zona Poncell</h1>
-                    <p className="text-[var(--md-sys-color-primary-container)] opacity-90 mb-12 text-center text-lg animate-page" style={{animationDelay: '0.2s'}}>Sistem Manajemen Konter Cerdas</p>
+                    <h1 className="text-4xl font-bold mb-2 text-center animate-page" style={{animationDelay: '0.1s'}}>Zona Poncell</h1>
+                    <p className="text-[var(--md-sys-color-primary-container)] opacity-90 mb-12 text-center text-lg font-medium animate-page" style={{animationDelay: '0.2s'}}>Bos Konter Edition</p>
                     <div className="absolute bottom-16 w-full px-6 flex justify-center animate-page" style={{animationDelay: '0.4s'}}>
-                        <Ripple className="w-full max-w-xs h-14 bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] rounded-full flex items-center justify-center font-medium text-lg shadow-lg" onClick={startApp}>
-                            Buka Sistem <span className="material-symbols-rounded ml-3">login</span>
+                        <Ripple className="w-full max-w-xs h-16 bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] rounded-full flex items-center justify-center font-bold text-lg shadow-xl" onClick={startApp}>
+                            Gas Masuk <span className="material-symbols-rounded ml-3 font-bold">rocket_launch</span>
                         </Ripple>
                     </div>
                 </div>
@@ -556,93 +548,93 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions } = useContext(AppContext);
+            const { transactions, setSelectedItem } = useContext(AppContext);
             const cm = new Date().getMonth(); const cy = new Date().getFullYear();
             const pm = cm === 0 ? 11 : cm - 1; const py = cm === 0 ? cy - 1 : cy;
             
             const monthData = transactions.filter(d => new Date(d.tanggal).getMonth() === cm && new Date(d.tanggal).getFullYear() === cy);
             const prevMonthData = transactions.filter(d => new Date(d.tanggal).getMonth() === pm && new Date(d.tanggal).getFullYear() === py);
 
-            const laba = monthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + i.laba, 0);
-            const omset = monthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + (i.jual * i.jumlah), 0);
+            const laba = monthData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
+            const omset = monthData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.jual * i.jumlah), 0);
             
-            const labaPrev = prevMonthData.filter(d => d.status === 'Selesai').reduce((s, i) => s + i.laba, 0);
+            const labaPrev = prevMonthData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
             const growth = labaPrev === 0 ? 100 : Math.round(((laba - labaPrev) / labaPrev) * 100);
             
-            const activeJobs = transactions.filter(d => d.status === 'Proses').length;
+            const activeJobs = transactions.filter(d => d.status === 'Jalan').length;
             const hour = new Date().getHours();
-            const greeting = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 19 ? 'Selamat Sore' : 'Selamat Malam';
+            const greeting = hour < 11 ? 'Pagi Bos' : hour < 15 ? 'Siang Bos' : hour < 19 ? 'Sore Bos' : 'Malem Bos';
 
             return (
                 <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <div className="flex justify-between items-end mb-2">
                         <div>
-                            <p className="text-sm text-[var(--md-sys-color-on-surface-variant)]">{greeting},</p>
-                            <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">Farhan</h1>
+                            <p className="text-base font-medium text-[var(--md-sys-color-on-surface-variant)]">{greeting},</p>
+                            <h1 className="text-4xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Hari Ini.</h1>
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-xl">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-bl-full transform translate-x-10 -translate-y-10"></div>
-                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black opacity-10 rounded-tr-full transform -translate-x-5 translate-y-5"></div>
+                    <div className="p-6 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-white opacity-10 rounded-bl-full transform translate-x-12 -translate-y-12"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-black opacity-10 rounded-tr-full transform -translate-x-8 translate-y-8"></div>
                         
                         <div className="relative z-10">
                             <div className="flex justify-between items-start mb-1">
-                                <p className="text-sm opacity-90 font-medium tracking-wide">Laba Bersih Bulan Ini</p>
-                                <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${growth >= 0 ? 'bg-white/20' : 'bg-red-500/30'}`}>
-                                    <span className="material-symbols-rounded text-[14px] mr-1">{growth >= 0 ? 'trending_up' : 'trending_down'}</span>
+                                <p className="text-[15px] opacity-90 font-bold tracking-wide">Cuan Murni Bulan Ini</p>
+                                <div className={`flex items-center text-sm font-extrabold px-3 py-1 rounded-full ${growth >= 0 ? 'bg-white/25' : 'bg-red-500/40'}`}>
+                                    <span className="material-symbols-rounded text-[16px] mr-1">{growth >= 0 ? 'trending_up' : 'trending_down'}</span>
                                     {Math.abs(growth)}%
                                 </div>
                             </div>
-                            <h2 className="text-[38px] font-semibold tracking-tighter mb-6">Rp{formatRupiah(laba)}</h2>
+                            <h2 className="text-[40px] font-extrabold tracking-tighter mb-6">Rp{formatRupiah(laba)}</h2>
                             
                             <div className="flex gap-3">
-                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-3 rounded-[var(--md-shape-xl)] flex-1 flex flex-col justify-center shadow-sm">
-                                    <span className="text-[10px] uppercase font-bold opacity-70 mb-0.5">Total Omset</span>
-                                    <span className="font-semibold text-sm">Rp{formatRupiah(omset)}</span>
+                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
+                                    <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Duit Masuk</span>
+                                    <span className="font-bold text-base">Rp{formatRupiah(omset)}</span>
                                 </div>
-                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-4 py-3 rounded-[var(--md-shape-xl)] flex-1 flex flex-col justify-center shadow-sm">
-                                    <span className="text-[10px] uppercase font-bold opacity-70 mb-0.5">Antrian Aktif</span>
-                                    <span className="font-semibold text-sm">{activeJobs} Pekerjaan</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider mb-3 ml-1">Kinerja Kategori</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="p-4 rounded-[var(--md-shape-xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
-                                    <span className="material-symbols-rounded text-[20px]">build_circle</span>
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm">Servis</h3>
-                                    <p className="text-xs opacity-80">{monthData.filter(d=>d.jenis==='Servis').length} Selesai</p>
-                                </div>
-                            </div>
-                            <div className="p-4 rounded-[var(--md-shape-xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
-                                    <span className="material-symbols-rounded text-[20px]">inventory_2</span>
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm">Barang</h3>
-                                    <p className="text-xs opacity-80">{monthData.filter(d=>d.jenis!=='Servis').reduce((s,i)=>s+i.jumlah,0)} Terjual</p>
+                                <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 py-4 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
+                                    <span className="text-[11px] uppercase font-extrabold opacity-70 mb-1">Belom Kelar</span>
+                                    <span className="font-bold text-base">{activeJobs} Kerjaan</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <div className="flex justify-between items-center mb-3 ml-1">
-                            <h3 className="text-sm font-semibold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">Aktivitas Terakhir</h3>
+                        <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest mb-4 ml-2">Statistik Kilat</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
+                                <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-rounded text-[24px]">build_circle</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-extrabold text-base">Servis</h3>
+                                    <p className="text-xs font-medium opacity-80">{monthData.filter(d=>d.jenis==='Servis' && d.status === 'Beres').length} Beres</p>
+                                </div>
+                            </div>
+                            <div className="p-5 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center gap-4 border border-[var(--md-sys-color-outline-variant)]">
+                                <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-rounded text-[24px]">inventory_2</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-extrabold text-base">Barang</h3>
+                                    <p className="text-xs font-medium opacity-80">{monthData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+i.jumlah,0)} Laku</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="flex justify-between items-center mb-4 ml-2">
+                            <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">Transaksi Barusan</h3>
                         </div>
                         <div className="space-y-3">
                             {transactions.slice(0, 5).map((item) => (
-                                <ActivityItem key={item.id} item={item} />
+                                <ActivityItem key={item.id} item={item} onClick={() => setSelectedItem(item)} />
                             ))}
                             {transactions.length === 0 && (
-                                <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-6 bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-xl)]">Belum ada transaksi</p>
+                                <p className="text-center text-[var(--md-sys-color-on-surface-variant)] py-8 font-bold bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)]">Belom dapet pelanggan nih bos</p>
                             )}
                         </div>
                     </div>
@@ -655,9 +647,9 @@
             const icon = isServis ? 'build' : item.jenis === 'Sparepart' ? 'memory' : 'headphones';
             
             let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]';
-            if (item.status === 'Selesai') statusColor = 'bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]';
-            if (item.status === 'Proses') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
-            if (item.status === 'Batal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
+            if (item.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]';
+            if (item.status === 'Jalan') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]';
+            if (item.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
 
             const timerRef = useRef(null);
             const isDragging = useRef(false);
@@ -683,40 +675,127 @@
 
             return (
                 <div onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp} onClick={handleClick}
-                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-xl)] shadow-sm ripple-root transition-all duration-200
+                     className={`flex items-center gap-4 p-4 rounded-[var(--md-shape-2xl)] shadow-sm ripple-root transition-all duration-200 border border-transparent hover:border-[var(--md-sys-color-outline-variant)] cursor-pointer
                      ${selected ? 'bg-[var(--md-sys-color-secondary-container)] scale-[0.98]' : 'bg-[var(--md-sys-color-surface-container-low)]'}`}>
                     
                     {selectable ? (
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
-                            <span className="material-symbols-rounded">{selected ? 'check' : 'circle'}</span>
+                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 transition-colors ${selected ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]' : 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                            <span className="material-symbols-rounded text-2xl">{selected ? 'check' : 'circle'}</span>
                         </div>
                     ) : (
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${statusColor}`}>
-                            <span className="material-symbols-rounded">{icon}</span>
+                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 ${statusColor}`}>
+                            <span className="material-symbols-rounded text-2xl">{icon}</span>
                         </div>
                     )}
                     
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-[var(--md-sys-color-on-surface)] truncate text-base">{item.nama}</h4>
-                        <p className="text-[13px] text-[var(--md-sys-color-on-surface-variant)] truncate">{formatDateShort(item.tanggal)} • {item.pelanggan}</p>
+                        <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{item.nama}</h4>
+                        <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{formatDateShort(item.tanggal)} • {item.pelanggan}</p>
                     </div>
                     <div className="text-right shrink-0">
-                        <p className="font-semibold text-[var(--md-sys-color-primary)] text-[15px] mb-1">Rp{formatRupiah(item.laba)}</p>
-                        <div className="flex items-center justify-end gap-1">
-                            {item.jumlah > 1 && <span className="text-[10px] font-bold bg-[var(--md-sys-color-surface-variant)] px-1.5 py-0.5 rounded text-[var(--md-sys-color-on-surface-variant)]">x{item.jumlah}</span>}
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${statusColor}`}>{item.status}</span>
+                        <p className="font-extrabold text-[var(--md-sys-color-primary)] text-[16px] mb-1">Rp{formatRupiah(item.laba)}</p>
+                        <div className="flex items-center justify-end gap-1.5">
+                            {item.jumlah > 1 && <span className="text-[11px] font-extrabold bg-[var(--md-sys-color-surface-variant)] px-2 py-0.5 rounded-full text-[var(--md-sys-color-on-surface-variant)]">x{item.jumlah}</span>}
+                            <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wide ${statusColor}`}>{item.status}</span>
                         </div>
                     </div>
                 </div>
             );
         }
 
-        // --- TAB 2: RIWAYAT ---
+        // --- TAB 2: CATET (FORM BARU) ---
+        const TabCatet = () => {
+            const { setTransactions, showSnackbar } = useContext(AppContext);
+            
+            const [jenis, setJenis] = useState('Servis');
+            const [nama, setNama] = useState('');
+            const [pelanggan, setPelanggan] = useState('');
+            const [modalStr, setModalStr] = useState('');
+            const [jualStr, setJualStr] = useState('');
+            const [jumlah, setJumlah] = useState(1);
+
+            const isServis = jenis === 'Servis';
+
+            // Auto set quantity to 1 if user switches back to Servis
+            useEffect(() => { if(isServis) setJumlah(1); }, [isServis]);
+
+            const handleSave = () => {
+                if(!nama.trim()) { showSnackbar('Woi, Nama Kerjaan isi dulu!'); return; }
+                if(!jualStr) { showSnackbar('Masa jual harga Rp0? Rugi dong!'); return; }
+                
+                const m = getRawNumber(modalStr); const j = getRawNumber(jualStr);
+                const newData = {
+                    id: generateId(), tanggal: new Date().toISOString(),
+                    jenis, nama: nama.trim(), pelanggan: pelanggan.trim() || 'Hamba Allah',
+                    modal: m, jual: j, jumlah: jumlah,
+                    laba: (j - m) * jumlah, status: 'Beres' // Default ke Beres aja biar cepet dapet cuan
+                };
+
+                setTransactions(prev => [newData, ...prev]); 
+                showSnackbar('Mantap! Duit dicatet 🤑'); 
+                
+                // Reset Form
+                setNama(''); setPelanggan(''); setModalStr(''); setJualStr(''); setJumlah(1);
+            };
+
+            const laba = (getRawNumber(jualStr) - getRawNumber(modalStr)) * jumlah;
+
+            return (
+                <div className="p-4 space-y-4 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Catet Duit Bos.</h1>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Dulu</p>
+                        <div className="flex bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-xl)] p-1.5 h-14 shadow-inner">
+                            {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
+                                <button key={j} type="button" onClick={() => setJenis(j)}
+                                    className={`flex-1 text-[15px] font-bold rounded-[var(--md-shape-lg)] transition-all duration-300 ${
+                                        jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md transform scale-[1.02]' 
+                                        : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
+                                    }`}>{j}</button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
+                        <TextField label="Nama Kerjaan / Barang" value={nama} onChange={setNama} icon={isServis?'build':'shopping_bag'} />
+                        <TextField label="Orangnya (Boleh Kosong)" value={pelanggan} onChange={setPelanggan} icon="person" />
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <TextField label="Modal Keluar" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
+                            <TextField label="Jual Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
+                        </div>
+
+                        {/* Slider Kuantitas Terkunci/Aktif */}
+                        <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 rounded-[var(--md-shape-2xl)] relative pt-8 mt-2 transition-all duration-500 ${isServis ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                            <span className="absolute left-5 top-3 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Berapa Biji Laku? (Qty)</span>
+                            <div className="flex items-center gap-5 mt-2">
+                                <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis} />
+                                <span className="w-12 text-center font-extrabold text-2xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] flex justify-between items-center shadow-md">
+                            <div>
+                                <span className="text-sm font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
+                                <span className="text-[11px] opacity-70 font-medium">Udah dikali jumlah</span>
+                            </div>
+                            <span className="text-3xl font-extrabold">Rp{formatRupiah(laba)}</span>
+                        </div>
+                    </div>
+
+                    <Button onClick={handleSave} icon="local_atm" fullWidth className="mt-6 h-16 text-lg shadow-[var(--md-elevation-3)] mb-4">Sikat Bos! Catet</Button>
+                </div>
+            );
+        };
+
+        // --- TAB 3: RIWAYAT ---
         const TabRiwayat = () => {
-            const { transactions, setTransactions, showSnackbar } = useContext(AppContext);
+            const { transactions, setTransactions, showSnackbar, setSelectedItem } = useContext(AppContext);
             const [search, setSearch] = useState('');
             const [filterType, setFilterType] = useState('Semua');
-            const [selectedItem, setSelectedItem] = useState(null);
             
             const [selectedIds, setSelectedIds] = useState([]);
             const isSelectionMode = selectedIds.length > 0;
@@ -729,15 +808,9 @@
                 });
             }, [transactions, search, filterType]);
 
-            // Setup hardware back button for Selection Mode
             useEffect(() => {
-                const handlePopState = () => {
-                    if (selectedIds.length > 0) { setSelectedIds([]); }
-                };
-                if (selectedIds.length > 0) {
-                    window.history.pushState({ selectionMode: true }, '');
-                    window.addEventListener('popstate', handlePopState);
-                }
+                const handlePopState = () => { if (selectedIds.length > 0) { setSelectedIds([]); } };
+                if (selectedIds.length > 0) { window.history.pushState({ selectionMode: true }, ''); window.addEventListener('popstate', handlePopState); }
                 return () => { if (selectedIds.length > 0) window.removeEventListener('popstate', handlePopState); };
             }, [selectedIds]);
 
@@ -749,69 +822,68 @@
             const toggleSelection = (id) => { setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]); };
 
             const handleBulkDelete = () => {
-                if(confirm(`Hapus ${selectedIds.length} transaksi permanen?`)) {
+                if(confirm(`Buang ${selectedIds.length} catetan ini ke tong sampah?`)) {
                     setTransactions(prev => prev.filter(t => !selectedIds.includes(t.id)));
-                    closeSelectionModeUI(); showSnackbar(`${selectedIds.length} item dihapus`);
+                    closeSelectionModeUI(); showSnackbar(`${selectedIds.length} catetan dibakar 🔥`);
                 }
             };
 
             const handleBulkCopy = () => {
                 const toCopy = transactions.filter(t => selectedIds.includes(t.id));
-                const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: 'Proses' }));
+                const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: 'Jalan' }));
                 setTransactions(prev => [...newItems, ...prev]);
-                closeSelectionModeUI(); showSnackbar(`${newItems.length} item diduplikasi`);
+                closeSelectionModeUI(); showSnackbar(`${newItems.length} dicopy, gasss!`);
             };
 
             return (
                 <div className="flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     
                     {isSelectionMode && (
-                        <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-16 flex items-center justify-between px-4 animate-appbar-down shadow-md" style={{ paddingTop: 'var(--sa-top)', height: 'calc(64px + var(--sa-top))' }}>
+                        <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-20 flex items-center justify-between px-4 animate-appbar-down shadow-lg rounded-b-[var(--md-shape-2xl)] border-b border-[var(--md-sys-color-outline-variant)]" style={{ paddingTop: 'var(--sa-top)', height: 'calc(80px + var(--sa-top))' }}>
                             <div className="flex items-center gap-4">
-                                <button onClick={closeSelectionModeUI} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors">
-                                    <span className="material-symbols-rounded">close</span>
+                                <button onClick={closeSelectionModeUI} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+                                    <span className="material-symbols-rounded text-2xl">close</span>
                                 </button>
-                                <span className="text-xl font-medium">{selectedIds.length} Terpilih</span>
+                                <span className="text-xl font-bold">{selectedIds.length} Dipilih</span>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={handleBulkCopy} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors">
-                                    <span className="material-symbols-rounded">content_copy</span>
+                                <button onClick={handleBulkCopy} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+                                    <span className="material-symbols-rounded text-2xl">content_copy</span>
                                 </button>
-                                <button onClick={handleBulkDelete} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition-colors text-[var(--md-sys-color-error)]">
-                                    <span className="material-symbols-rounded">delete</span>
+                                <button onClick={handleBulkDelete} className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--md-sys-color-error)]/20 hover:bg-[var(--md-sys-color-error)]/30 transition-colors text-[var(--md-sys-color-error)]">
+                                    <span className="material-symbols-rounded text-2xl">delete</span>
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    <div className="px-4 space-y-4 pb-2 z-10 bg-[var(--md-sys-color-background)]">
-                        <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight">Riwayat</h1>
+                    <div className="px-4 space-y-5 pb-2 z-10 bg-[var(--md-sys-color-background)]">
+                        <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight">Catetan Lama.</h1>
                         
-                        <div className="flex items-center h-14 bg-[var(--md-sys-color-surface-container-high)] rounded-full px-4 text-[var(--md-sys-color-on-surface)] shadow-sm focus-within:ring-2 ring-[var(--md-sys-color-primary)] transition-all">
-                            <span className="material-symbols-rounded mr-3 opacity-70">search</span>
-                            <input type="text" placeholder="Cari data..." value={search} onChange={e => setSearch(e.target.value)}
-                                className="bg-transparent border-none outline-none flex-1 text-base placeholder:text-[var(--md-sys-color-on-surface-variant)]" />
-                            {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2" onClick={() => setSearch('')}>close</span>}
+                        <div className="flex items-center h-16 bg-[var(--md-sys-color-surface-container-highest)] rounded-[var(--md-shape-2xl)] px-5 text-[var(--md-sys-color-on-surface)] shadow-inner focus-within:ring-2 ring-[var(--md-sys-color-primary)] transition-all">
+                            <span className="material-symbols-rounded mr-4 opacity-70 text-[24px]">search</span>
+                            <input type="text" placeholder="Nyari kerjaan siapa bos?..." value={search} onChange={e => setSearch(e.target.value)}
+                                className="bg-transparent border-none outline-none flex-1 text-[16px] font-bold placeholder:text-[var(--md-sys-color-on-surface-variant)]/60 placeholder:font-medium" />
+                            {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2 p-1 bg-black/20 rounded-full" onClick={() => setSearch('')}>close</span>}
                         </div>
 
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                             {['Semua', 'Servis', 'Sparepart', 'Aksesoris'].map(f => (
                                 <button key={f} onClick={() => setFilterType(f)}
-                                    className={`px-5 h-10 rounded-full text-sm font-semibold border transition-all shrink-0 ${
+                                    className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 transition-all shrink-0 ${
                                         filterType === f 
-                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
-                                        : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent'
+                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-md scale-105' 
+                                        : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{f}</button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Dihilangkan delay animasi per index, karena menyebabkan bug tersembunyi saat di-scroll */}
                     <div className="flex-1 overflow-y-auto px-4 pb-32 space-y-3 pt-2">
                         {filteredData.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-24 text-[var(--md-sys-color-on-surface-variant)]">
-                                <span className="material-symbols-rounded text-6xl mb-4 opacity-40">manage_search</span>
-                                <p className="font-medium text-lg opacity-60">Tidak ada data</p>
+                                <span className="material-symbols-rounded text-[80px] mb-4 opacity-30">manage_search</span>
+                                <p className="font-bold text-xl opacity-60">Kosong melompong bos</p>
                             </div>
                         ) : (
                             filteredData.map(item => (
@@ -821,13 +893,11 @@
                             ))
                         )}
                     </div>
-
-                    <DetailSheet item={selectedItem} onClose={() => setSelectedItem(null)} />
                 </div>
             );
         };
 
-        // --- TAB 3: ANALISIS ---
+        // --- TAB 4: ANALISIS ---
         const TabAnalisis = () => {
             const { transactions, settings } = useContext(AppContext);
             const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
@@ -840,7 +910,8 @@
                     tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
                     error: style.getPropertyValue('--md-sys-color-error').trim(),
                     text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(),
-                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim()
+                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
+                    bg: style.getPropertyValue('--md-sys-color-surface-container-low').trim()
                 };
             }, [settings.theme]);
 
@@ -850,86 +921,92 @@
                 Object.values(inst.current).forEach(chart => chart && chart.destroy());
 
                 const last7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0]; });
-                const laba7 = last7.map(date => transactions.filter(t => t.tanggal.startsWith(date) && t.status === 'Selesai').reduce((s,i) => s + i.laba, 0));
+                const laba7 = last7.map(date => transactions.filter(t => t.tanggal.startsWith(date) && t.status === 'Beres').reduce((s,i) => s + i.laba, 0));
                 
+                Chart.defaults.font.family = "'Readex Pro', sans-serif";
+                Chart.defaults.font.weight = 'bold';
+                Chart.defaults.color = c.text;
+
                 inst.current.line = new Chart(refLine.current.getContext('2d'), {
                     type: 'line',
-                    data: { labels: last7.map(d => new Date(d).toLocaleDateString('id-ID', { weekday:'short'})), datasets: [{ label: 'Laba Bersih', data: laba7, borderColor: c.primary, backgroundColor: `${c.primary}20`, fill: true, tension: 0.5, pointBackgroundColor: c.primary, borderWidth: 3 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: c.text } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { color: c.text, callback: v => `${v/1000}k` } } } }
+                    data: { labels: last7.map(d => new Date(d).toLocaleDateString('id-ID', { weekday:'short'})), datasets: [{ label: 'Cuan', data: laba7, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } }
                 });
 
-                const counts = ['Servis', 'Sparepart', 'Aksesoris'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Selesai').length);
+                const counts = ['Servis', 'Sparepart', 'Aksesoris'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Beres').length);
                 inst.current.pie = new Chart(refPie.current.getContext('2d'), {
                     type: 'doughnut',
-                    data: { labels: ['Servis', 'Sparepart', 'Aks'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error], borderWidth: 0, hoverOffset: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: c.text, font: {family: 'Readex Pro', weight: '500'} } } } }
+                    data: { labels: ['Servis', 'Spare', 'Aks'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } }
                 });
 
                 const itemsMap = {};
-                transactions.filter(t=>t.status==='Selesai' && t.jenis!=='Servis').forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; });
+                transactions.filter(t=>t.status==='Beres' && t.jenis!=='Servis').forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; });
                 const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
 
                 if(topItems.length > 0 && refBar.current) {
                     inst.current.bar = new Chart(refBar.current.getContext('2d'), {
                         type: 'bar',
-                        data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 6 }] },
-                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false}, ticks: {color: c.text, font: {family:'Readex Pro'}} } } }
+                        data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 8 }] },
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false} } } }
                     });
                 }
 
                 return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
             }, [transactions, settings.theme, getColors]);
 
-            const totalSelesai = transactions.filter(t => t.status === 'Selesai');
+            const totalSelesai = transactions.filter(t => t.status === 'Beres');
             const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
             const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
 
             return (
-                <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight">Analisis</h1>
+                <div className="p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                    <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-5 rounded-[var(--md-shape-xl)] shadow-sm">
-                            <span className="material-symbols-rounded text-2xl mb-2 opacity-80">monitoring</span>
-                            <p className="text-xs font-semibold uppercase tracking-wider opacity-80 mb-1">Rata Margin</p>
-                            <h2 className="text-3xl font-bold">{margin}%</h2>
+                        <div className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden">
+                            <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">percent</span></div>
+                            <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
+                            <h2 className="text-4xl font-extrabold tracking-tighter">{margin}%</h2>
                         </div>
-                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-5 rounded-[var(--md-shape-xl)] shadow-sm">
-                            <span className="material-symbols-rounded text-2xl mb-2 opacity-80">done_all</span>
-                            <p className="text-xs font-semibold uppercase tracking-wider opacity-80 mb-1">Pekerjaan</p>
-                            <h2 className="text-3xl font-bold">{totalSelesai.length}</h2>
-                        </div>
-                    </div>
-
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-semibold text-[var(--md-sys-color-on-surface)]">Tren Laba (7 Hari)</h3>
-                            <span className="material-symbols-rounded text-[var(--md-sys-color-on-surface-variant)] text-sm">show_chart</span>
-                        </div>
-                        <div className="h-[200px] relative">
-                            {transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)]">Data tidak cukup</p>}
+                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden">
+                            <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px]">done_all</span></div>
+                            <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
+                            <h2 className="text-4xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base font-bold">Nota</span></h2>
                         </div>
                     </div>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Porsi Kategori</h3>
-                        <div className="h-[150px] relative">
-                            {transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-12 text-[var(--md-sys-color-on-surface-variant)]">Data tidak cukup</p>}
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Grafik Cuan 7 Hari</h3>
+                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]">
+                                <span className="material-symbols-rounded text-xl">show_chart</span>
+                            </div>
+                        </div>
+                        <div className="h-[220px] relative">
+                            {transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}
                         </div>
                     </div>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Barang Terlaris</h3>
-                        <div className="h-[160px] relative">
-                            {transactions.filter(t=>t.jenis!=='Servis' && t.status==='Selesai').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-12 text-[var(--md-sys-color-on-surface-variant)]">Belum ada penjualan barang</p>}
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Dari Mana Aja?</h3>
+                        <div className="h-[180px] relative">
+                            {transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}
+                        </div>
+                    </div>
+
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Barang Paling Laku</h3>
+                        <div className="h-[180px] relative">
+                            {transactions.filter(t=>t.jenis!=='Servis' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // --- TAB 4: SETING ---
+        // --- TAB 5: SETING ---
         const TabSeting = () => {
             const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
 
@@ -941,7 +1018,7 @@
             const handleBackup = () => {
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
                 const a = document.createElement('a'); a.href = dataStr; a.download = `ZonaPoncell_Backup_${new Date().getTime()}.json`; a.click();
-                showSnackbar('Data berhasil di-backup');
+                showSnackbar('Sip, Data udah di-backup');
             };
 
             const handleRestore = (e) => {
@@ -950,197 +1027,131 @@
                 reader.onload = (event) => {
                     try {
                         const json = JSON.parse(event.target.result);
-                        if(Array.isArray(json)) { setTransactions(json); showSnackbar('Data berhasil dipulihkan'); }
-                    } catch(err) { showSnackbar('Format file tidak valid!'); }
+                        if(Array.isArray(json)) { setTransactions(json); showSnackbar('Mantap, Data balik lagi'); }
+                    } catch(err) { showSnackbar('File ga jelas bos, gagal!'); }
                 };
                 reader.readAsText(file);
             };
 
             const handleClear = () => {
-                if(confirm('Peringatan: Semua data transaksi akan dihapus permanen. Yakin?')) {
-                    setTransactions([]); showSnackbar('Semua data dibersihkan');
+                if(confirm('WOI PERINGATAN! Ini bakal hapus SEMUA data lo secara permanen. Lanjutin bakar data?')) {
+                    setTransactions([]); showSnackbar('BUM! Semua data udah hangus 🔥');
                 }
             };
 
             return (
                 <div className="p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
-                    <h1 className="text-3xl font-semibold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4">Pengaturan</h1>
+                    <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <p className="font-semibold text-[var(--md-sys-color-on-surface)] mb-4">Warna Tema (Dark Only)</p>
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <p className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] mb-5">Pilih Warna (Dark Mode Terus)</p>
                         <div className="grid grid-cols-3 gap-4">
                             {themes.map(t => (
                                 <div key={t.id} onClick={() => setSettings({...settings, theme: t.id})}
-                                     className={`h-14 rounded-[var(--md-shape-lg)] flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-105 shadow-lg ring-2 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105'}`}
+                                     className={`h-16 rounded-[var(--md-shape-2xl)] flex items-center justify-center cursor-pointer transition-all duration-300 ${settings.theme === t.id ? 'scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-[var(--md-sys-color-on-surface)] ring-offset-4 ring-offset-[var(--md-sys-color-surface-container-low)]' : 'scale-100 hover:scale-105 opacity-80'}`}
                                      style={{ backgroundColor: t.color }}>
-                                     {settings.theme === t.id && <span className="material-symbols-rounded text-black text-2xl opacity-70">check</span>}
+                                     {settings.theme === t.id && <span className="material-symbols-rounded text-black text-[32px] opacity-80">check</span>}
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-2xl)] p-3 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                        <h3 className="text-sm font-semibold tracking-wider text-[var(--md-sys-color-primary)] uppercase p-3 ml-1">Database Lokal</h3>
-                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={handleBackup}>
-                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">download</span></div>
-                            <div className="text-left"><p className="font-semibold">Backup Database</p><p className="text-xs opacity-70">Unduh data ke JSON</p></div>
+                    <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-4 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
+                        <h3 className="text-[13px] font-extrabold tracking-widest text-[var(--md-sys-color-primary)] uppercase p-3 ml-2">Ngatur Database</h3>
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors mt-2" onClick={handleBackup}>
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">download</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Amankan Data (Backup)</p><p className="text-[13px] font-medium opacity-70">Download ke JSON</p></div>
                         </Ripple>
-                        <label className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer">
-                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">upload</span></div>
-                            <div className="text-left"><p className="font-semibold">Restore Data</p><p className="text-xs opacity-70">Pulihkan dari file JSON</p></div>
+                        <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer">
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Balikin Data (Restore)</p><p className="text-[13px] font-medium opacity-70">Ambil dari JSON</p></div>
                             <input type="file" accept=".json" className="hidden" onChange={handleRestore} />
                         </label>
-                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] transition-colors mt-2" onClick={handleClear}>
-                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] flex items-center justify-center mr-4 shrink-0"><span className="material-symbols-rounded">delete_forever</span></div>
-                            <div className="text-left"><p className="font-semibold">Hapus Semua</p><p className="text-xs opacity-80">Reset pabrik aplikasi</p></div>
+                        <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] hover:text-[var(--md-sys-color-on-error-container)] transition-colors group" onClick={handleClear}>
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-error)]/20 text-[var(--md-sys-color-error)] group-hover:bg-[var(--md-sys-color-error)] group-hover:text-[var(--md-sys-color-on-error)] flex items-center justify-center mr-5 shrink-0 transition-colors"><span className="material-symbols-rounded text-[24px]">local_fire_department</span></div>
+                            <div className="text-left"><p className="font-extrabold text-base">Bakar Semua Data</p><p className="text-[13px] font-medium opacity-80">Reset pabrik aplikasi</p></div>
                         </Ripple>
                     </div>
-                    <p className="text-center text-[11px] text-[var(--md-sys-color-on-surface-variant)] pt-2 pb-6 tracking-widest uppercase font-semibold">Zona Poncell M3 Pro • V2.0</p>
+                    <p className="text-center text-[12px] text-[var(--md-sys-color-on-surface-variant)] pt-4 pb-6 tracking-widest uppercase font-extrabold opacity-50">Zona Poncell M3 Pro • Bos Edition</p>
                 </div>
             );
         };
 
-        // --- FORM TAMBAH (BOTTOM SHEET) ---
-        const AddTransactionSheet = ({ isOpen, onClose }) => {
-            const { setTransactions, showSnackbar } = useContext(AppContext);
+        // --- SHEET DETAIL (GLOBAL) ---
+        const DetailSheet = () => {
+            const { transactions, setTransactions, showSnackbar, selectedItem: item, setSelectedItem } = useContext(AppContext);
             
-            const [jenis, setJenis] = useState('Servis');
-            const [nama, setNama] = useState('');
-            const [pelanggan, setPelanggan] = useState('');
-            const [modalStr, setModalStr] = useState('0');
-            const [jualStr, setJualStr] = useState('0');
-            const [jumlah, setJumlah] = useState(1);
+            const onClose = () => setSelectedItem(null);
 
-            useEffect(() => {
-                if (isOpen) { setJenis('Servis'); setNama(''); setPelanggan(''); setModalStr('0'); setJualStr('0'); setJumlah(1); }
-            }, [isOpen]);
-
-            const handleSave = () => {
-                if(!nama.trim()) { showSnackbar('Nama barang/servis wajib diisi!'); return; }
-                
-                const m = getRawNumber(modalStr); const j = getRawNumber(jualStr);
-                const newData = {
-                    id: generateId(), tanggal: new Date().toISOString(),
-                    jenis, nama: nama.trim(), pelanggan: pelanggan.trim() || 'Umum',
-                    modal: m, jual: j, jumlah: jumlah,
-                    laba: (j - m) * jumlah, status: 'Proses'
-                };
-
-                setTransactions(prev => [newData, ...prev]); showSnackbar('Transaksi dicatat'); onClose();
-            };
-
-            const laba = (getRawNumber(jualStr) - getRawNumber(modalStr)) * jumlah;
-
-            return (
-                <BottomSheet isOpen={isOpen} onClose={onClose} title="Catat Transaksi">
-                    <div className="space-y-6 pt-3">
-                        <div className="flex bg-[var(--md-sys-color-surface-container-high)] rounded-full p-1 h-12 shadow-inner">
-                            {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
-                                <button key={j} type="button" onClick={() => setJenis(j)}
-                                    className={`flex-1 text-sm font-semibold rounded-full transition-all duration-300 ${
-                                        jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' 
-                                        : 'text-[var(--md-sys-color-on-surface-variant)] bg-transparent'
-                                    }`}>{j}</button>
-                            ))}
-                        </div>
-
-                        <TextField label="Nama Barang / Kerusakan" value={nama} onChange={setNama} icon={jenis==='Servis'?'build':'shopping_bag'} />
-                        <TextField label="Nama Pelanggan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="person" />
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <TextField label="Biaya Modal" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
-                            <TextField label="Harga Jual" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
-                        </div>
-
-                        {jenis !== 'Servis' && (
-                            <div className="bg-[var(--md-sys-color-surface-container-highest)] p-4 rounded-[var(--md-shape-sm)] relative pt-6 mt-2">
-                                <span className="absolute left-4 top-2 text-[12px] font-medium text-[var(--md-sys-color-on-surface-variant)]">Kuantitas (Jumlah)</span>
-                                <div className="flex items-center gap-4 mt-2">
-                                    <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" />
-                                    <span className="w-10 text-center font-bold text-lg text-[var(--md-sys-color-primary)]">{jumlah}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-5 rounded-[var(--md-shape-2xl)] flex justify-between items-center shadow-sm">
-                            <div>
-                                <span className="text-xs font-bold uppercase tracking-wider opacity-80 block mb-1">Estimasi Laba</span>
-                                <span className="text-[10px] opacity-70">Termasuk perkalian jumlah</span>
-                            </div>
-                            <span className="text-2xl font-bold">Rp{formatRupiah(laba)}</span>
-                        </div>
-
-                        <Button onClick={handleSave} icon="save" fullWidth className="mt-2 h-14 text-base shadow-lg">Simpan ke Database</Button>
-                    </div>
-                </BottomSheet>
-            );
-        };
-
-        // --- SHEET DETAIL ---
-        const DetailSheet = ({ item, onClose }) => {
-            const { setTransactions, showSnackbar } = useContext(AppContext);
             if (!item) return null;
 
+            // Pastikan data item up-to-date kalau abis diubah statusnya
+            const currentItem = transactions.find(t => t.id === item.id) || item;
+
             const updateStatus = (newStatus) => {
-                setTransactions(prev => prev.map(t => t.id === item.id ? {...t, status: newStatus} : t));
-                showSnackbar(`Status menjadi ${newStatus}`); onClose();
+                setTransactions(prev => prev.map(t => t.id === currentItem.id ? {...t, status: newStatus} : t));
+                showSnackbar(`Sip, Status diubah ke ${newStatus}`);
             };
 
             const handleDelete = () => {
-                if(confirm('Hapus transaksi ini secara permanen?')) {
-                    setTransactions(prev => prev.filter(t => t.id !== item.id));
-                    showSnackbar('Transaksi dihapus'); onClose();
+                if(confirm('Yakin mau buang data ini ke tong sampah?')) {
+                    setTransactions(prev => prev.filter(t => t.id !== currentItem.id));
+                    showSnackbar('Satu data dibuang'); onClose();
                 }
             };
 
             return (
-                <BottomSheet isOpen={!!item} onClose={onClose} title="Detail Transaksi">
-                    <div className="space-y-6 pt-3">
-                        <div className="text-center bg-[var(--md-sys-color-surface)] p-5 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
-                            <h2 className="text-2xl font-semibold text-[var(--md-sys-color-on-surface)] mb-1 leading-tight">{item.nama}</h2>
-                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm mb-3">{formatDateLong(item.tanggal)}</p>
-                            <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-sm font-medium">
-                                <span className="material-symbols-rounded text-sm">person</span> {item.pelanggan}
+                <BottomSheet isOpen={!!item} onClose={onClose} title="Detailnya Nih">
+                    <div className="space-y-5 pt-4">
+                        <div className="text-center bg-[var(--md-sys-color-surface)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <span className="material-symbols-rounded text-[100px]">{currentItem.jenis === 'Servis' ? 'build' : currentItem.jenis === 'Sparepart' ? 'memory' : 'headphones'}</span>
+                            </div>
+                            <h2 className="text-2xl font-extrabold text-[var(--md-sys-color-on-surface)] mb-2 leading-tight relative z-10">{currentItem.nama}</h2>
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm font-medium mb-4 relative z-10">{formatDateLong(currentItem.tanggal)}</p>
+                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm">
+                                <span className="material-symbols-rounded text-lg">person</span> {currentItem.pelanggan}
                             </div>
                         </div>
 
-                        <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-5 shadow-sm">
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Kuantitas</span>
-                                <span className="font-bold text-[var(--md-sys-color-on-surface)]">{item.jumlah}x</span>
-                            </div>
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Harga Modal /pcs</span>
-                                <span className="font-semibold text-[var(--md-sys-color-error)]">Rp{formatRupiah(item.modal)}</span>
+                        <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-3xl)] p-6 shadow-md border border-[var(--md-sys-color-outline-variant)]">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Berapa Biji (Qty)</span>
+                                <span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem.jumlah}x</span>
                             </div>
                             <div className="flex justify-between items-center mb-4">
-                                <span className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Harga Jual /pcs</span>
-                                <span className="font-semibold text-[var(--md-sys-color-success)]">Rp{formatRupiah(item.jual)}</span>
+                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span>
+                                <span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem.modal)}</span>
                             </div>
-                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center">
+                            <div className="flex justify-between items-center mb-6">
+                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span>
+                                <span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem.jual)}</span>
+                            </div>
+                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center">
                                 <div>
-                                    <span className="font-bold text-[var(--md-sys-color-on-surface)] block">Laba Bersih</span>
-                                    <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">Total = (Jual - Modal) × {item.jumlah}</span>
+                                    <span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span>
+                                    <span className="text-[11px] font-medium text-[var(--md-sys-color-on-surface-variant)]">Total = (Jual - Modal) × {currentItem.jumlah}</span>
                                 </div>
-                                <span className="text-3xl font-bold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(item.laba)}</span>
+                                <span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem.laba)}</span>
                             </div>
                         </div>
 
                         <div>
-                            <p className="text-sm font-bold tracking-wider uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-1">Progres Pekerjaan</p>
+                            <p className="text-[13px] font-extrabold tracking-widest uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-2">Status Kerjaan</p>
                             <div className="flex gap-2">
-                                {['Proses', 'Selesai', 'Batal'].map(s => (
+                                {['Jalan', 'Beres', 'Gagal'].map(s => (
                                     <button key={s} onClick={() => updateStatus(s)}
-                                        className={`flex-1 h-12 rounded-full text-sm font-bold border-2 transition-all duration-300 ${
-                                            item.status === s 
-                                            ? `bg-[var(--md-sys-color-${s==='Selesai'?'success':s==='Proses'?'primary':'error'}-container)] text-[var(--md-sys-color-on-${s==='Selesai'?'success':s==='Proses'?'primary':'error'}-container)] border-transparent shadow-md scale-105`
+                                        className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 transition-all duration-300 ${
+                                            currentItem.status === s 
+                                            ? `bg-[var(--md-sys-color-${s==='Beres'?'success':s==='Jalan'?'primary':'error'}-container)] text-[var(--md-sys-color-on-${s==='Beres'?'success':s==='Jalan'?'primary':'error'}-container)] border-transparent shadow-lg scale-[1.03]`
                                             : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                         }`}>{s}</button>
                                 ))}
                             </div>
                         </div>
 
-                        <Button variant="text" icon="delete" fullWidth className="text-[var(--md-sys-color-error)] mt-2 h-14" onClick={handleDelete}>Hapus Data Permanen</Button>
+                        <Button variant="text" icon="delete" fullWidth className="text-[var(--md-sys-color-error)] mt-4 h-16 bg-[var(--md-sys-color-error-container)]/10 hover:bg-[var(--md-sys-color-error-container)]/30 rounded-[var(--md-shape-2xl)]" onClick={handleDelete}>Buang Data Ini</Button>
                     </div>
                 </BottomSheet>
             );
@@ -1152,14 +1163,14 @@
         const MainApp = () => {
             const { settings } = useContext(AppContext);
             const [activeTab, setActiveTab] = useState('dasbor');
-            const [isAddOpen, setIsAddOpen] = useState(false);
 
             if (!settings.hasStarted) return <SplashScreen />;
 
             const tabs = [
                 { id: 'dasbor', icon: 'home', label: 'Beranda' },
+                { id: 'catet', icon: 'add_circle', label: 'Catet' }, // Added Catet tab
                 { id: 'riwayat', icon: 'history', label: 'Riwayat' },
-                { id: 'analisis', icon: 'query_stats', label: 'Analisis' },
+                { id: 'analisis', icon: 'monitoring', label: 'Ngecek' }, // Updated label & icon
                 { id: 'seting', icon: 'tune', label: 'Seting' }
             ];
 
@@ -1167,35 +1178,40 @@
                 <div className="h-[100dvh] w-full max-w-lg mx-auto flex flex-col relative bg-[var(--md-sys-color-background)] overflow-hidden sm:border-x sm:border-[var(--md-sys-color-outline-variant)] sm:shadow-2xl">
                     <main className="flex-1 overflow-hidden relative">
                         {activeTab === 'dasbor' && <TabDasbor />}
+                        {activeTab === 'catet' && <TabCatet />}
                         {activeTab === 'riwayat' && <TabRiwayat />}
                         {activeTab === 'analisis' && <TabAnalisis />}
                         {activeTab === 'seting' && <TabSeting />}
                     </main>
 
-                    {/* Extended FAB */}
-                    <div className={`absolute right-4 transition-all duration-400 z-40 ${activeTab === 'seting' ? 'opacity-0 scale-50 pointer-events-none translate-y-10' : 'opacity-100 scale-100'}`} style={{ bottom: 'calc(96px + var(--sa-bottom))' }}>
-                        <Ripple onClick={() => setIsAddOpen(true)} className="m3-fab flex items-center h-16 px-6 cursor-pointer bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] shadow-[var(--md-elevation-3)] rounded-[20px] hover:shadow-[var(--md-elevation-4)] hover:-translate-y-1 transition-all">
-                            <span className="material-symbols-rounded mr-3 text-[26px]">edit_document</span>
-                            <span className="font-semibold text-base">Catat Baru</span>
-                        </Ripple>
-                    </div>
-
                     {/* Navigation Bar */}
-                    <nav className="absolute bottom-0 w-full h-[88px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
+                    <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] border-t border-[var(--md-sys-color-outline-variant)]/30" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         {tabs.map(t => {
                             const active = activeTab === t.id;
+                            const isCatet = t.id === 'catet';
+                            
                             return (
                                 <Ripple key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer">
-                                    <div className={`w-16 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
-                                        <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
-                                    </div>
-                                    <span className={`text-[12px] font-bold mt-1.5 transition-colors tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
+                                    {isCatet ? (
+                                        // Special styling for the "Catet" tab icon
+                                        <div className={`w-14 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] scale-110 shadow-lg' : 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] scale-100 group-hover:scale-105'}`}>
+                                            <span className={`material-symbols-rounded text-[28px] transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                        </div>
+                                    ) : (
+                                        // Normal styling for other tabs
+                                        <div className={`w-14 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
+                                            <span className={`material-symbols-rounded text-2xl transition-all duration-300 ${active ? '' : 'icon-outlined'}`}>{t.icon}</span>
+                                        </div>
+                                    )}
+                                    <span className={`text-[12px] font-extrabold mt-1.5 transition-colors tracking-wide ${active ? 'text-[var(--md-sys-color-on-surface)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{t.label}</span>
                                 </Ripple>
                             );
                         })}
                     </nav>
 
-                    <AddTransactionSheet isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
+                    {/* Global Sheet for details */}
+                    <DetailSheet />
+                    
                     <SnackbarContainer />
                 </div>
             );

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zona Poncell</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Material Symbols & Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        // Material 3 Expressive Palette (Vibrant & Bold)
+                        m3: {
+                            bg: '#FFFBFE',
+                            surface: '#F4EDFB',
+                            primary: '#6750A4',
+                            onPrimary: '#FFFFFF',
+                            primaryContainer: '#EADDFF',
+                            onPrimaryContainer: '#21005D',
+                            secondary: '#006A60',
+                            secondaryContainer: '#74F8E5',
+                            onSecondaryContainer: '#00201C',
+                            tertiary: '#8D4A60',
+                            tertiaryContainer: '#FFD8E4',
+                            onTertiaryContainer: '#3E001D',
+                            error: '#B3261E',
+                            errorContainer: '#F9DEDC',
+                            onErrorContainer: '#410E0B',
+                            outline: '#79747E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FFFBFE; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 600; }
+        /* Animasi transisi tab */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-gray-900 h-screen flex flex-col overflow-hidden">
+    <div id="root" class="h-full w-full max-w-2xl mx-auto flex flex-col bg-m3-bg relative shadow-2xl"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // Logika formatting yang bulletproof
+        const formatRpStr = (val) => {
+            if (!val) return '';
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+        };
+
+        const App = () => {
+            const [transactions, setTransactions] = useState([]);
+            const [activeTab, setActiveTab] = useState('input');
+            const [isLoaded, setIsLoaded] = useState(false);
+
+            useEffect(() => {
+                const saved = localStorage.getItem('zonaponcell_db');
+                if (saved) setTransactions(JSON.parse(saved));
+                setIsLoaded(true);
+            }, []);
+
+            useEffect(() => {
+                if (isLoaded) localStorage.setItem('zonaponcell_db', JSON.stringify(transactions));
+            }, [transactions, isLoaded]);
+
+            const itemsDictionary = useMemo(() => [...new Set(transactions.map(t => t.nama))], [transactions]);
+
+            const handleSave = (data) => {
+                setTransactions([...transactions, data]);
+                setActiveTab('history');
+            };
+
+            const handleDelete = (id) => {
+                if (confirm('Yakin lu mau hapus data ini? Kalo ilang ga bisa balik.')) {
+                    setTransactions(transactions.filter(t => t.id !== id));
+                }
+            };
+
+            const handleRestore = (data) => {
+                setTransactions(data);
+                setActiveTab('history');
+            };
+
+            if (!isLoaded) return <div class="p-10 text-center font-bold font-display text-xl">Loading bentar...</div>;
+
+            return (
+                <>
+                    <header class="bg-m3-bg pt-6 pb-4 px-5 sticky top-0 z-10 flex justify-between items-center border-b border-m3-surface">
+                        <div>
+                            <h1 class="text-3xl font-extrabold font-display text-m3-primary tracking-tight">ZONA PONCELL</h1>
+                            <p class="text-sm font-bold text-m3-secondary">Sistem Cuan Logis</p>
+                        </div>
+                        <div class="h-12 w-12 bg-m3-primaryContainer rounded-2xl flex items-center justify-center text-m3-onPrimaryContainer">
+                            <span class="material-symbols-outlined text-3xl">bolt</span>
+                        </div>
+                    </header>
+
+                    <main class="flex-1 overflow-y-auto relative pb-28 fade-in">
+                        {activeTab === 'input' && <InputTab onSave={handleSave} itemsDict={itemsDictionary} />}
+                        {activeTab === 'dash' && <DashTab data={transactions} />}
+                        {activeTab === 'history' && <HistoryTab data={transactions} onDelete={handleDelete} />}
+                        {activeTab === 'settings' && <SettingsTab data={transactions} onRestore={handleRestore} />}
+                    </main>
+
+                    <nav class="absolute bottom-0 w-full bg-m3-surface shadow-[0_-10px_40px_rgba(103,80,164,0.1)] rounded-t-[32px] px-2 pb-safe pt-3 pb-4 flex justify-around items-center z-20">
+                        <NavBtn icon="add_box" label="Input" active={activeTab === 'input'} onClick={() => setActiveTab('input')} />
+                        <NavBtn icon="query_stats" label="Cuan" active={activeTab === 'dash'} onClick={() => setActiveTab('dash')} />
+                        <NavBtn icon="list_alt" label="Histori" active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+                        <NavBtn icon="manufacturing" label="Seting" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
+                    </nav>
+                </>
+            );
+        };
+
+        const InputTab = ({ onSave, itemsDict }) => {
+            const [jenis, setJenis] = useState('Servis');
+            const [nama, setNama] = useState('');
+            const [modalRaw, setModalRaw] = useState('');
+            const [jualRaw, setJualRaw] = useState('');
+
+            const handleModal = (e) => setModalRaw(e.target.value.replace(/\D/g, ''));
+            const handleJual = (e) => setJualRaw(e.target.value.replace(/\D/g, ''));
+
+            useEffect(() => {
+                if (jenis === 'Servis') setModalRaw('0');
+            }, [jenis]);
+
+            const submit = (e) => {
+                e.preventDefault();
+                if (!nama.trim() || !jualRaw) return alert("Isi nama sama harga jual yang bener, jangan kosong!");
+                
+                const valModal = parseInt(modalRaw || '0', 10);
+                const valJual = parseInt(jualRaw || '0', 10);
+                
+                onSave({
+                    id: Date.now(),
+                    tanggal: new Date().toISOString(),
+                    jenis,
+                    nama,
+                    modal: valModal,
+                    jual: valJual,
+                    laba: valJual - valModal
+                });
+
+                setNama('');
+                setModalRaw(jenis === 'Servis' ? '0' : '');
+                setJualRaw('');
+            };
+
+            return (
+                <div class="p-5">
+                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Catat Dulu Bos</h2>
+                    
+                    <form onSubmit={submit} class="space-y-6">
+                        <div class="bg-m3-surface p-1.5 rounded-[24px] flex gap-2">
+                            {['Servis', 'Sparepart', 'Aksesoris'].map(j => (
+                                <button 
+                                    type="button" 
+                                    key={j}
+                                    onClick={() => setJenis(j)}
+                                    class={`flex-1 py-4 px-2 rounded-[20px] font-bold text-sm transition-all ${jenis === j ? 'bg-m3-primary text-m3-onPrimary shadow-lg scale-[1.02]' : 'text-m3-outline hover:bg-black/5'}`}
+                                >
+                                    {j}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-sm font-extrabold text-m3-primary tracking-wide uppercase ml-2">Detail Garapan / Barang</label>
+                            <input 
+                                type="text" 
+                                list="item-list"
+                                value={nama}
+                                onChange={(e) => setNama(e.target.value)}
+                                placeholder="Cth: LCD Samsung A50..."
+                                class="w-full bg-m3-surface border-2 border-transparent rounded-[24px] px-6 py-5 focus:border-m3-primary focus:bg-m3-bg outline-none transition-all text-lg font-semibold shadow-sm"
+                            />
+                            <datalist id="item-list">
+                                {itemsDict.map((item, idx) => <option key={idx} value={item} />)}
+                            </datalist>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-3">
+                                <label class="text-sm font-extrabold text-m3-tertiary tracking-wide uppercase ml-2">Modal</label>
+                                <input 
+                                    type="text" inputMode="numeric" pattern="[0-9]*"
+                                    value={modalRaw ? formatRpStr(modalRaw) : ''}
+                                    onChange={handleModal}
+                                    disabled={jenis === 'Servis'}
+                                    placeholder="Rp 0"
+                                    class="w-full bg-m3-tertiaryContainer text-m3-onTertiaryContainer border-none rounded-[24px] px-5 py-5 focus:ring-4 focus:ring-m3-tertiary/30 outline-none transition-all text-lg font-bold disabled:opacity-50 disabled:grayscale"
+                                />
+                            </div>
+                            <div class="space-y-3">
+                                <label class="text-sm font-extrabold text-m3-secondary tracking-wide uppercase ml-2">Jual</label>
+                                <input 
+                                    type="text" inputMode="numeric" pattern="[0-9]*"
+                                    value={jualRaw ? formatRpStr(jualRaw) : ''}
+                                    onChange={handleJual}
+                                    placeholder="Rp 0"
+                                    class="w-full bg-m3-secondaryContainer text-m3-onSecondaryContainer border-none rounded-[24px] px-5 py-5 focus:ring-4 focus:ring-m3-secondary/30 outline-none transition-all text-lg font-bold"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="bg-m3-bg p-6 rounded-[32px] border-[3px] border-m3-surface flex justify-between items-center mt-4">
+                            <span class="font-extrabold text-m3-outline uppercase tracking-wider text-sm">Estimasi Laba</span>
+                            <span class="text-3xl font-display font-black text-m3-primary">
+                                {formatRpStr((parseInt(jualRaw || 0) - parseInt(modalRaw || 0)).toString())}
+                            </span>
+                        </div>
+
+                        <button type="submit" class="w-full bg-m3-primary text-m3-onPrimary font-display font-black text-xl py-5 rounded-[32px] shadow-xl shadow-m3-primary/30 active:scale-95 transition-all mt-4 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">save</span>
+                            SIKAT DATA!
+                        </button>
+                    </form>
+                </div>
+            );
+        };
+
+        const DashTab = ({ data }) => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            const totalOmset = data.reduce((a, c) => a + c.jual, 0);
+            const totalModal = data.reduce((a, c) => a + c.modal, 0);
+            const totalLaba = data.reduce((a, c) => a + c.laba, 0);
+
+            useEffect(() => {
+                if (chartInstance.current) chartInstance.current.destroy();
+                
+                if (data.length === 0) return;
+
+                const dates = [...Array(7)].map((_, i) => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - (6 - i));
+                    return d.toISOString().split('T')[0];
+                });
+
+                const labaHarian = dates.map(date => 
+                    data.filter(d => d.tanggal.startsWith(date)).reduce((sum, item) => sum + item.laba, 0)
+                );
+                
+                const displayDates = dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: displayDates,
+                        datasets: [{
+                            label: 'Laba Bersih',
+                            data: labaHarian,
+                            borderColor: '#6750A4',
+                            backgroundColor: '#EADDFF',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#006A60',
+                            pointRadius: 6,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { display: false, beginAtZero: true },
+                            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } } }
+                        }
+                    }
+                });
+                return () => { if (chartInstance.current) chartInstance.current.destroy(); }
+            }, [data]);
+
+            return (
+                <div class="p-5">
+                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Analisis Cuan</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="col-span-2 bg-m3-secondaryContainer text-m3-onSecondaryContainer p-6 rounded-[32px] shadow-sm">
+                            <p class="text-sm font-extrabold tracking-wide uppercase opacity-70 mb-2">Total Laba Bersih</p>
+                            <p class="text-4xl font-display font-black">{formatRpStr(totalLaba.toString())}</p>
+                        </div>
+                        <div class="bg-m3-primaryContainer text-m3-onPrimaryContainer p-5 rounded-[24px]">
+                            <p class="text-xs font-extrabold uppercase opacity-70 mb-1">Total Omset</p>
+                            <p class="text-xl font-display font-bold">{formatRpStr(totalOmset.toString())}</p>
+                        </div>
+                        <div class="bg-m3-errorContainer text-m3-onErrorContainer p-5 rounded-[24px]">
+                            <p class="text-xs font-extrabold uppercase opacity-70 mb-1">Total Modal Keluar</p>
+                            <p class="text-xl font-display font-bold">{formatRpStr(totalModal.toString())}</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-[32px] border-2 border-m3-surface shadow-sm">
+                        <h3 class="font-bold text-m3-outline uppercase tracking-wider text-sm mb-4">Grafik Laba 7 Hari</h3>
+                        <div class="h-52 w-full relative">
+                            {data.length === 0 ? 
+                                <div class="absolute inset-0 flex items-center justify-center text-m3-outline font-bold">Data kosong njir.</div> 
+                                : <canvas ref={chartRef}></canvas>
+                            }
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const HistoryTab = ({ data, onDelete }) => {
+            const sorted = [...data].sort((a, b) => b.id - a.id);
+
+            return (
+                <div class="p-5">
+                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Histori Garapan</h2>
+                    
+                    <div class="space-y-4">
+                        {sorted.length === 0 && (
+                            <div class="bg-m3-surface p-10 rounded-[32px] text-center border border-m3-outline/20 mt-10">
+                                <span class="material-symbols-outlined text-5xl text-m3-outline mb-2">search_off</span>
+                                <p class="font-bold text-m3-outline">Kosong melompong.<br/>Belum ada cuan masuk.</p>
+                            </div>
+                        )}
+                        {sorted.map(item => {
+                            const d = new Date(item.tanggal);
+                            const tgl = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                            return (
+                                <div key={item.id} class="bg-white p-5 rounded-[28px] border-2 border-m3-surface shadow-sm flex items-center justify-between gap-4">
+                                    <div class="flex-1 overflow-hidden">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-[10px] font-black uppercase tracking-wider px-3 py-1 bg-m3-primaryContainer text-m3-onPrimaryContainer rounded-full">{item.jenis}</span>
+                                            <span class="text-xs font-bold text-m3-outline">{tgl}</span>
+                                        </div>
+                                        <p class="font-bold text-lg text-gray-900 truncate">{item.nama}</p>
+                                        <div class="flex gap-3 mt-1">
+                                            <p class="text-sm font-bold text-m3-secondary">Laba: {formatRpStr(item.laba.toString())}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => onDelete(item.id)} class="p-4 bg-m3-errorContainer text-m3-error rounded-[20px] active:scale-90 transition-transform flex-shrink-0">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        const SettingsTab = ({ data, onRestore }) => {
+            const backup = () => {
+                const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `ZONAPONCELL_BACKUP_${new Date().getTime()}.json`;
+                a.click();
+            };
+
+            const restore = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        if (Array.isArray(parsed)) {
+                            onRestore(parsed);
+                            alert("Beres! Data sukses dibalikkin.");
+                        } else throw new Error();
+                    } catch (err) {
+                        alert("File lu error/bukan backupan valid.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            return (
+                <div class="p-5">
+                    <h2 class="text-2xl font-bold font-display mb-6 text-m3-onPrimaryContainer">Setingan Sistem</h2>
+                    
+                    <div class="space-y-5">
+                        <div class="bg-m3-primaryContainer p-6 rounded-[32px] flex flex-col gap-5">
+                            <div class="flex items-center gap-4 text-m3-onPrimaryContainer">
+                                <span class="material-symbols-outlined text-4xl">cloud_download</span>
+                                <div>
+                                    <h3 class="font-display font-black text-xl">Backup Data</h3>
+                                    <p class="text-sm font-medium opacity-80">Amanin data cuan lu ke file JSON</p>
+                                </div>
+                            </div>
+                            <button onClick={backup} class="w-full bg-m3-primary text-m3-onPrimary font-bold py-4 rounded-[24px] active:scale-95 transition-all text-lg shadow-lg">
+                                Download Backup
+                            </button>
+                        </div>
+
+                        <div class="bg-m3-tertiaryContainer p-6 rounded-[32px] flex flex-col gap-5">
+                            <div class="flex items-center gap-4 text-m3-onTertiaryContainer">
+                                <span class="material-symbols-outlined text-4xl">cloud_upload</span>
+                                <div>
+                                    <h3 class="font-display font-black text-xl">Restore Data</h3>
+                                    <p class="text-sm font-medium opacity-80">Tarik balik data dari file JSON lama</p>
+                                </div>
+                            </div>
+                            <label class="w-full bg-m3-tertiary text-m3-onPrimary font-bold py-4 rounded-[24px] active:scale-95 transition-all text-center text-lg shadow-lg cursor-pointer block">
+                                Pilih File JSON
+                                <input type="file" accept=".json" class="hidden" onChange={restore} />
+                            </label>
+                        </div>
+                        
+                        <div class="text-center mt-10">
+                            <p class="text-m3-outline font-bold text-xs uppercase tracking-widest">Zona Poncell v2.0 - Material Expressive</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const NavBtn = ({ icon, label, active, onClick }) => (
+            <button onClick={onClick} class={`flex flex-col items-center justify-center min-w-[72px] transition-all relative ${active ? 'text-m3-onPrimaryContainer' : 'text-m3-outline hover:text-m3-primary'}`}>
+                <div class={`px-5 py-1.5 rounded-full mb-1 transition-all duration-300 ${active ? 'bg-m3-primaryContainer scale-110' : 'bg-transparent'}`}>
+                    <span class={`material-symbols-outlined text-3xl transition-transform ${active ? 'scale-110' : ''}`}>{icon}</span>
+                </div>
+                <span class={`text-[11px] font-extrabold tracking-wide ${active ? 'opacity-100' : 'opacity-70'}`}>{label}</span>
+            </button>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+

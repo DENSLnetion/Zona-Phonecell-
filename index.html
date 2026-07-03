@@ -8,18 +8,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Zona Poncell M3 Pro</title>
     
-    <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -204,28 +200,33 @@
         .icon-outlined { font-variation-settings: 'FILL' 0; }
 
         /* ==========================================================================
-           ANIMATIONS
+           ANIMATIONS (TERMASUK TAB TRANSITION NUMPUK)
            ========================================================================== */
-        .spring-bounce {
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .spring-bounce { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        @keyframes pageFadeIn {
-            0% { opacity: 0; transform: translateY(20px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
+        @keyframes pageFadeIn { 0% { opacity: 0; transform: translateY(20px) scale(0.97); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         .animate-page { animation: pageFadeIn 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
 
-        /* Normal Ease untuk Bottom Sheet (Tanpa Pegas) */
+        /* ANIMASI TAB NUMPUK (FORWARD) - Slide dari kanan nutupin yg lama */
+        @keyframes panelSlideInRight {
+            0% { transform: translateX(100%); opacity: 1; box-shadow: -20px 0 40px rgba(0,0,0,0.5); z-index: 10; }
+            100% { transform: translateX(0); opacity: 1; box-shadow: 0 0 0 transparent; z-index: 10; }
+        }
+        .anim-forward { animation: panelSlideInRight 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+        /* ANIMASI TAB NUMPUK (BACKWARD) - Muncul dari kiri/bawah krn panel atasnya digeser */
+        @keyframes panelRevealLeft {
+            0% { transform: translateX(-20%) scale(0.96); opacity: 0; }
+            100% { transform: translateX(0) scale(1); opacity: 1; }
+        }
+        .anim-backward { animation: panelRevealLeft 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
         @keyframes slideUpSheet { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
         .animate-sheet-up { animation: slideUpSheet 0.5s cubic-bezier(0.2, 0, 0, 1) forwards; }
-        
         @keyframes slideDownSheet { 0% { transform: translateY(0); } 100% { transform: translateY(100%); } }
         .animate-sheet-down { animation: slideDownSheet 0.4s cubic-bezier(0.3, 0, 0.8, 0.15) forwards; }
-
         @keyframes slideDownAppBar { 0% { transform: translateY(-100%); } 100% { transform: translateY(0); } }
         .animate-appbar-down { animation: slideDownAppBar 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) forwards; }
-
         @keyframes fadeInOverlay { 0% { opacity: 0; } 100% { opacity: 1; } }
         .animate-overlay-in { animation: fadeInOverlay 0.4s ease forwards; }
 
@@ -233,7 +234,6 @@
            CUSTOM COMPONENTS STYLES
            ========================================================================== */
         
-        /* 1. RIPPLE EFFECT */
         .ripple-root { position: relative; overflow: hidden; cursor: pointer; }
         .ripple-span {
             position: absolute; border-radius: 50%; transform: scale(0);
@@ -242,54 +242,23 @@
         }
         @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
 
-        /* 2. TEXT FIELD EXPRESSIVE (M3) */
         .m3-text-field {
             position: relative; background-color: var(--md-sys-color-surface-container-highest);
-            border-radius: var(--md-shape-lg);
-            display: flex; flex-direction: column; min-height: 64px; 
-            border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
+            border-radius: var(--md-shape-lg); display: flex; flex-direction: column; min-height: 64px; 
+            border: 2px solid transparent; transition: all 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
         }
-        .m3-text-field:focus-within {
-            background-color: var(--md-sys-color-surface-container);
-            border-color: var(--md-sys-color-primary);
-            transform: scale(1.02);
-        }
-        .m3-input {
-            width: 100%; border: none; outline: none; background: transparent;
-            padding: 28px 16px 12px 16px; font-size: 16px; font-weight: 600;
-            color: var(--md-sys-color-on-surface); font-family: inherit;
-        }
+        .m3-text-field:focus-within { background-color: var(--md-sys-color-surface-container); border-color: var(--md-sys-color-primary); transform: scale(1.02); }
+        .m3-input { width: 100%; border: none; outline: none; background: transparent; padding: 28px 16px 12px 16px; font-size: 16px; font-weight: 600; color: var(--md-sys-color-on-surface); font-family: inherit; }
         .m3-input.has-icon { padding-left: 56px; }
-        .m3-label {
-            position: absolute; left: 16px; top: 20px; pointer-events: none;
-            color: var(--md-sys-color-on-surface-variant); font-size: 16px; font-weight: 500;
-            transition: 0.3s cubic-bezier(0.34, 1.3, 0.64, 1); transform-origin: left top;
-        }
+        .m3-label { position: absolute; left: 16px; top: 20px; pointer-events: none; color: var(--md-sys-color-on-surface-variant); font-size: 16px; font-weight: 500; transition: 0.3s cubic-bezier(0.34, 1.3, 0.64, 1); transform-origin: left top; }
         .m3-input.has-icon ~ .m3-label { left: 56px; }
-        
-        .m3-input:focus ~ .m3-label, .m3-input.has-value ~ .m3-label {
-            transform: translateY(-12px) scale(0.75); color: var(--md-sys-color-primary);
-        }
+        .m3-input:focus ~ .m3-label, .m3-input.has-value ~ .m3-label { transform: translateY(-12px) scale(0.75); color: var(--md-sys-color-primary); }
         .m3-input.has-value:not(:focus) ~ .m3-label { color: var(--md-sys-color-on-surface-variant); }
-        
-        .m3-icon {
-            position: absolute; left: 16px; top: 20px; pointer-events: none;
-            color: var(--md-sys-color-on-surface-variant);
-        }
+        .m3-icon { position: absolute; left: 16px; top: 20px; pointer-events: none; color: var(--md-sys-color-on-surface-variant); }
         .m3-input:focus ~ .m3-icon { color: var(--md-sys-color-primary); }
 
-        /* 3. SLIDER */
-        .m3-slider {
-            -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px;
-            background: var(--md-sys-color-surface-variant); outline: none;
-        }
-        .m3-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 24px; height: 24px; border-radius: 50%;
-            background: var(--md-sys-color-primary); cursor: pointer;
-            box-shadow: 0 0 0 6px var(--md-sys-color-surface); transition: 0.2s;
-        }
+        .m3-slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: var(--md-sys-color-surface-variant); outline: none; }
+        .m3-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--md-sys-color-primary); cursor: pointer; box-shadow: 0 0 0 6px var(--md-sys-color-surface); transition: 0.2s; }
         .m3-slider::-webkit-slider-thumb:active { box-shadow: 0 0 0 12px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
@@ -318,7 +287,6 @@
 
         const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
-        // LOGIKA MURNI: Mode "Gw Banget"
         const formatModeUang = (angka, isGwBanget, context) => {
             if (isGwBanget) {
                 const abs = Math.abs(angka);
@@ -326,30 +294,13 @@
                 let res = '';
                 let hasSlang = false;
 
-                const slangs = {
-                    10000: 'Ceban',
-                    50000: 'Goban',
-                    100000: 'Cepe',
-                    150000: 'Pego'
-                };
-
-                if (slangs[abs]) {
-                    res = slangs[abs];
-                    hasSlang = true;
-                } else if (abs < 1000) {
-                    res = abs.toString();
-                } else if (abs < 1000000) {
-                    res = Math.round(abs / 1000) + 'k';
-                } else if (abs < 1000000000) {
-                    let val = parseFloat((abs / 1000000).toFixed(2));
-                    res = val.toString().replace('.', ',') + ' Juta';
-                } else if (abs < 1000000000000) {
-                    let val = parseFloat((abs / 1000000000).toFixed(2));
-                    res = val.toString().replace('.', ',') + ' Miliar';
-                } else {
-                    let val = parseFloat((abs / 1000000000000).toFixed(2));
-                    res = val.toString().replace('.', ',') + ' Triliun';
-                }
+                const slangs = { 10000: 'Ceban', 50000: 'Goban', 100000: 'Cepe', 150000: 'Pego' };
+                if (slangs[abs]) { res = slangs[abs]; hasSlang = true; } 
+                else if (abs < 1000) { res = abs.toString(); } 
+                else if (abs < 1000000) { res = Math.round(abs / 1000) + 'k'; } 
+                else if (abs < 1000000000) { let val = parseFloat((abs / 1000000).toFixed(2)); res = val.toString().replace('.', ',') + ' Juta'; } 
+                else if (abs < 1000000000000) { let val = parseFloat((abs / 1000000000).toFixed(2)); res = val.toString().replace('.', ',') + ' Miliar'; } 
+                else { let val = parseFloat((abs / 1000000000000).toFixed(2)); res = val.toString().replace('.', ',') + ' Triliun'; }
 
                 if (isNeg) return `Nombok ${res}`;
                 if (context === 'cuan') return hasSlang ? res : `Rp${res}`;
@@ -401,31 +352,19 @@
              }
         };
 
-        // KONVERTER JSON KE CSV (Tanpa Library Eksternal biar ga berat)
         const jsonToCsv = (items) => {
             if (!items || !items.length) return '';
-            
             const headers = ['ID', 'Tanggal', 'Jenis', 'Nama / Keterangan', 'Pelanggan', 'Modal', 'Jual', 'Jumlah', 'Total Laba', 'Status'];
             let csvContent = headers.join(',') + '\r\n';
-
             items.forEach(item => {
-                const row = [
-                    `"${item.id}"`,
-                    `"${item.tanggal}"`,
-                    `"${item.jenis}"`,
-                    `"${item.nama.replace(/"/g, '""')}"`, // Escape tanda kutip biar ga berantakan di excel
-                    `"${item.pelanggan.replace(/"/g, '""')}"`,
-                    item.modal,
-                    item.jual,
-                    item.jumlah,
-                    item.laba,
-                    `"${item.status}"`
-                ];
+                const row = [`"${item.id}"`, `"${item.tanggal}"`, `"${item.jenis}"`, `"${item.nama.replace(/"/g, '""')}"`, `"${item.pelanggan.replace(/"/g, '""')}"`, item.modal, item.jual, item.jumlah, item.laba, `"${item.status}"`];
                 csvContent += row.join(',') + '\r\n';
             });
-
             return csvContent;
         };
+
+        // URUTAN TAB BUAT LOGIKA SLIDE / SWIPE
+        const TABS_ORDER = ['dasbor', 'catet', 'riwayat', 'analisis', 'seting'];
 
         // ==========================================================================
         // CONTEXT: GLOBAL STATE
@@ -433,11 +372,24 @@
         const AppContext = createContext();
 
         const AppProvider = ({ children }) => {
-            const [activeTab, setActiveTab] = useState('dasbor');
+            const [activeTabRaw, setActiveTabRaw] = useState('dasbor');
+            const [tabDirection, setTabDirection] = useState('initial'); // 'initial', 'forward', 'backward'
+            
             const [transactions, setTransactions] = useState([]);
             const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false });
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
+
+            // Fungsi ubah Tab khusus, dengan logika hitung kedalaman numpuk
+            const setActiveTab = useCallback((newTab) => {
+                const oldIdx = TABS_ORDER.indexOf(activeTabRaw);
+                const newIdx = TABS_ORDER.indexOf(newTab);
+                if (oldIdx === newIdx) return;
+                
+                // Set arah animasi
+                setTabDirection(newIdx > oldIdx ? 'forward' : 'backward');
+                setActiveTabRaw(newTab);
+            }, [activeTabRaw]);
 
             useEffect(() => {
                 const savedDb = localStorage.getItem('zp_m3_data');
@@ -476,7 +428,11 @@
             };
 
             return (
-                <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, selectedItem, setSelectedItem, activeTab, setActiveTab }}>
+                <AppContext.Provider value={{ 
+                    transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, 
+                    selectedItem, setSelectedItem, 
+                    activeTab: activeTabRaw, setActiveTab, tabDirection 
+                }}>
                     {children}
                 </AppContext.Provider>
             );
@@ -485,7 +441,6 @@
         // ==========================================================================
         // M3 UI COMPONENTS
         // ==========================================================================
-        
         const Ripple = ({ children, className = '', onClick, onPointerDown, onPointerUp, onPointerMove, onPointerLeave, style }) => {
             const [ripples, setRipples] = useState([]);
             
@@ -640,17 +595,15 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, settings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
+            const { transactions, settings, setTransactions, showSnackbar, setSelectedItem, setActiveTab, tabDirection } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0);
             const [showProgres, setShowProgres] = useState(false);
 
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
             const periodData = filterByPeriod(transactions, settings.periodFormat, periodOffset);
-            
             const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + i.laba, 0);
             const omset = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.jual * i.jumlah), 0);
-            
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             
             const handlePrevPeriod = () => setPeriodOffset(prev => prev - 1);
@@ -661,8 +614,10 @@
                 showSnackbar('Cakep! Kerjaan kelar bos');
             };
 
+            const animClass = tabDirection === 'forward' ? 'anim-forward' : tabDirection === 'backward' ? 'anim-backward' : 'animate-page';
+
             return (
-                <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className={`tab-content-area p-4 space-y-6 ${animClass} h-full overflow-y-auto no-scrollbar pb-32`} style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <div className="flex justify-between items-end mb-2">
                         <div>
                             <h1 className="text-3xl font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">Zona Phonecell</h1>
@@ -840,7 +795,7 @@
 
         // --- TAB 2: CATET (FORM BARU) ---
         const TabCatet = () => {
-            const { setTransactions, showSnackbar } = useContext(AppContext);
+            const { setTransactions, showSnackbar, tabDirection } = useContext(AppContext);
             
             const [jenis, setJenis] = useState('Servis');
             const [nama, setNama] = useState('');
@@ -848,7 +803,6 @@
             const [modalStr, setModalStr] = useState('');
             const [jualStr, setJualStr] = useState('');
             const [jumlah, setJumlah] = useState(1);
-
             const [subTopUp, setSubTopUp] = useState('Pulsa');
             const [viaTopUp, setViaTopUp] = useState('Bank');
 
@@ -859,31 +813,26 @@
 
             const handleSave = () => {
                 if(!nama.trim()) { showSnackbar('Woi, Keterangan / Tujuan isi dulu!'); return; }
-                
-                const m = getRawNumber(modalStr); 
-                const j = getRawNumber(jualStr) || 0; 
-                
+                const m = getRawNumber(modalStr); const j = getRawNumber(jualStr) || 0; 
                 let finalNama = nama.trim();
                 if(isTopUp) finalNama = `Top Up ${subTopUp} (${viaTopUp}) - ${finalNama}`;
 
                 const newData = {
                     id: generateId(), tanggal: new Date().toISOString(),
                     jenis, nama: finalNama, pelanggan: pelanggan.trim() || 'Hamba Allah',
-                    modal: m, jual: j, jumlah: jumlah,
-                    laba: (j - m) * jumlah, status: 'Beres'
+                    modal: m, jual: j, jumlah: jumlah, laba: (j - m) * jumlah, status: 'Beres'
                 };
 
-                setTransactions(prev => [newData, ...prev]); 
-                showSnackbar('Mantap! Duit dicatet 🤑'); 
-                
+                setTransactions(prev => [newData, ...prev]); showSnackbar('Mantap! Duit dicatet 🤑'); 
                 setNama(''); setPelanggan(''); setModalStr(''); setJualStr(''); setJumlah(1);
             };
 
             const laba = ((getRawNumber(jualStr) || 0) - getRawNumber(modalStr)) * jumlah;
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'phone_iphone' };
+            const animClass = tabDirection === 'forward' ? 'anim-forward' : tabDirection === 'backward' ? 'anim-backward' : 'animate-page';
 
             return (
-                <div className="tab-content-area p-4 space-y-4 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className={`tab-content-area p-4 space-y-4 ${animClass} h-full overflow-y-auto no-scrollbar pb-32`} style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Catet Duit Bos.</h1>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
@@ -955,7 +904,7 @@
 
         // --- TAB 3: RIWAYAT ---
         const TabRiwayat = () => {
-            const { transactions, setTransactions, showSnackbar, setSelectedItem } = useContext(AppContext);
+            const { transactions, setTransactions, showSnackbar, setSelectedItem, tabDirection } = useContext(AppContext);
             const [search, setSearch] = useState('');
             const [filterType, setFilterType] = useState('Semua');
             
@@ -976,11 +925,7 @@
                 return () => { if (selectedIds.length > 0) window.removeEventListener('popstate', handlePopState); };
             }, [selectedIds]);
 
-            const closeSelectionModeUI = () => {
-                if (window.history.state && window.history.state.selectionMode) { window.history.back(); }
-                else { setSelectedIds([]); }
-            };
-
+            const closeSelectionModeUI = () => { if (window.history.state && window.history.state.selectionMode) { window.history.back(); } else { setSelectedIds([]); } };
             const toggleSelection = (id) => { setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]); };
 
             const handleBulkDelete = () => {
@@ -997,8 +942,10 @@
                 closeSelectionModeUI(); showSnackbar(`${newItems.length} dicopy, gasss!`);
             };
 
+            const animClass = tabDirection === 'forward' ? 'anim-forward' : tabDirection === 'backward' ? 'anim-backward' : 'animate-page';
+
             return (
-                <div className="tab-content-area flex flex-col h-full animate-page relative" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className={`tab-content-area flex flex-col h-full ${animClass} relative`} style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     
                     {isSelectionMode && (
                         <div className="absolute top-0 left-0 right-0 z-[60] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] h-20 flex items-center justify-between px-4 animate-appbar-down shadow-lg rounded-b-[var(--md-shape-2xl)] border-b border-[var(--md-sys-color-outline-variant)]" style={{ paddingTop: 'var(--sa-top)', height: 'calc(80px + var(--sa-top))' }}>
@@ -1009,12 +956,8 @@
                                 <span className="text-xl font-bold">{selectedIds.length} Dipilih</span>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={handleBulkCopy} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 spring-bounce active:scale-90">
-                                    <span className="material-symbols-rounded text-2xl">content_copy</span>
-                                </button>
-                                <button onClick={handleBulkDelete} className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--md-sys-color-error)]/20 hover:bg-[var(--md-sys-color-error)]/30 text-[var(--md-sys-color-error)] spring-bounce active:scale-90">
-                                    <span className="material-symbols-rounded text-2xl">delete</span>
-                                </button>
+                                <button onClick={handleBulkCopy} className="w-12 h-12 rounded-full flex items-center justify-center bg-black/10 hover:bg-black/20 spring-bounce active:scale-90"><span className="material-symbols-rounded text-2xl">content_copy</span></button>
+                                <button onClick={handleBulkDelete} className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--md-sys-color-error)]/20 hover:bg-[var(--md-sys-color-error)]/30 text-[var(--md-sys-color-error)] spring-bounce active:scale-90"><span className="material-symbols-rounded text-2xl">delete</span></button>
                             </div>
                         </div>
                     )}
@@ -1033,8 +976,7 @@
                             {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(f => (
                                 <button key={f} onClick={() => setFilterType(f)}
                                     className={`px-6 h-12 rounded-full text-[15px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 ${
-                                        filterType === f 
-                                        ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
+                                        filterType === f ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
                                         : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
                                     }`}>{f}</button>
                             ))}
@@ -1049,9 +991,7 @@
                             </div>
                         ) : (
                             filteredData.map(item => (
-                                <ActivityItem key={item.id} item={item} 
-                                              selectable={isSelectionMode} selected={selectedIds.includes(item.id)}
-                                              onSelect={() => toggleSelection(item.id)} onClick={() => setSelectedItem(item)} />
+                                <ActivityItem key={item.id} item={item} selectable={isSelectionMode} selected={selectedIds.includes(item.id)} onSelect={() => toggleSelection(item.id)} onClick={() => setSelectedItem(item)} />
                             ))
                         )}
                     </div>
@@ -1061,21 +1001,17 @@
 
         // --- TAB 4: ANALISIS ---
         const TabAnalisis = () => {
-            const { transactions, settings } = useContext(AppContext);
+            const { transactions, settings, tabDirection } = useContext(AppContext);
             const refLine = useRef(null); const refPie = useRef(null); const refBar = useRef(null);
             const inst = useRef({ line: null, pie: null, bar: null });
-            
             const [sheetInfo, setSheetInfo] = useState(null);
 
             const getColors = useCallback(() => {
                 const style = getComputedStyle(document.body);
                 return {
-                    primary: style.getPropertyValue('--md-sys-color-primary').trim(),
-                    tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
-                    error: style.getPropertyValue('--md-sys-color-error').trim(),
-                    secondary: style.getPropertyValue('--md-sys-color-secondary').trim(),
-                    text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(),
-                    grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
+                    primary: style.getPropertyValue('--md-sys-color-primary').trim(), tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
+                    error: style.getPropertyValue('--md-sys-color-error').trim(), secondary: style.getPropertyValue('--md-sys-color-secondary').trim(),
+                    text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(), grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
                     bg: style.getPropertyValue('--md-sys-color-surface-container-low').trim()
                 };
             }, [settings.theme]);
@@ -1085,68 +1021,29 @@
                 const format = settings.periodFormat;
                 
                 if (format === 'Hari') {
-                    labels = [...Array(7)].map((_, i) => { 
-                        const d = new Date(); d.setDate(d.getDate() - (6 - i)); 
-                        return d.toLocaleDateString('id-ID', { weekday:'short'}); 
-                    });
+                    labels = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toLocaleDateString('id-ID', { weekday:'short'}); });
                     dataPoints = [...Array(7)].map((_, i) => {
-                        const d = new Date(); d.setDate(d.getDate() - (6 - i));
-                        const targetDate = d.toISOString().split('T')[0];
+                        const d = new Date(); d.setDate(d.getDate() - (6 - i)); const targetDate = d.toISOString().split('T')[0];
                         return transactions.filter(t => t.tanggal.startsWith(targetDate) && t.status === 'Beres').reduce((s,i) => s + i.laba, 0);
                     });
                 } else if (format === 'Minggu') {
-                    for (let i = 3; i >= 0; i--) {
-                        labels.push(`M-${i === 0 ? 'Ini' : i}`);
-                        const wData = filterByPeriod(transactions, 'Minggu', -i);
-                        dataPoints.push(wData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0));
-                    }
+                    for (let i = 3; i >= 0; i--) { labels.push(`M-${i === 0 ? 'Ini' : i}`); const wData = filterByPeriod(transactions, 'Minggu', -i); dataPoints.push(wData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0)); }
                 } else {
-                    for (let i = 5; i >= 0; i--) {
-                        const d = new Date(); d.setMonth(d.getMonth() - i);
-                        labels.push(d.toLocaleDateString('id-ID', { month: 'short' }));
-                        const mData = filterByPeriod(transactions, 'Bulan', -i);
-                        dataPoints.push(mData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0));
-                    }
+                    for (let i = 5; i >= 0; i--) { const d = new Date(); d.setMonth(d.getMonth() - i); labels.push(d.toLocaleDateString('id-ID', { month: 'short' })); const mData = filterByPeriod(transactions, 'Bulan', -i); dataPoints.push(mData.filter(t => t.status === 'Beres').reduce((s,x) => s + x.laba, 0)); }
                 }
                 return { labels, dataPoints };
             };
 
             useEffect(() => {
                 if (transactions.length === 0) return;
-                const c = getColors();
-                Object.values(inst.current).forEach(chart => chart && chart.destroy());
-                
-                Chart.defaults.font.family = "'Readex Pro', sans-serif";
-                Chart.defaults.font.weight = 'bold';
-                Chart.defaults.color = c.text;
-
+                const c = getColors(); Object.values(inst.current).forEach(chart => chart && chart.destroy());
+                Chart.defaults.font.family = "'Readex Pro', sans-serif"; Chart.defaults.font.weight = 'bold'; Chart.defaults.color = c.text;
                 const { labels: lineLabels, dataPoints: lineData } = getChartData();
-
-                inst.current.line = new Chart(refLine.current.getContext('2d'), {
-                    type: 'line',
-                    data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } }
-                });
-
+                inst.current.line = new Chart(refLine.current.getContext('2d'), { type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } } });
                 const counts = ['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Beres').length);
-                inst.current.pie = new Chart(refPie.current.getContext('2d'), {
-                    type: 'doughnut',
-                    data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } }
-                });
-
-                const itemsMap = {};
-                transactions.filter(t=>t.status==='Beres' && (t.jenis==='Sparepart' || t.jenis==='Aksesoris')).forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; });
-                const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
-
-                if(topItems.length > 0 && refBar.current) {
-                    inst.current.bar = new Chart(refBar.current.getContext('2d'), {
-                        type: 'bar',
-                        data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 8 }] },
-                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false} } } }
-                    });
-                }
-
+                inst.current.pie = new Chart(refPie.current.getContext('2d'), { type: 'doughnut', data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } } });
+                const itemsMap = {}; transactions.filter(t=>t.status==='Beres' && (t.jenis==='Sparepart' || t.jenis==='Aksesoris')).forEach(t => { itemsMap[t.nama] = (itemsMap[t.nama] || 0) + t.jumlah; }); const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
+                if(topItems.length > 0 && refBar.current) { inst.current.bar = new Chart(refBar.current.getContext('2d'), { type: 'bar', data: { labels: topItems.map(i=>i[0]), datasets: [{ data: topItems.map(i=>i[1]), backgroundColor: c.tertiary, borderRadius: 8 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { x: { display: false }, y: { grid: {display:false} } } } }); }
                 return () => Object.values(inst.current).forEach(chart => chart && chart.destroy());
             }, [transactions, settings.theme, settings.periodFormat, getColors]);
 
@@ -1154,37 +1051,24 @@
             const totalOmset = totalSelesai.reduce((s,i) => s + (i.jual * i.jumlah), 0);
             const totalLaba = totalSelesai.reduce((s,i) => s + i.laba, 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
-
+            
             const groupedByMonth = useMemo(() => {
                 const groups = {};
                 totalSelesai.forEach(t => {
                     const d = new Date(t.tanggal);
                     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
                     const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-                    
-                    if (!groups[key]) groups[key] = { 
-                        label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, 
-                        count: 0, countServis: 0, countBarang: 0, countTopUp: 0, itemsLaku: 0 
-                    };
-                    
-                    groups[key].totalOmset += (t.jual * t.jumlah);
-                    groups[key].totalLaba += t.laba;
-                    groups[key].totalModal += (t.modal * t.jumlah);
-                    groups[key].count += 1;
-                    if(t.jenis === 'Servis') {
-                        groups[key].countServis += 1;
-                    } else if (t.jenis === 'Top Up') {
-                        groups[key].countTopUp += 1;
-                    } else {
-                        groups[key].countBarang += 1;
-                        groups[key].itemsLaku += t.jumlah;
-                    }
+                    if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, count: 0, countServis: 0, countBarang: 0, countTopUp: 0, itemsLaku: 0 };
+                    groups[key].totalOmset += (t.jual * t.jumlah); groups[key].totalLaba += t.laba; groups[key].totalModal += (t.modal * t.jumlah); groups[key].count += 1;
+                    if(t.jenis === 'Servis') { groups[key].countServis += 1; } else if (t.jenis === 'Top Up') { groups[key].countTopUp += 1; } else { groups[key].countBarang += 1; groups[key].itemsLaku += t.jumlah; }
                 });
                 return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); 
             }, [totalSelesai]);
 
+            const animClass = tabDirection === 'forward' ? 'anim-forward' : tabDirection === 'backward' ? 'anim-backward' : 'animate-page';
+
             return (
-                <div className="tab-content-area p-4 space-y-5 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className={`tab-content-area p-4 space-y-5 ${animClass} h-full overflow-y-auto no-scrollbar pb-32`} style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] mb-2 tracking-tight px-2">Ngecek Cuan.</h1>
                     
                     <div className="grid grid-cols-2 gap-4">
@@ -1203,61 +1087,38 @@
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)]">Grafik Cuan ({settings.periodFormat})</h3>
-                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]">
-                                <span className="material-symbols-rounded text-xl">show_chart</span>
-                            </div>
+                            <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]"><span className="material-symbols-rounded text-xl">show_chart</span></div>
                         </div>
-                        <div className="h-[220px] relative">
-                            {transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}
-                        </div>
+                        <div className="h-[220px] relative">{transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}</div>
                     </div>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                         <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Dari Mana Aja?</h3>
-                        <div className="h-[180px] relative">
-                            {transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}
-                        </div>
+                        <div className="h-[180px] relative">{transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}</div>
                     </div>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                         <h3 className="font-extrabold text-lg text-[var(--md-sys-color-on-surface)] mb-6">Barang Paling Laku</h3>
-                        <div className="h-[180px] relative">
-                            {transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}
-                        </div>
+                        <div className="h-[180px] relative">{transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-16 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}</div>
                     </div>
                     
                     <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
                         <div className="space-y-4 pt-2">
-                            <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">
-                                {sheetInfo === 'margin' ? 'Rincian detail perputaran duit & persentase margin laba per-bulan bos.' : 'Rekap mendalam hasil garapan per-bulannya bos.'}
-                            </p>
-                            
-                            {groupedByMonth.length === 0 && (
-                                <div className="py-8 text-center text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] rounded-[var(--md-shape-2xl)]">
-                                    <span className="material-symbols-rounded text-6xl mb-2 opacity-50">inbox</span>
-                                    <p className="font-bold text-lg">Belom ada garapan kelar bos</p>
-                                </div>
-                            )}
-
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">{sheetInfo === 'margin' ? 'Rincian detail perputaran duit & persentase margin laba per-bulan bos.' : 'Rekap mendalam hasil garapan per-bulannya bos.'}</p>
+                            {groupedByMonth.length === 0 && (<div className="py-8 text-center text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] rounded-[var(--md-shape-2xl)]"><span className="material-symbols-rounded text-6xl mb-2 opacity-50">inbox</span><p className="font-bold text-lg">Belom ada garapan kelar bos</p></div>)}
                             {groupedByMonth.map((grp, idx) => {
                                 const mrg = grp.totalOmset > 0 ? ((grp.totalLaba / grp.totalOmset) * 100).toFixed(1) : 0;
-                                
                                 return (
                                     <div key={idx} className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-[var(--md-shape-2xl)] space-y-3 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                                         <h4 className="font-extrabold text-[var(--md-sys-color-primary)] text-lg mb-2">{grp.label}</h4>
-                                        
                                         {sheetInfo === 'margin' ? (
                                             <>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Modal Dikeluarin</span><span className="font-bold text-[14px] text-[var(--md-sys-color-error)]">Rp{formatRupiah(grp.totalModal)}</span></div>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk (Kotor)</span><span className="font-bold text-[14px] text-[var(--md-sys-color-success)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Rata² Cuan per Nota</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(Math.round(grp.totalLaba/grp.count))}</span></div>
-                                                
                                                 <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
                                                     <span className="font-bold text-[13px] uppercase tracking-wide">Margin Total</span>
-                                                    <div className="text-right">
-                                                        <span className="block text-xl font-extrabold text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span>
-                                                        <span className="block text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">{mrg}% dari Omset</span>
-                                                    </div>
+                                                    <div className="text-right"><span className="block text-xl font-extrabold text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span><span className="block text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">{mrg}% dari Omset</span></div>
                                                 </div>
                                             </>
                                         ) : (
@@ -1266,7 +1127,6 @@
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Top Up</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countTopUp} Trx</span></div>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Jual Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Nota</span></div>
                                                 <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Total Pcs Barang Laku</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.itemsLaku} Pcs</span></div>
-                                                
                                                 <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
                                                     <span className="font-bold text-[13px] uppercase tracking-wide">Total Nota Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Nota</span>
                                                 </div>
@@ -1283,93 +1143,49 @@
 
         // --- TAB 5: SETING ---
         const TabSeting = () => {
-            const { settings, setSettings, transactions, setTransactions, showSnackbar } = useContext(AppContext);
+            const { settings, setSettings, transactions, setTransactions, showSnackbar, tabDirection } = useContext(AppContext);
+            const [showPasteModal, setShowPasteModal] = useState(false);
+            const [pasteText, setPasteText] = useState('');
 
             const themes = [
                 { id: 'blue', color: '#9ecaeb' }, { id: 'green', color: '#83da93' }, { id: 'orange', color: '#ffb77c' },
                 { id: 'purple', color: '#d0bcff' }, { id: 'red', color: '#ffb4ab' }, { id: 'teal', color: '#4fd8eb' }
             ];
 
-            // LOGIKA EXPORT BUAT APK (Pake Web Share API)
             const handleExportFile = async (type) => {
-                if (transactions.length === 0) {
-                    showSnackbar('Data masih kosong bos, ga ada yang bisa di-export.');
-                    return;
-                }
-
-                const isCSV = type === 'csv';
-                const dateStr = new Date().getTime();
-                const fileName = `ZonaPoncell_Export_${dateStr}.${isCSV ? 'csv' : 'json'}`;
-                
-                let fileContent = '';
-                let mimeType = '';
-
-                if (isCSV) {
-                    fileContent = jsonToCsv(transactions);
-                    mimeType = 'text/csv';
-                } else {
-                    fileContent = JSON.stringify(transactions);
-                    mimeType = 'application/json';
-                }
-
+                if (transactions.length === 0) { showSnackbar('Data masih kosong bos, ga ada yang bisa di-export.'); return; }
+                const isCSV = type === 'csv'; const dateStr = new Date().getTime(); const fileName = `ZonaPoncell_Export_${dateStr}.${isCSV ? 'csv' : 'json'}`;
+                let fileContent = ''; let mimeType = '';
+                if (isCSV) { fileContent = jsonToCsv(transactions); mimeType = 'text/csv'; } else { fileContent = JSON.stringify(transactions); mimeType = 'application/json'; }
                 const blob = new Blob([fileContent], { type: mimeType });
                 
-                // Cek apakah browser / webview support Share API untuk file
                 if (navigator.share && navigator.canShare) {
                     const file = new File([blob], fileName, { type: mimeType });
                     if (navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: `Export Data ${isCSV ? 'Excel/CSV' : 'JSON'}`,
-                                text: 'Nih bos datanya.'
-                            });
-                            showSnackbar('Mantap, file berhasil dikirim/disimpen 🚀');
-                            return; // Kalo sukses share, stop disini.
-                        } catch (err) {
-                            console.log('Share batal atau gagal:', err);
-                            // Kalo user batalin share gapapa, lanjoot ke fallback kalo emang error.
-                            if (err.name !== 'AbortError') showSnackbar('Share gagal, nyoba cara download biasa...');
-                            else return;
-                        }
+                        try { await navigator.share({ files: [file], title: `Export Data ${isCSV ? 'Excel/CSV' : 'JSON'}`, text: 'Nih bos datanya.' }); showSnackbar('Mantap, file berhasil dikirim/disimpen 🚀'); return; } catch (err) { if (err.name !== 'AbortError') showSnackbar('Share gagal, nyoba cara download biasa...'); else return; }
                     }
                 }
-
-                // Fallback: Kalo Share API ga support (misal di PC / Webview versi jadul)
-                // Pake cara download standard <a>
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
                 showSnackbar(`Sip, Data di-download sbg ${type.toUpperCase()}`);
             };
 
-            // Restore tetep pake <input type="file"> karena ini standar native dialog Android (kalo diset di WebChromeClient apk lu)
-            const handleRestore = (e) => {
-                const file = e.target.files[0]; if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const json = JSON.parse(event.target.result);
-                        if(Array.isArray(json)) { setTransactions(json); showSnackbar('Mantap, Data balik lagi'); }
-                    } catch(err) { showSnackbar('File ga jelas bos, gagal!'); }
-                };
-                reader.readAsText(file);
-                e.target.value = ''; // Reset input
+            const handleRestoreFile = (e) => {
+                const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+                reader.onload = (event) => { try { const json = JSON.parse(event.target.result); if(Array.isArray(json)) { setTransactions(json); showSnackbar('Mantap, Data balik lagi'); } } catch(err) { showSnackbar('File ga jelas bos, gagal!'); } };
+                reader.readAsText(file); e.target.value = ''; 
             };
 
-            const handleClear = () => {
-                if(confirm('WOI PERINGATAN! Ini bakal hapus SEMUA data lo secara permanen. Lanjutin bakar data?')) {
-                    setTransactions([]); showSnackbar('BUM! Semua data udah hangus 🔥');
-                }
+            const handleRestorePaste = () => {
+                if(!pasteText.trim()) { showSnackbar('Isi dulu woi teksnya!'); return; }
+                try { const json = JSON.parse(pasteText); if(Array.isArray(json)) { setTransactions(json); showSnackbar('Cakep! Data berhasil disedot dari teks.'); setPasteText(''); setShowPasteModal(false); } else { showSnackbar('Teksnya bukan format data yang bener bos!'); } } catch(err) { showSnackbar('Teks ga valid / rusak, coba copy ulang file JSON nya.'); }
             };
+
+            const handleClear = () => { if(confirm('WOI PERINGATAN! Ini bakal hapus SEMUA data lo secara permanen. Lanjutin bakar data?')) { setTransactions([]); showSnackbar('BUM! Semua data udah hangus 🔥'); } };
+
+            const animClass = tabDirection === 'forward' ? 'anim-forward' : tabDirection === 'backward' ? 'anim-backward' : 'animate-page';
 
             return (
-                <div className="tab-content-area p-4 space-y-6 animate-page h-full overflow-y-auto no-scrollbar pb-32" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
+                <div className={`tab-content-area p-4 space-y-6 ${animClass} h-full overflow-y-auto no-scrollbar pb-32`} style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
                     <h1 className="text-3xl font-bold text-[var(--md-sys-color-on-surface)] tracking-tight mb-4 px-2">Settingan.</h1>
 
                     <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-[var(--md-shape-3xl)] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]">
@@ -1420,15 +1236,22 @@
 
                         <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => handleExportFile('json')}>
                             <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">save</span></div>
-                            <div className="text-left"><p className="font-bold text-base">Backup Mentahan (JSON)</p><p className="text-[13px] font-medium opacity-70">Buat jaga-jaga kalo error</p></div>
+                            <div className="text-left"><p className="font-bold text-base">Backup Mentahan (JSON)</p><p className="text-[13px] font-medium opacity-70">Wajib rutin di-backup</p></div>
                         </Ripple>
 
+                        <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
+
                         <label className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors cursor-pointer active:scale-[0.98] spring-bounce">
-                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload</span></div>
-                            <div className="text-left"><p className="font-bold text-base">Restore Data (JSON)</p><p className="text-[13px] font-medium opacity-70">Masukin file backup lu</p></div>
-                            <input type="file" accept=".json" className="hidden" onChange={handleRestore} />
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">upload_file</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Restore Data (Pilih File)</p><p className="text-[13px] font-medium opacity-70">Tarik file backup JSON</p></div>
+                            <input type="file" accept=".json" className="hidden" onChange={handleRestoreFile} />
                         </label>
                         
+                        <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-variant)] transition-colors" onClick={() => setShowPasteModal(true)}>
+                            <div className="w-12 h-12 rounded-[20px] bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center mr-5 shrink-0 shadow-sm"><span className="material-symbols-rounded text-[24px]">content_paste</span></div>
+                            <div className="text-left"><p className="font-bold text-base">Restore Data (Paste Teks)</p><p className="text-[13px] font-medium opacity-70">Alternatif kalo pilih file gagal</p></div>
+                        </Ripple>
+
                         <div className="w-full h-[1px] bg-[var(--md-sys-color-outline-variant)] my-2 opacity-50"></div>
                         
                         <Ripple className="w-full flex items-center p-4 rounded-[var(--md-shape-2xl)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)] hover:text-[var(--md-sys-color-on-error-container)] transition-colors group" onClick={handleClear}>
@@ -1437,67 +1260,42 @@
                         </Ripple>
                     </div>
                     <p className="text-center text-[12px] text-[var(--md-sys-color-on-surface-variant)] pt-4 pb-6 tracking-widest uppercase font-extrabold opacity-50">Zona Poncell M3 Pro • Bos Edition</p>
+
+                    <BottomSheet isOpen={showPasteModal} onClose={() => { setShowPasteModal(false); setPasteText(''); }} title="Paste Data Backup">
+                        <div className="space-y-4 pt-2 flex flex-col h-full">
+                            <p className="text-sm font-medium text-[var(--md-sys-color-on-surface-variant)]">Kalo tombol "Pilih File" ga fungsi di HP lu, buka file JSON backup lu pake editor teks. Terus Copy semua isinya, dan Paste di kotak bawah ini bos.</p>
+                            <textarea className="flex-1 w-full p-4 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] border-2 border-transparent focus:border-[var(--md-sys-color-primary)] outline-none resize-none no-scrollbar font-mono text-xs h-48" placeholder='Paste teks berawalan [ { "id": ... } ] disini...' value={pasteText} onChange={(e) => setPasteText(e.target.value)}></textarea>
+                            <Button onClick={handleRestorePaste} icon="download" fullWidth className="h-16 text-lg mt-2">Sedot Data Sekarang</Button>
+                        </div>
+                    </BottomSheet>
                 </div>
             );
         };
 
-        // --- SHEET DETAIL (GLOBAL) ---
         const DetailSheet = () => {
             const { transactions, setTransactions, showSnackbar, selectedItem: item, setSelectedItem } = useContext(AppContext);
-            
             const onClose = () => setSelectedItem(null);
-
             if (!item) return null;
-
             const currentItem = transactions.find(t => t.id === item.id) || item;
-
-            const updateStatus = (newStatus) => {
-                setTransactions(prev => prev.map(t => t.id === currentItem.id ? {...t, status: newStatus} : t));
-                showSnackbar(`Sip, Status diubah ke ${newStatus}`);
-            };
-
-            const handleDelete = () => {
-                if(confirm('Yakin mau buang data ini ke tong sampah?')) {
-                    setTransactions(prev => prev.filter(t => t.id !== currentItem.id));
-                    showSnackbar('Satu data dibuang'); onClose();
-                }
-            };
-
+            const updateStatus = (newStatus) => { setTransactions(prev => prev.map(t => t.id === currentItem.id ? {...t, status: newStatus} : t)); showSnackbar(`Sip, Status diubah ke ${newStatus}`); };
+            const handleDelete = () => { if(confirm('Yakin mau buang data ini ke tong sampah?')) { setTransactions(prev => prev.filter(t => t.id !== currentItem.id)); showSnackbar('Satu data dibuang'); onClose(); } };
             const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'account_balance_wallet' };
 
             return (
                 <BottomSheet isOpen={!!item} onClose={onClose} title="Detailnya Nih">
                     <div className="space-y-5 pt-4">
                         <div className="text-center bg-[var(--md-sys-color-surface)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <span className="material-symbols-rounded text-[100px]">{iconMap[currentItem.jenis]}</span>
-                            </div>
+                            <div className="absolute top-0 right-0 p-4 opacity-10"><span className="material-symbols-rounded text-[100px]">{iconMap[currentItem.jenis]}</span></div>
                             <h2 className="text-2xl font-extrabold text-[var(--md-sys-color-on-surface)] mb-2 leading-tight relative z-10">{currentItem.nama}</h2>
                             <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm font-medium mb-4 relative z-10">{formatDateLong(currentItem.tanggal)}</p>
-                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm">
-                                <span className="material-symbols-rounded text-lg">person</span> {currentItem.pelanggan}
-                            </div>
+                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">person</span> {currentItem.pelanggan}</div>
                         </div>
 
                         <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-3xl)] p-6 shadow-md border border-[var(--md-sys-color-outline-variant)]">
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span>
-                                <span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem.jumlah}x</span>
-                            </div>
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span>
-                                <span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem.modal)}</span>
-                            </div>
-                            <div className="flex justify-between items-center mb-6">
-                                <span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span>
-                                <span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem.jual)}</span>
-                            </div>
-                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center">
-                                <div>
-                                    <span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span>
-                                </div>
-                                <span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem.laba)}</span>
-                            </div>
+                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span><span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem.jumlah}x</span></div>
+                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem.modal)}</span></div>
+                            <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem.jual)}</span></div>
+                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center"><div><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span></div><span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem.laba)}</span></div>
                         </div>
 
                         <div>
@@ -1508,19 +1306,11 @@
                                     if (s === 'Beres') activeClass = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] border-transparent shadow-lg scale-[1.03]';
                                     else if (s === 'Jalan') activeClass = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] border-transparent shadow-lg scale-[1.03]';
                                     else if (s === 'Gagal') activeClass = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border-transparent shadow-lg scale-[1.03]';
-                                    
                                     const inactiveClass = 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)] active:scale-95';
-
-                                    return (
-                                        <button key={s} onClick={() => updateStatus(s)}
-                                            className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 spring-bounce ${currentItem.status === s ? activeClass : inactiveClass}`}>
-                                            {s}
-                                        </button>
-                                    );
+                                    return (<button key={s} onClick={() => updateStatus(s)} className={`flex-1 h-14 rounded-[var(--md-shape-xl)] text-[15px] font-extrabold border-2 spring-bounce ${currentItem.status === s ? activeClass : inactiveClass}`}>{s}</button>);
                                 })}
                             </div>
                         </div>
-
                         <Button variant="text" icon="delete" fullWidth className="text-[var(--md-sys-color-error)] mt-4 h-16 bg-[var(--md-sys-color-error-container)]/10 hover:bg-[var(--md-sys-color-error-container)]/30 rounded-[var(--md-shape-2xl)]" onClick={handleDelete}>Buang Data Ini</Button>
                     </div>
                 </BottomSheet>
@@ -1528,10 +1318,14 @@
         };
 
         // ==========================================================================
-        // APP SHELL
+        // APP SHELL (DILENGKAPI FITUR SWIPE)
         // ==========================================================================
         const MainApp = () => {
             const { settings, activeTab, setActiveTab } = useContext(AppContext);
+            
+            // Sensor pergerakan Swipe
+            const touchStartX = useRef(0);
+            const touchStartY = useRef(0);
 
             if (!settings.hasStarted) return <SplashScreen />;
 
@@ -1543,9 +1337,41 @@
                 { id: 'seting', icon: 'tune', label: 'Seting' }
             ];
 
+            const handleTouchStart = (e) => {
+                touchStartX.current = e.touches[0].clientX;
+                touchStartY.current = e.touches[0].clientY;
+            };
+
+            const handleTouchEnd = (e) => {
+                // Biar user tetep bisa ngetik/scroll slider/scroll kategori tanpa ngubah tab
+                const target = e.target.tagName.toLowerCase();
+                const isInput = target === 'input' || target === 'textarea';
+                const isHorizontalScrollArea = e.target.closest('.overflow-x-auto') !== null;
+                if (isInput || isHorizontalScrollArea) return;
+
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchStartX.current - touchEndX;
+                const deltaY = touchStartY.current - touchEndY;
+
+                // Hitung arah: Dominan horizontal & harus nge-geser minimal 50px
+                if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                    const currentIndex = TABS_ORDER.indexOf(activeTab);
+                    
+                    if (deltaX > 0 && currentIndex < TABS_ORDER.length - 1) {
+                        // Swipe Kiri (Pindah ke Kanan)
+                        setActiveTab(TABS_ORDER[currentIndex + 1]);
+                    } else if (deltaX < 0 && currentIndex > 0) {
+                        // Swipe Kanan (Pindah ke Kiri)
+                        setActiveTab(TABS_ORDER[currentIndex - 1]);
+                    }
+                }
+            };
+
             return (
                 <div className="h-[100dvh] w-full max-w-lg mx-auto flex flex-col relative bg-[var(--md-sys-color-background)] overflow-hidden sm:border-x sm:border-[var(--md-sys-color-outline-variant)] sm:shadow-2xl">
-                    <main className="flex-1 overflow-hidden relative">
+                    
+                    <main className="flex-1 overflow-hidden relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
                         {activeTab === 'dasbor' && <TabDasbor />}
                         {activeTab === 'catet' && <TabCatet />}
                         {activeTab === 'riwayat' && <TabRiwayat />}
@@ -1553,11 +1379,9 @@
                         {activeTab === 'seting' && <TabSeting />}
                     </main>
 
-                    {/* Navigation Bar - Bebas efek putih, full solid pindah geser */}
                     <nav className="absolute bottom-0 w-full h-[96px] bg-[var(--md-sys-color-surface-container)] flex justify-around items-center px-2 z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.5)]" style={{ paddingBottom: 'var(--sa-bottom)' }}>
                         {tabs.map(t => {
                             const active = activeTab === t.id;
-                            
                             return (
                                 <div key={t.id} onClick={() => setActiveTab(t.id)} className="flex-1 h-full flex flex-col items-center justify-center pt-2 pb-1 relative group cursor-pointer active:scale-95 spring-bounce">
                                     <div className={`w-14 h-8 rounded-full flex items-center justify-center spring-bounce ${active ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] scale-110 shadow-sm' : 'text-[var(--md-sys-color-on-surface-variant)] scale-100 group-hover:bg-[var(--md-sys-color-surface-variant)]'}`}>
@@ -1569,9 +1393,7 @@
                         })}
                     </nav>
 
-                    {/* Global Sheet for details */}
                     <DetailSheet />
-                    
                     <SnackbarContainer />
                 </div>
             );
@@ -1582,4 +1404,5 @@
     </script>
 </body>
 </html>
+
 

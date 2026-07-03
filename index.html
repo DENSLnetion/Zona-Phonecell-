@@ -264,6 +264,7 @@
            ANIMATED AMOUNT (ODOMETER ROLL EFFECT PER KARAKTER)
            ========================================================================== */
         .aa-char-slot { display: inline-block; position: relative; overflow: hidden; height: 1.15em; vertical-align: top; }
+        .aa-wrap { font-variant-numeric: tabular-nums; }
         .aa-char-face { display: block; }
         .aa-char-anim { animation-duration: var(--aa-duration, 380ms); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
         .aa-char-out-up   { animation-name: aaOutUp; }
@@ -348,19 +349,19 @@
             }, [animId, changed, duration]);
 
             const display = char === '\u0000' ? '\u00A0' : char;
-
-            if (!playing) {
-                return <span className="aa-char-face inline-block">{display}</span>;
-            }
-
             const prevDisplay = prevChar === '\u0000' || prevChar == null ? '\u00A0' : prevChar;
             const outClass = dir === 'up' ? 'aa-char-out-up' : 'aa-char-out-down';
             const inClass = dir === 'up' ? 'aa-char-in-up' : 'aa-char-in-down';
 
+            // Struktur wrapper SELALU sama (posisi/tinggi/vertical-align) baik pas
+            // animasi jalan atau diam -- biar ga ada lompatan baseline yang bikin
+            // keliatan "geter". Yang beda cuma nampilin lapisan animasi atau ga.
             return (
                 <span className="aa-char-slot" style={{ '--aa-duration': `${duration}ms` }}>
-                    <span className={`aa-char-face aa-char-anim ${outClass}`} style={{ position: 'absolute', inset: 0 }}>{prevDisplay}</span>
-                    <span className={`aa-char-face aa-char-anim ${inClass}`}>{display}</span>
+                    {playing && (
+                        <span className={`aa-char-face aa-char-anim ${outClass}`} style={{ position: 'absolute', inset: 0 }}>{prevDisplay}</span>
+                    )}
+                    <span className={`aa-char-face ${playing ? `aa-char-anim ${inClass}` : ''}`}>{display}</span>
                 </span>
             );
         };
@@ -378,6 +379,7 @@
             const prevValueRef = useRef(value);
             const prevFormattedRef = useRef(formatted);
             const animIdRef = useRef(0);
+            const settleTimeoutRef = useRef(null);
             const [chars, setChars] = useState(() => formatted.split('').map(c => ({ char: c, prevChar: null, dir: 'up', animId: 0, changed: false })));
 
             useEffect(() => {
@@ -398,10 +400,20 @@
 
                 prevValueRef.current = value;
                 prevFormattedRef.current = formatted;
-            }, [formatted, value]);
+
+                // Setelah animasi kelar, "beresin" balik ke panjang teks yang
+                // sebenernya (buang karakter padding sementara) -- biar lebar
+                // nominal balik pas & kotak di sekitarnya ga ikut kedorong/geser.
+                if (settleTimeoutRef.current) clearTimeout(settleTimeoutRef.current);
+                settleTimeoutRef.current = setTimeout(() => {
+                    setChars(formatted.split('').map(c => ({ char: c, prevChar: null, dir, animId: id, changed: false })));
+                }, duration + 40);
+
+                return () => { if (settleTimeoutRef.current) clearTimeout(settleTimeoutRef.current); };
+            }, [formatted, value, duration]);
 
             return (
-                <span className={`inline-flex ${className}`} style={{ whiteSpace: 'pre' }}>
+                <span className={`inline-flex aa-wrap ${className}`} style={{ whiteSpace: 'pre' }}>
                     {chars.map((c, i) => <AnimatedChar key={i} {...c} duration={duration} />)}
                 </span>
             );

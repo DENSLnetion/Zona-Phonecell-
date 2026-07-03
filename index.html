@@ -608,6 +608,7 @@
             const [isClosing, setIsClosing] = useState(false);
             const [mounted, setMounted] = useState(false);
             const [dragClosing, setDragClosing] = useState(false);
+            const [entering, setEntering] = useState(false);
             const sheetRef = useRef(null);
             const contentRef = useRef(null);
 
@@ -621,12 +622,17 @@
                 return () => { if (isOpen) window.removeEventListener('popstate', handlePopState); };
             }, [isOpen, title]);
 
-            // Reset drag/transform state setiap kali sheet dibuka ulang
+            // Reset drag/transform state setiap kali sheet dibuka ulang.
+            // "entering" cuma true sebentar buat mainin animasi masuk -- begitu
+            // animasinya kelar (onAnimationEnd di bawah), langsung dicabut. Ini
+            // penting biar class CSS animasinya (yang pakai fill-mode forwards)
+            // ga terus nempel & rebutan kontrol `transform` sama drag manual.
             useEffect(() => {
                 if (isOpen && sheetRef.current) {
                     sheetRef.current.style.transition = '';
                     sheetRef.current.style.transform = '';
                     setDragClosing(false);
+                    setEntering(true);
                 }
             }, [isOpen]);
 
@@ -662,6 +668,11 @@
                     verticalIntent = null;
                     startedInContent = !!(contentEl && contentEl.contains(e.target));
                     sheetEl.style.transition = 'none';
+                    // Safety net: kalo user narik pas animasi masuk masih jalan,
+                    // langsung cabut class animasinya biar ga rebutan kontrol
+                    // `transform` sama drag manual.
+                    sheetEl.classList.remove('animate-sheet-up', 'animate-sheet-down');
+                    setEntering(false);
                 };
 
                 const onMove = (e) => {
@@ -732,7 +743,8 @@
                     <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
                          onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
                     
-                    <div ref={sheetRef} className={`relative w-full max-w-2xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing && !dragClosing ? 'animate-sheet-down' : (!isClosing ? 'animate-sheet-up' : '')}`}
+                    <div ref={sheetRef} className={`relative w-full max-w-2xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing && !dragClosing ? 'animate-sheet-down' : (entering && !isClosing ? 'animate-sheet-up' : '')}`}
+                         onAnimationEnd={(e) => { if (e.animationName === 'slideUpSheet') setEntering(false); }}
                          style={{ paddingBottom: 'var(--sa-bottom)', height: '85dvh' }}>
                         
                         <div className="w-full flex justify-center pt-5 pb-3 shrink-0" onClick={handleUIClose}>

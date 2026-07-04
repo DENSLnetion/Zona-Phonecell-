@@ -479,7 +479,7 @@
         const AppProvider = ({ children }) => {
             const [activeTab, setActiveTab] = useState('dasbor');
             const [transactions, setTransactions] = useState([]);
-            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false });
+            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false, targetDaily: 500000 });
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
 
@@ -523,7 +523,7 @@
                     const surfaceColor = getComputedStyle(document.body).getPropertyValue('--md-sys-color-surface').trim();
                     document.getElementById('meta-theme-color').content = surfaceColor;
                 }, 100);
-            }, [settings.theme, settings.periodFormat, settings.gwBanget]);
+            }, [settings.theme, settings.periodFormat, settings.gwBanget, settings.targetDaily]);
 
             const showSnackbar = (message) => {
                 const id = Date.now();
@@ -739,7 +739,7 @@
                     <div className={`absolute inset-0 bg-black/70 ${isClosing ? 'opacity-0' : 'animate-overlay-in'} transition-all duration-300`} 
                          onClick={handleUIClose} onTouchMove={e => e.preventDefault()} />
                     
-                    <div ref={sheetRef} className={`relative w-full max-w-2xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing && !dragClosing ? 'animate-sheet-down' : (entering && !isClosing ? 'animate-sheet-up' : '')}`}
+                    <div ref={sheetRef} className={`relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex flex-col rounded-t-[var(--md-shape-3xl)] bg-[var(--md-sys-color-surface-container-low)] shadow-2xl mt-auto ${isClosing && !dragClosing ? 'animate-sheet-down' : (entering && !isClosing ? 'animate-sheet-up' : '')}`}
                          onAnimationEnd={(e) => { if (e.animationName === 'slideUpSheet') setEntering(false); }}
                          style={{ paddingBottom: 'var(--sa-bottom)', height: '85dvh' }}>
                         
@@ -801,9 +801,10 @@
 
         // --- TAB 1: DASBOR ---
         const TabDasbor = () => {
-            const { transactions, settings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
+            const { transactions, settings, setSettings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0);
-            const [showProgres, setShowProgres] = useState(false);
+            const [activeSheet, setActiveSheet] = useState(null);
+            const [targetInput, setTargetInput] = useState((settings.targetDaily || 500000).toString());
 
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
@@ -814,11 +815,29 @@
             // Omset hanya dihitung dari jualan murni, Rejeki masuk ke laba, Belanja ngurangin laba
             const omset = periodData.filter(d => d.status === 'Beres' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
+            const trxBeres = periodData.filter(d => d.status === 'Beres');
             
             // Stats tambahan Desktop
             const labaToday = todayData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
-            const targetDaily = 500000; 
+            const targetDaily = settings.targetDaily || 500000;
             const progressTarget = Math.min((Math.max(labaToday, 0) / targetDaily) * 100, 100).toFixed(0);
+
+            // Barang laku: total pcs + rincian per nama barang
+            const barangLakuData = periodData.filter(d => d.jenis !== 'Servis' && d.jenis !== 'Top Up' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki' && d.status === 'Beres');
+            const barangLakuPcs = barangLakuData.reduce((s, i) => s + (i.jumlah || 1), 0);
+            const barangLakuRincian = useMemo(() => {
+                const map = {};
+                barangLakuData.forEach(t => { map[t.nama || 'Tanpa Nama'] = (map[t.nama || 'Tanpa Nama'] || 0) + (t.jumlah || 1); });
+                return Object.entries(map).sort((a, b) => b[1] - a[1]);
+            }, [periodData]);
+
+            // Modal keluar: total modal + rincian per jenis
+            const modalKeluar = trxBeres.reduce((s, i) => s + ((i.modal || 0) * (i.jumlah || 1)), 0);
+            const modalRincian = useMemo(() => {
+                const map = {};
+                trxBeres.forEach(t => { const m = (t.modal || 0) * (t.jumlah || 1); if (m > 0) map[t.jenis] = (map[t.jenis] || 0) + m; });
+                return Object.entries(map).sort((a, b) => b[1] - a[1]);
+            }, [periodData]);
 
             const getTopCustomers = () => {
                 const map = {};
@@ -826,9 +845,16 @@
                     const name = (t.pelanggan || 'Hamba Allah').trim();
                     if(name !== 'Hamba Allah' && name !== '' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki') { map[name] = (map[name] || 0) + 1; }
                 });
-                return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, 4);
+                return Object.entries(map).sort((a,b)=>b[1]-a[1]);
             };
-            const topCustomers = getTopCustomers();
+            const allCustomers = getTopCustomers();
+            const topCustomers = allCustomers.slice(0, 4);
+            const pelangganUnik = allCustomers.length;
+
+            // Rata-rata cuan per transaksi + best/worst
+            const rataCuan = trxBeres.length > 0 ? Math.round(laba / trxBeres.length) : 0;
+            const bestTrx = trxBeres.length > 0 ? [...trxBeres].sort((a,b) => (b.laba||0) - (a.laba||0))[0] : null;
+            const worstTrx = trxBeres.length > 0 ? [...trxBeres].sort((a,b) => (a.laba||0) - (b.laba||0))[0] : null;
 
             const handlePrevPeriod = () => setPeriodOffset(prev => prev - 1);
             const handleNextPeriod = () => { if(periodOffset < 0) setPeriodOffset(prev => prev + 1); };
@@ -836,6 +862,20 @@
             const markAsDone = (id) => {
                 setTransactions(prev => prev.map(t => t.id === id ? {...t, status: 'Beres'} : t));
                 showSnackbar('Cakep! Kerjaan kelar bos');
+            };
+
+            const openTargetSheet = () => { setTargetInput(targetDaily.toString()); setActiveSheet('target'); };
+            const saveTarget = () => {
+                const val = getRawNumber(targetInput);
+                if (val <= 0) { showSnackbar('Target harus lebih dari 0 bos!'); return; }
+                setSettings(prev => ({ ...prev, targetDaily: val }));
+                showSnackbar('Sip, target harian diupdate 🎯');
+                setActiveSheet(null);
+            };
+
+            const sheetTitles = {
+                progres: 'Kerjaan Belom Kelar', barang: 'Rincian Barang Laku', target: 'Atur Target Harian',
+                modal: 'Rincian Modal Keluar', pelanggan: 'Daftar Pelanggan', rata: 'Rata-Rata Cuan / Transaksi'
             };
 
             return (
@@ -888,8 +928,9 @@
                                     </div>
                                 </div>
 
+                                {/* BARIS 1: Progres, Barang Laku, Target Hari Ini */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                                    <Ripple onClick={() => setShowProgres(true)} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                    <Ripple onClick={() => setActiveSheet('progres')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-secondary-container)] text-[var(--md-sys-color-secondary-container)] flex items-center justify-center shrink-0">
                                             <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">pending_actions</span>
                                         </div>
@@ -899,18 +940,18 @@
                                         </div>
                                     </Ripple>
                                     
-                                    <div className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)]">
+                                    <Ripple onClick={() => setActiveSheet('barang')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
                                             <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">inventory_2</span>
                                         </div>
                                         <div>
                                             <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Barang Laku</h3>
-                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Pcs bulan ini</p>
+                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{barangLakuPcs} Pcs periode ini</p>
                                         </div>
-                                    </div>
+                                    </Ripple>
                                     
-                                    {/* Card ke-3 Khusus PC untuk Target / Extra Insight */}
-                                    <div className="hidden lg:flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] flex-col justify-center border border-[var(--md-sys-color-outline-variant)]">
+                                    {/* Card ke-3 Khusus PC untuk Target, sekarang bisa dipencet buat diedit */}
+                                    <Ripple onClick={openTargetSheet} className="hidden md:flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] flex-col justify-center border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="font-extrabold text-lg">Target Hari Ini</h3>
                                             <span className="material-symbols-rounded opacity-50">track_changes</span>
@@ -920,9 +961,42 @@
                                         </div>
                                         <div className="flex justify-between text-sm font-bold opacity-80">
                                             <span>{progressTarget}%</span>
-                                            <span>Rp 500k</span>
+                                            <span>Rp{formatRupiah(targetDaily)}</span>
                                         </div>
-                                    </div>
+                                    </Ripple>
+                                </div>
+
+                                {/* BARIS 2 (KHUSUS DESKTOP): Modal Keluar, Pelanggan Aktif, Rata-Rata Cuan */}
+                                <div className="hidden md:grid grid-cols-3 gap-4 md:gap-6">
+                                    <Ripple onClick={() => setActiveSheet('modal')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                        <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-error-container)] text-[var(--md-sys-color-error-container)] flex items-center justify-center shrink-0">
+                                            <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">payments</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Modal Keluar</h3>
+                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">Rp{formatRupiah(modalKeluar)} periode ini</p>
+                                        </div>
+                                    </Ripple>
+
+                                    <Ripple onClick={() => setActiveSheet('pelanggan')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                        <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-success-container)] text-[var(--md-sys-color-success-container)] flex items-center justify-center shrink-0">
+                                            <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">groups</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Pelanggan Aktif</h3>
+                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{pelangganUnik} orang periode ini</p>
+                                        </div>
+                                    </Ripple>
+
+                                    <Ripple onClick={() => setActiveSheet('rata')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                        <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-primary-container)] text-[var(--md-sys-color-primary-container)] flex items-center justify-center shrink-0">
+                                            <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">insights</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Rata-Rata Cuan</h3>
+                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">Rp{formatRupiah(rataCuan)} / transaksi</p>
+                                        </div>
+                                    </Ripple>
                                 </div>
                             </div>
 
@@ -976,30 +1050,149 @@
                         </div>
                     </div>
                     
-                    <BottomSheet isOpen={showProgres} onClose={() => setShowProgres(false)} title="Kerjaan Belom Kelar">
-                        <div className="space-y-3 pt-2">
-                            {pendingJobs.length === 0 ? (
-                                <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
-                                    <span className="material-symbols-rounded text-6xl mb-2 opacity-50">task_alt</span>
-                                    <p className="font-bold text-lg">Mantap, ga ada PR bos!</p>
-                                </div>
-                            ) : (
-                                pendingJobs.map(job => (
-                                    <div key={job.id} className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center justify-between gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-rounded text-[24px]">{ICON_MAP[job.jenis] || 'build'}</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{job.nama}</h4>
-                                            <p className="text-[13px] text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{job.pelanggan}</p>
-                                        </div>
-                                        <Ripple onClick={() => markAsDone(job.id)} className="shrink-0 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] px-4 py-2 rounded-full font-bold text-sm flex items-center shadow-sm">
-                                            <span className="material-symbols-rounded text-lg mr-1">check_circle</span> Kelar
-                                        </Ripple>
+                    <BottomSheet isOpen={!!activeSheet} onClose={() => setActiveSheet(null)} title={sheetTitles[activeSheet] || ''}>
+                        {activeSheet === 'progres' && (
+                            <div className="space-y-3 pt-2">
+                                {pendingJobs.length === 0 ? (
+                                    <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                        <span className="material-symbols-rounded text-6xl mb-2 opacity-50">task_alt</span>
+                                        <p className="font-bold text-lg">Mantap, ga ada PR bos!</p>
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                ) : (
+                                    pendingJobs.map(job => (
+                                        <div key={job.id} className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center justify-between gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center shrink-0">
+                                                <span className="material-symbols-rounded text-[24px]">{ICON_MAP[job.jenis] || 'build'}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{job.nama}</h4>
+                                                <p className="text-[13px] text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{job.pelanggan}</p>
+                                            </div>
+                                            <Ripple onClick={() => markAsDone(job.id)} className="shrink-0 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] px-4 py-2 rounded-full font-bold text-sm flex items-center shadow-sm">
+                                                <span className="material-symbols-rounded text-lg mr-1">check_circle</span> Kelar
+                                            </Ripple>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {activeSheet === 'barang' && (
+                            <div className="space-y-3 pt-2">
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-2">Rincian barang/aksesoris paling laku periode ini bos.</p>
+                                {barangLakuRincian.length === 0 ? (
+                                    <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                        <span className="material-symbols-rounded text-6xl mb-2 opacity-50">inventory_2</span>
+                                        <p className="font-bold text-lg">Belom ada barang laku periode ini</p>
+                                    </div>
+                                ) : (
+                                    barangLakuRincian.map(([nama, pcs], idx) => (
+                                        <div key={idx} className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-full bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex items-center justify-center font-bold text-sm">{idx+1}</div>
+                                                <span className="font-bold text-[var(--md-sys-color-on-surface)]">{nama}</span>
+                                            </div>
+                                            <span className="font-extrabold text-[var(--md-sys-color-on-surface-variant)]">{pcs} Pcs</span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {activeSheet === 'target' && (
+                            <div className="space-y-6 pt-2">
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Atur target cuan bersih harian buat dikejar bos. Progres di dasbor bakal ngikutin angka ini.</p>
+                                <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-6 border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
+                                    <span className="text-[var(--md-sys-color-primary)] font-extrabold text-3xl mr-2">Rp</span>
+                                    <input type="text" inputMode="numeric" value={formatRupiah(getRawNumber(targetInput))} onChange={e => setTargetInput(e.target.value)}
+                                        placeholder="0" className="bg-transparent text-[var(--md-sys-color-on-surface)] font-extrabold text-4xl w-full max-w-[260px] outline-none text-left" />
+                                </div>
+                                <div className="flex gap-2">
+                                    {[300000, 500000, 1000000, 2000000].map(v => (
+                                        <button key={v} onClick={() => setTargetInput(v.toString())} className="flex-1 h-11 rounded-full border border-[var(--md-sys-color-outline-variant)] font-bold text-[13px] text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-variant)]">{v/1000}k</button>
+                                    ))}
+                                </div>
+                                <Button onClick={saveTarget} icon="check" fullWidth className="h-14">Simpen Target</Button>
+                            </div>
+                        )}
+
+                        {activeSheet === 'modal' && (
+                            <div className="space-y-3 pt-2">
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-2">Rincian modal yang keluar per kategori periode ini.</p>
+                                {modalRincian.length === 0 ? (
+                                    <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                        <span className="material-symbols-rounded text-6xl mb-2 opacity-50">payments</span>
+                                        <p className="font-bold text-lg">Belom ada modal keluar periode ini</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {modalRincian.map(([jenis, total], idx) => (
+                                            <div key={idx} className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="material-symbols-rounded text-[var(--md-sys-color-error)]">{ICON_MAP[jenis] || 'build'}</span>
+                                                    <span className="font-bold text-[var(--md-sys-color-on-surface)]">{jenis}</span>
+                                                </div>
+                                                <span className="font-extrabold text-[var(--md-sys-color-error)]">Rp{formatRupiah(total)}</span>
+                                            </div>
+                                        ))}
+                                        <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-4 flex justify-between items-center">
+                                            <span className="font-bold text-[13px] uppercase tracking-wide">Total Modal Keluar</span>
+                                            <span className="text-xl font-extrabold text-[var(--md-sys-color-error)]">Rp{formatRupiah(modalKeluar)}</span>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        {activeSheet === 'pelanggan' && (
+                            <div className="space-y-3 pt-2">
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-2">{pelangganUnik} pelanggan beda tercatat periode ini bos.</p>
+                                {allCustomers.length === 0 ? (
+                                    <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                        <span className="material-symbols-rounded text-6xl mb-2 opacity-50">groups</span>
+                                        <p className="font-bold text-lg">Belom ada pelanggan tercatat</p>
+                                    </div>
+                                ) : (
+                                    allCustomers.map(([nama, count], idx) => (
+                                        <div key={idx} className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-full bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)] flex items-center justify-center font-bold text-sm">{idx+1}</div>
+                                                <span className="font-bold text-[var(--md-sys-color-on-surface)]">{nama}</span>
+                                            </div>
+                                            <span className="font-extrabold text-[var(--md-sys-color-on-surface-variant)]">{count} Trx</span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {activeSheet === 'rata' && (
+                            <div className="space-y-4 pt-2">
+                                <div className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-[var(--md-shape-2xl)] p-6 text-center">
+                                    <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1">Rata-Rata Cuan / Transaksi</p>
+                                    <p className="text-3xl font-extrabold">Rp{formatRupiah(rataCuan)}</p>
+                                    <p className="text-[13px] font-medium opacity-70 mt-1">Dari {trxBeres.length} transaksi beres periode ini</p>
+                                </div>
+                                {bestTrx && (
+                                    <div className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <span className="material-symbols-rounded text-[var(--md-sys-color-success)]">trending_up</span>
+                                            <div className="min-w-0"><p className="font-bold text-[var(--md-sys-color-on-surface)] truncate">{bestTrx.nama}</p><p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">Cuan Tertinggi</p></div>
+                                        </div>
+                                        <span className="font-extrabold text-[var(--md-sys-color-success)] shrink-0">Rp{formatRupiah(bestTrx.laba||0)}</span>
+                                    </div>
+                                )}
+                                {worstTrx && (
+                                    <div className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <span className="material-symbols-rounded text-[var(--md-sys-color-error)]">trending_down</span>
+                                            <div className="min-w-0"><p className="font-bold text-[var(--md-sys-color-on-surface)] truncate">{worstTrx.nama}</p><p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">Cuan Terendah</p></div>
+                                        </div>
+                                        <span className={`font-extrabold shrink-0 ${(worstTrx.laba||0) < 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>Rp{formatRupiah(worstTrx.laba||0)}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </BottomSheet>
                 </div>
             );

@@ -458,6 +458,23 @@
              }
         };
 
+        const getPeriodKey = (format, offset) => {
+             const d = new Date();
+             if (format === 'Hari') {
+                 d.setDate(d.getDate() + offset);
+                 return `H-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+             } else if (format === 'Minggu') {
+                 d.setDate(d.getDate() + (offset * 7));
+                 const day = d.getDay();
+                 const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                 const monday = new Date(d.setDate(diff));
+                 return `W-${monday.getFullYear()}-${monday.getMonth()}-${monday.getDate()}`;
+             } else {
+                 d.setMonth(d.getMonth() + offset);
+                 return `M-${d.getFullYear()}-${d.getMonth()}`;
+             }
+        };
+
         const jsonToCsv = (items) => {
             if (!items || !items.length) return '';
             const headers = ['ID', 'Tanggal', 'Jenis', 'Nama / Keterangan', 'Pelanggan', 'Modal', 'Jual', 'Jumlah', 'Total Laba', 'Status'];
@@ -479,9 +496,11 @@
         const AppProvider = ({ children }) => {
             const [activeTab, setActiveTab] = useState('dasbor');
             const [transactions, setTransactions] = useState([]);
-            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false, targetDaily: 500000 });
+            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false, targetDaily: 500000, targetNotifKeys: {} });
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
+            const [loaded, setLoaded] = useState(false);
+            const [targetAlert, setTargetAlert] = useState(null);
 
             useEffect(() => {
                 try {
@@ -507,6 +526,8 @@
                 } catch (e) {
                     console.error('Settings corrupted, using defaults.');
                 }
+
+                setLoaded(true);
             }, []);
 
             useEffect(() => {
@@ -525,6 +546,31 @@
                 }, 100);
             }, [settings.theme, settings.periodFormat, settings.gwBanget, settings.targetDaily]);
 
+            // Cek otomatis: pas periode (hari/minggu/bulan) yang lagi jalan udah abis, apakah target tercapai?
+            // Muncul sekali doang per periode yang udah lewat, ga bakal spam tiap buka app.
+            useEffect(() => {
+                if (!loaded) return;
+                const format = settings.periodFormat;
+                const key = getPeriodKey(format, -1);
+                const storedKey = (settings.targetNotifKeys || {})[format];
+
+                if (storedKey === key) return;
+
+                if (storedKey === undefined) {
+                    // Baseline pertama kali, jangan langsung nongol popup buat periode yang lewat sebelum app ini kepake
+                    setSettings(prev => ({ ...prev, targetNotifKeys: { ...(prev.targetNotifKeys || {}), [format]: key } }));
+                    return;
+                }
+
+                const prevData = filterByPeriod(transactions, format, -1);
+                const labaPeriode = prevData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
+                const target = settings.targetDaily || 500000;
+                const achieved = labaPeriode >= target;
+
+                setTargetAlert({ format, achieved, laba: labaPeriode, target, kurang: Math.max(target - labaPeriode, 0) });
+                setSettings(prev => ({ ...prev, targetNotifKeys: { ...(prev.targetNotifKeys || {}), [format]: key } }));
+            }, [loaded, settings.periodFormat, transactions]);
+
             const showSnackbar = (message) => {
                 const id = Date.now();
                 setSnackbars(prev => [...prev, { id, message }]);
@@ -534,6 +580,7 @@
             return (
                 <AppContext.Provider value={{ transactions, setTransactions, settings, setSettings, snackbars, showSnackbar, selectedItem, setSelectedItem, activeTab, setActiveTab }}>
                     {children}
+                    <TargetAlertSheet alert={targetAlert} onClose={() => setTargetAlert(null)} settings={settings} />
                 </AppContext.Provider>
             );
         };
@@ -760,6 +807,34 @@
             return ReactDOM.createPortal(sheetContent, document.body);
         };
 
+        const TargetAlertSheet = ({ alert, onClose, settings }) => {
+            if (!alert) return null;
+            const periodNoun = { Hari: 'Kemarin', Minggu: 'Minggu Lalu', Bulan: 'Bulan Lalu' }[alert.format] || 'Periode Lalu';
+            const periodNounLower = periodNoun.toLowerCase();
+            const title = alert.achieved ? 'Target Tercapai' : 'Target Belum Tercapai';
+
+            return (
+                <BottomSheet isOpen={!!alert} onClose={onClose} title={title}>
+                    <div className="space-y-6 pt-2 text-center">
+                        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${alert.achieved ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]' : 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'}`}>
+                            <span className="material-symbols-rounded text-[40px]">{alert.achieved ? 'military_tech' : 'trending_up'}</span>
+                        </div>
+                        <div>
+                            <p className="font-extrabold text-xl text-[var(--md-sys-color-on-surface)] mb-2">
+                                {alert.achieved ? `Mantap, target ${periodNounLower} kelar` : `${periodNoun}, target belum kekejar`}
+                            </p>
+                            <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">
+                                {alert.achieved
+                                    ? `Cuan bersih ${periodNounLower} tembus Rp${formatRupiah(alert.laba)} dari target Rp${formatRupiah(alert.target)}. Pertahanin ritmenya bos.`
+                                    : `Cuan bersih ${periodNounLower} baru Rp${formatRupiah(Math.max(alert.laba, 0))} dari target Rp${formatRupiah(alert.target)}, kurang Rp${formatRupiah(alert.kurang)} lagi. Gaskeun terus di periode sekarang.`}
+                            </p>
+                        </div>
+                        <Button onClick={onClose} fullWidth className="h-14">Oke, Siap</Button>
+                    </div>
+                </BottomSheet>
+            );
+        };
+
         const SnackbarContainer = () => {
             const { snackbars } = useContext(AppContext);
             return (
@@ -820,6 +895,7 @@
             const labaToday = laba;
             const targetDaily = settings.targetDaily || 500000;
             const progressTarget = Math.min((Math.max(labaToday, 0) / targetDaily) * 100, 100).toFixed(0);
+            const targetLabel = { Hari: 'Target Hari Ini', Minggu: 'Target Minggu Ini', Bulan: 'Target Bulan Ini' }[settings.periodFormat] || 'Target Hari Ini';
 
             // Barang laku: total pcs + rincian per nama barang
             const barangLakuData = periodData.filter(d => d.jenis !== 'Servis' && d.jenis !== 'Top Up' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki' && d.status === 'Beres');
@@ -873,7 +949,7 @@
             };
 
             const sheetTitles = {
-                progres: 'Kerjaan Belom Kelar', barang: 'Rincian Barang Laku', target: 'Atur Target Harian',
+                progres: 'Kerjaan Belom Kelar', barang: 'Rincian Barang Laku', target: `Atur ${targetLabel}`,
                 modal: 'Rincian Modal Keluar', pelanggan: 'Daftar Pelanggan', rata: 'Rata-Rata Cuan / Transaksi'
             };
 
@@ -952,7 +1028,7 @@
                                     {/* Card ke-3 Khusus PC untuk Target, sekarang bisa dipencet buat diedit */}
                                     <Ripple onClick={openTargetSheet} className="flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] flex-col justify-center border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="font-extrabold text-lg">Target Hari Ini</h3>
+                                            <h3 className="font-extrabold text-lg">{targetLabel}</h3>
                                             <span className="material-symbols-rounded opacity-50">track_changes</span>
                                         </div>
                                         <div className="w-full h-4 bg-[var(--md-sys-color-surface-variant)] rounded-full overflow-hidden mb-2 relative">
@@ -1100,7 +1176,7 @@
 
                         {activeSheet === 'target' && (
                             <div className="space-y-6 pt-2">
-                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Atur target cuan bersih harian buat dikejar bos. Progres di dasbor bakal ngikutin angka ini.</p>
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Atur target cuan bersih buat dikejar bos. Target ini kesimpen terus dan tetep aktif walau lo pindah-pindah periode Hari/Minggu/Bulan. Progres di dasbor bakal ngikutin angka ini.</p>
                                 <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-6 border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
                                     <span className="text-[var(--md-sys-color-primary)] font-extrabold text-3xl mr-2">Rp</span>
                                     <input type="text" inputMode="numeric" value={formatRupiah(getRawNumber(targetInput))} onChange={e => setTargetInput(e.target.value)}

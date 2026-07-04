@@ -493,10 +493,26 @@
         // ==========================================================================
         const AppContext = createContext();
 
+        const DEFAULT_DAILY_RATE = 100000;
+
+        // Jumlah hari di bulan yang lagi dilihat (ngikutin offset kayak filterByPeriod), buat nurunin target bulanan dari rate harian
+        const getDaysInMonthForOffset = (offset) => {
+            const d = new Date();
+            d.setMonth(d.getMonth() + offset);
+            return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        };
+
+        // Satu sumber target (rate harian) diturunin otomatis ke Hari/Minggu/Bulan
+        const getTargetForFormat = (dailyRate, format, daysInMonth) => {
+            if (format === 'Minggu') return Math.round(dailyRate * 7);
+            if (format === 'Bulan') return Math.round(dailyRate * (daysInMonth || 30));
+            return Math.round(dailyRate);
+        };
+
         const AppProvider = ({ children }) => {
             const [activeTab, setActiveTab] = useState('dasbor');
             const [transactions, setTransactions] = useState([]);
-            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false, targetDaily: 500000, targetNotifKeys: {} });
+            const [settings, setSettings] = useState({ theme: 'blue', hasStarted: false, periodFormat: 'Bulan', gwBanget: false, dailyRate: DEFAULT_DAILY_RATE, targetNotifKeys: {} });
             const [snackbars, setSnackbars] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
             const [loaded, setLoaded] = useState(false);
@@ -521,7 +537,16 @@
                 try {
                     const savedSettings = localStorage.getItem('zp_m3_config');
                     if (savedSettings) {
-                        setSettings(prev => ({...prev, ...JSON.parse(savedSettings)}));
+                        const parsedSettings = JSON.parse(savedSettings);
+                        // Migrasi dari versi lama: entah itu 1 target per periode (targets{}), atau 1 target doang (targetDaily)
+                        let migratedRate = parsedSettings.dailyRate;
+                        if (migratedRate === undefined) {
+                            if (parsedSettings.targets && parsedSettings.targets.Hari) migratedRate = parsedSettings.targets.Hari;
+                            else if (parsedSettings.targetDaily) migratedRate = parsedSettings.targetDaily;
+                        }
+                        delete parsedSettings.targets;
+                        delete parsedSettings.targetDaily;
+                        setSettings(prev => ({...prev, ...parsedSettings, dailyRate: migratedRate !== undefined ? migratedRate : DEFAULT_DAILY_RATE}));
                     }
                 } catch (e) {
                     console.error('Settings corrupted, using defaults.');
@@ -544,7 +569,7 @@
                     const surfaceColor = getComputedStyle(document.body).getPropertyValue('--md-sys-color-surface').trim();
                     document.getElementById('meta-theme-color').content = surfaceColor;
                 }, 100);
-            }, [settings.theme, settings.periodFormat, settings.gwBanget, settings.targetDaily]);
+            }, [settings.theme, settings.periodFormat, settings.gwBanget, settings.dailyRate]);
 
             // Cek otomatis: pas periode (hari/minggu/bulan) yang lagi jalan udah abis, apakah target tercapai?
             // Muncul sekali doang per periode yang udah lewat, ga bakal spam tiap buka app.
@@ -564,12 +589,13 @@
 
                 const prevData = filterByPeriod(transactions, format, -1);
                 const labaPeriode = prevData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
-                const target = settings.targetDaily || 500000;
+                const daysInMonth = getDaysInMonthForOffset(-1);
+                const target = getTargetForFormat(settings.dailyRate || DEFAULT_DAILY_RATE, format, daysInMonth);
                 const achieved = labaPeriode >= target;
 
                 setTargetAlert({ format, achieved, laba: labaPeriode, target, kurang: Math.max(target - labaPeriode, 0) });
                 setSettings(prev => ({ ...prev, targetNotifKeys: { ...(prev.targetNotifKeys || {}), [format]: key } }));
-            }, [loaded, settings.periodFormat, transactions]);
+            }, [loaded, settings.periodFormat, settings.dailyRate, transactions]);
 
             const showSnackbar = (message) => {
                 const id = Date.now();
@@ -879,7 +905,7 @@
             const { transactions, settings, setSettings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0);
             const [activeSheet, setActiveSheet] = useState(null);
-            const [targetInput, setTargetInput] = useState((settings.targetDaily || 500000).toString());
+            const [targetInput, setTargetInput] = useState('');
 
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
@@ -891,9 +917,10 @@
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             const trxBeres = periodData.filter(d => d.status === 'Beres');
             
-            // Target: ngikutin periode yang dipilih di setting (Hari/Minggu/Bulan, dst)
+            // Target: satu sumber (rate harian), diturunin otomatis ke Hari/Minggu/Bulan
             const labaToday = laba;
-            const targetDaily = settings.targetDaily || 500000;
+            const daysInViewedMonth = getDaysInMonthForOffset(settings.periodFormat === 'Bulan' ? periodOffset : 0);
+            const targetDaily = getTargetForFormat(settings.dailyRate || DEFAULT_DAILY_RATE, settings.periodFormat, daysInViewedMonth);
             const progressTarget = Math.min((Math.max(labaToday, 0) / targetDaily) * 100, 100).toFixed(0);
             const targetLabel = { Hari: 'Target Hari Ini', Minggu: 'Target Minggu Ini', Bulan: 'Target Bulan Ini' }[settings.periodFormat] || 'Target Hari Ini';
 
@@ -943,8 +970,13 @@
             const saveTarget = () => {
                 const val = getRawNumber(targetInput);
                 if (val <= 0) { showSnackbar('Target harus lebih dari 0 bos!'); return; }
-                setSettings(prev => ({ ...prev, targetDaily: val }));
-                showSnackbar('Sip, target harian diupdate 🎯');
+                const format = settings.periodFormat;
+                let newRate;
+                if (format === 'Minggu') newRate = val / 7;
+                else if (format === 'Bulan') newRate = val / (daysInViewedMonth || 30);
+                else newRate = val;
+                setSettings(prev => ({ ...prev, dailyRate: Math.round(newRate) }));
+                showSnackbar(`Sip, ${targetLabel.toLowerCase()} diupdate 🎯`);
                 setActiveSheet(null);
             };
 
@@ -1176,7 +1208,7 @@
 
                         {activeSheet === 'target' && (
                             <div className="space-y-6 pt-2">
-                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Atur target cuan bersih buat dikejar bos. Target ini kesimpen terus dan tetep aktif walau lo pindah-pindah periode Hari/Minggu/Bulan. Progres di dasbor bakal ngikutin angka ini.</p>
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">Atur target cuan bersih buat periode {settings.periodFormat.toLowerCase()} ini. Target Hari, Minggu, dan Bulan otomatis nyesuain satu sama lain, jadi cukup set salah satu aja, sisanya ke-update sendiri.</p>
                                 <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-2xl)] p-6 border border-[var(--md-sys-color-outline-variant)] flex items-center justify-center">
                                     <span className="text-[var(--md-sys-color-primary)] font-extrabold text-3xl mr-2">Rp</span>
                                     <input type="text" inputMode="numeric" value={formatRupiah(getRawNumber(targetInput))} onChange={e => setTargetInput(e.target.value)}

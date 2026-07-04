@@ -1083,7 +1083,7 @@
 
         // --- TAB 2: CATET (DIPERLUAS DENGAN SHORTCUT & RIWAYAT MINI DI PC) ---
         const TabCatet = () => {
-            const { transactions, setTransactions, showSnackbar, setSelectedItem } = useContext(AppContext);
+            const { transactions, setTransactions, showSnackbar, setSelectedItem, settings } = useContext(AppContext);
             
             const [jenis, setJenis] = useState('Servis');
             const [nama, setNama] = useState('');
@@ -2121,4 +2121,3 @@
     </script>
 </body>
 </html>
-

@@ -809,7 +809,6 @@
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
             const periodData = filterByPeriod(transactions, settings.periodFormat, periodOffset);
-            const todayData = filterByPeriod(transactions, 'Hari', 0);
             
             const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
             // Omset hanya dihitung dari jualan murni, Rejeki masuk ke laba, Belanja ngurangin laba
@@ -817,8 +816,8 @@
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             const trxBeres = periodData.filter(d => d.status === 'Beres');
             
-            // Stats tambahan Desktop
-            const labaToday = todayData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
+            // Target: ngikutin periode yang dipilih di setting (Hari/Minggu/Bulan, dst)
+            const labaToday = laba;
             const targetDaily = settings.targetDaily || 500000;
             const progressTarget = Math.min((Math.max(labaToday, 0) / targetDaily) * 100, 100).toFixed(0);
 
@@ -940,7 +939,7 @@
                                         </div>
                                     </Ripple>
                                     
-                                    <Ripple onClick={() => setActiveSheet('barang')} className="p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                    <Ripple onClick={() => setActiveSheet('barang')} className="hidden md:flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6 border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full md:rounded-[20px] bg-[var(--md-sys-color-on-tertiary-container)] text-[var(--md-sys-color-tertiary-container)] flex items-center justify-center shrink-0">
                                             <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">inventory_2</span>
                                         </div>
@@ -951,7 +950,7 @@
                                     </Ripple>
                                     
                                     {/* Card ke-3 Khusus PC untuk Target, sekarang bisa dipencet buat diedit */}
-                                    <Ripple onClick={openTargetSheet} className="hidden md:flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] flex-col justify-center border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
+                                    <Ripple onClick={openTargetSheet} className="flex p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)] flex-col justify-center border border-[var(--md-sys-color-outline-variant)] cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="font-extrabold text-lg">Target Hari Ini</h3>
                                             <span className="material-symbols-rounded opacity-50">track_changes</span>
@@ -983,7 +982,7 @@
                                             <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">groups</span>
                                         </div>
                                         <div>
-                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Pelanggan Aktif</h3>
+                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Aktif</h3>
                                             <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{pelangganUnik} orang periode ini</p>
                                         </div>
                                     </Ripple>
@@ -993,7 +992,7 @@
                                             <span className="material-symbols-rounded text-[24px] md:text-[32px] lg:text-[40px]">insights</span>
                                         </div>
                                         <div>
-                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Rata-Rata Cuan</h3>
+                                            <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Profit</h3>
                                             <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">Rp{formatRupiah(rataCuan)} / transaksi</p>
                                         </div>
                                     </Ripple>
@@ -1310,7 +1309,7 @@
                 const newData = {
                     id: generateId(), tanggal: new Date().toISOString(),
                     jenis, nama: finalNama, pelanggan: pelanggan.trim() || 'Hamba Allah',
-                    modal: m, jual: j, jumlah: jumlah, laba: (j - m) * jumlah, status: 'Beres'
+                    modal: m, jual: j, jumlah: jumlah, laba: (j - m) * jumlah, status: isServis ? 'Jalan' : 'Beres'
                 };
 
                 setTransactions(prev => [newData, ...prev]); 
@@ -1545,7 +1544,7 @@
 
             const handleBulkCopy = () => {
                 const toCopy = transactions.filter(t => selectedIds.includes(t.id));
-                const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: 'Jalan' }));
+                const newItems = toCopy.map(item => ({ ...item, id: generateId(), tanggal: new Date().toISOString(), status: item.jenis === 'Servis' ? 'Jalan' : 'Beres' }));
                 setTransactions(prev => [...newItems, ...prev]);
                 closeSelectionModeUI(); showSnackbar(`${newItems.length} dicopy, gasss!`);
             };
@@ -2368,8 +2367,8 @@
                                 <span className="material-symbols-rounded text-[24px]">storefront</span>
                             </div>
                             <div className="min-w-0">
-                                <h1 className="font-extrabold text-[15px] text-[var(--md-sys-color-on-surface)] leading-tight truncate">Zona Poncell</h1>
-                                <p className="text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)] tracking-wide uppercase truncate">Bos Konter Panel</p>
+                                <h1 className="font-extrabold text-[15px] text-[var(--md-sys-color-on-surface)] leading-tight truncate">Zona Phonecell</h1>
+                                <p className="text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)] tracking-wide uppercase truncate">Padarincang</p>
                             </div>
                         </div>
 

@@ -68,6 +68,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
             --md-sys-color-background: #1a1c1e; --md-sys-color-on-background: #e2e2e6;
             --md-sys-color-surface: #1a1c1e; --md-sys-color-on-surface: #e2e2e6;
             --md-sys-color-surface-variant: #42474e; --md-sys-color-on-surface-variant: #c3c7cf;
@@ -89,6 +90,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #76da9a; --md-sys-color-on-success: #00391a;
+            --md-sys-color-success-container: #005227; --md-sys-color-on-success-container: #92f7b5;
             --md-sys-color-background: #1a1c19; --md-sys-color-on-background: #e2e3dd;
             --md-sys-color-surface: #1a1c19; --md-sys-color-on-surface: #e2e3dd;
             --md-sys-color-surface-variant: #424940; --md-sys-color-on-surface-variant: #c2c9bd;
@@ -110,6 +112,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #94d687; --md-sys-color-on-success: #003a00;
+            --md-sys-color-success-container: #105200; --md-sys-color-on-success-container: #aff3a0;
             --md-sys-color-background: #201a17; --md-sys-color-on-background: #ece0da;
             --md-sys-color-surface: #201a17; --md-sys-color-on-surface: #ece0da;
             --md-sys-color-surface-variant: #51443b; --md-sys-color-on-surface-variant: #d6c3b6;
@@ -131,6 +134,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
             --md-sys-color-background: #1c1b1f; --md-sys-color-on-background: #e6e1e5;
             --md-sys-color-surface: #1c1b1f; --md-sys-color-on-surface: #e6e1e5;
             --md-sys-color-surface-variant: #49454f; --md-sys-color-on-surface-variant: #cac4d0;
@@ -152,6 +156,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
             --md-sys-color-background: #201a19; --md-sys-color-on-background: #ede0de;
             --md-sys-color-surface: #201a19; --md-sys-color-on-surface: #ede0de;
             --md-sys-color-surface-variant: #534341; --md-sys-color-on-surface-variant: #d8c2bf;
@@ -173,6 +178,7 @@
             --md-sys-color-error: #ffb4ab; --md-sys-color-on-error: #690005;
             --md-sys-color-error-container: #93000a; --md-sys-color-on-error-container: #ffb4ab;
             --md-sys-color-success: #83da93; --md-sys-color-on-success: #003911;
+            --md-sys-color-success-container: #00531a; --md-sys-color-on-success-container: #9ff7ae;
             --md-sys-color-background: #191c1d; --md-sys-color-on-background: #e1e3e3;
             --md-sys-color-surface: #191c1d; --md-sys-color-on-surface: #e1e3e3;
             --md-sys-color-surface-variant: #3f484a; --md-sys-color-on-surface-variant: #bfc8ca;
@@ -320,12 +326,22 @@
                 else { let val = parseFloat((abs / 1000000000000).toFixed(2)); res = val.toString().replace('.', ',') + ' Triliun'; }
 
                 if (isNeg) return `Nombok ${res}`;
-                if (context === 'cuan') return hasSlang ? res : `Rp${res}`;
+                if (context === 'cuan') return hasSlang ? res : (angka < 0 ? `-Rp${res}` : `Rp${res}`);
                 return res; 
             } else {
                 const valStr = formatRupiah(Math.abs(angka || 0));
-                return angka < 0 ? `Rp-${valStr}` : `Rp${valStr}`;
+                return angka < 0 ? `-Rp${valStr}` : `Rp${valStr}`;
             }
+        };
+
+        // Mapping Icon Master
+        const ICON_MAP = { 
+            'Servis': 'build', 
+            'Sparepart': 'memory', 
+            'Aksesoris': 'headphones', 
+            'Top Up': 'account_balance_wallet',
+            'Belanja': 'receipt_long',
+            'Rejeki': 'savings'
         };
 
         // ==========================================================================
@@ -795,19 +811,20 @@
             const todayData = filterByPeriod(transactions, 'Hari', 0);
             
             const laba = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
-            const omset = periodData.filter(d => d.status === 'Beres').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
+            // Omset hanya dihitung dari jualan murni, Rejeki masuk ke laba, Belanja ngurangin laba
+            const omset = periodData.filter(d => d.status === 'Beres' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
             const pendingJobs = periodData.filter(d => d.status === 'Jalan');
             
             // Stats tambahan Desktop
             const labaToday = todayData.filter(d => d.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
-            const targetDaily = 500000; // Contoh statis target harian buat visualisasi di PC
-            const progressTarget = Math.min((labaToday / targetDaily) * 100, 100).toFixed(0);
+            const targetDaily = 500000; 
+            const progressTarget = Math.min((Math.max(labaToday, 0) / targetDaily) * 100, 100).toFixed(0);
 
             const getTopCustomers = () => {
                 const map = {};
                 periodData.forEach(t => {
                     const name = (t.pelanggan || 'Hamba Allah').trim();
-                    if(name !== 'Hamba Allah' && name !== '') { map[name] = (map[name] || 0) + 1; }
+                    if(name !== 'Hamba Allah' && name !== '' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki') { map[name] = (map[name] || 0) + 1; }
                 });
                 return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, 4);
             };
@@ -835,12 +852,12 @@
                             
                             {/* KOLOM KIRI (KARTU CUAN + STATISTIK) */}
                             <div className="lg:col-span-8 space-y-6 md:space-y-8">
-                                <div className="p-6 md:p-10 lg:p-12 rounded-[var(--md-shape-3xl)] bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] relative overflow-hidden shadow-2xl">
+                                <div className={`p-6 md:p-10 lg:p-12 rounded-[var(--md-shape-3xl)] relative overflow-hidden shadow-2xl transition-colors duration-500 ${laba < 0 ? 'bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)]' : 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]'}`}>
                                     <span className="material-symbols-rounded absolute right-[-20px] bottom-[-20px] md:right-[-40px] md:bottom-[-40px] lg:right-[-20px] lg:bottom-[-60px] text-[130px] md:text-[200px] lg:text-[280px] opacity-[0.20] -rotate-12 pointer-events-none">account_balance_wallet</span>
                                     
                                     <div className="relative z-10">
                                         <div className="flex justify-between items-center mb-1">
-                                            <p className="text-[15px] lg:text-[18px] opacity-90 font-bold tracking-wide">Cuan Murni</p>
+                                            <p className="text-[15px] lg:text-[18px] opacity-90 font-bold tracking-wide">Cuan Bersih</p>
                                             <div className="flex items-center gap-1 bg-black/10 rounded-full px-2 py-1 lg:px-3 lg:py-2">
                                                 <Ripple className="w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center hover:bg-black/10" onClick={handlePrevPeriod}>
                                                     <span className="material-symbols-rounded text-lg lg:text-2xl">chevron_left</span>
@@ -859,13 +876,13 @@
                                         </div>
                                         
                                         <div className="flex gap-3 md:gap-6">
-                                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 md:px-6 lg:px-8 py-4 md:py-5 lg:py-6 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
-                                                <span className="text-[11px] md:text-[13px] lg:text-[15px] uppercase font-extrabold opacity-70 mb-1 lg:mb-2">Duit Masuk</span>
+                                            <div className={`px-5 md:px-6 lg:px-8 py-4 md:py-5 lg:py-6 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg transition-colors duration-500 ${laba < 0 ? 'bg-[var(--md-sys-color-on-error)] text-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)]'}`}>
+                                                <span className="text-[11px] md:text-[13px] lg:text-[15px] uppercase font-extrabold opacity-70 mb-1 lg:mb-2">Omset Jualan</span>
                                                 <span className="font-bold text-base md:text-xl lg:text-2xl">{formatModeUang(omset, settings.gwBanget, 'cuan')}</span>
                                             </div>
-                                            <div className="bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)] px-5 md:px-6 lg:px-8 py-4 md:py-5 lg:py-6 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg">
-                                                <span className="text-[11px] md:text-[13px] lg:text-[15px] uppercase font-extrabold opacity-70 mb-1 lg:mb-2">Total Garapan</span>
-                                                <span className="font-bold text-base md:text-xl lg:text-2xl">{periodData.length} Nota</span>
+                                            <div className={`px-5 md:px-6 lg:px-8 py-4 md:py-5 lg:py-6 rounded-[var(--md-shape-2xl)] flex-1 flex flex-col justify-center shadow-lg transition-colors duration-500 ${laba < 0 ? 'bg-[var(--md-sys-color-on-error)] text-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-on-primary)] text-[var(--md-sys-color-primary)]'}`}>
+                                                <span className="text-[11px] md:text-[13px] lg:text-[15px] uppercase font-extrabold opacity-70 mb-1 lg:mb-2">Total Nota</span>
+                                                <span className="font-bold text-base md:text-xl lg:text-2xl">{periodData.length} Data</span>
                                             </div>
                                         </div>
                                     </div>
@@ -888,7 +905,7 @@
                                         </div>
                                         <div>
                                             <h3 className="font-extrabold text-base md:text-xl lg:text-2xl mb-1">Barang Laku</h3>
-                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Pcs bulan ini</p>
+                                            <p className="text-xs md:text-sm lg:text-base font-medium opacity-80">{periodData.filter(d=>d.jenis!=='Servis' && d.jenis !== 'Belanja' && d.jenis !== 'Rejeki' && d.status === 'Beres').reduce((s,i)=>s+(i.jumlah||1),0)} Pcs bulan ini</p>
                                         </div>
                                     </div>
                                     
@@ -899,7 +916,7 @@
                                             <span className="material-symbols-rounded opacity-50">track_changes</span>
                                         </div>
                                         <div className="w-full h-4 bg-[var(--md-sys-color-surface-variant)] rounded-full overflow-hidden mb-2 relative">
-                                            <div className="h-full bg-[var(--md-sys-color-primary)] rounded-full transition-all duration-1000" style={{width: `${progressTarget}%`}}></div>
+                                            <div className={`h-full rounded-full transition-all duration-1000 ${labaToday < 0 ? 'bg-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-primary)]'}`} style={{width: `${progressTarget}%`}}></div>
                                         </div>
                                         <div className="flex justify-between text-sm font-bold opacity-80">
                                             <span>{progressTarget}%</span>
@@ -970,7 +987,7 @@
                                 pendingJobs.map(job => (
                                     <div key={job.id} className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)] flex items-center justify-between gap-4">
                                         <div className="w-12 h-12 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-rounded text-[24px]">{job.jenis==='Servis'?'build':job.jenis==='Sparepart'?'memory':job.jenis==='Top Up'?'account_balance_wallet':'headphones'}</span>
+                                            <span className="material-symbols-rounded text-[24px]">{ICON_MAP[job.jenis] || 'build'}</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base">{job.nama}</h4>
@@ -990,12 +1007,23 @@
 
         const ActivityItem = ({ item, onClick, selectable, selected, onSelect }) => {
             const { settings } = useContext(AppContext);
-            const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'headphones', 'Top Up': 'account_balance_wallet' };
-            const icon = iconMap[item?.jenis] || 'build';
+            const icon = ICON_MAP[item?.jenis] || 'build';
+            
+            // Pewarnaan Badge Status & Uang
+            const isNombok = (item?.laba || 0) < 0;
+            const isRejeki = item?.jenis === 'Rejeki';
             
             let statusColor = 'bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)]'; 
-            if (item?.status === 'Beres') statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; 
+            if (item?.status === 'Beres') {
+                if (isNombok) statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]';
+                else if (isRejeki) statusColor = 'bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]';
+                else statusColor = 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'; 
+            }
             if (item?.status === 'Gagal') statusColor = 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]'; 
+
+            let amountColor = 'text-[var(--md-sys-color-primary)]';
+            if (isNombok) amountColor = 'text-[var(--md-sys-color-error)]';
+            else if (isRejeki) amountColor = 'text-[var(--md-sys-color-success)]';
 
             const timerRef = useRef(null);
             const isDragging = useRef(false);
@@ -1036,10 +1064,12 @@
                     
                     <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-[var(--md-sys-color-on-surface)] truncate text-base md:text-[17px]">{item?.nama || 'Tanpa Nama'}</h4>
-                        <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">{formatDateShort(item?.tanggal)} • {item?.pelanggan || 'Hamba Allah'}</p>
+                        <p className="text-[13px] font-medium text-[var(--md-sys-color-on-surface-variant)] truncate mt-0.5">
+                            {formatDateShort(item?.tanggal)} • {item?.jenis === 'Belanja' || item?.jenis === 'Rejeki' ? item?.jenis : (item?.pelanggan || 'Hamba Allah')}
+                        </p>
                     </div>
                     <div className="text-right shrink-0">
-                        <p className="font-extrabold text-[var(--md-sys-color-primary)] text-[16px] md:text-[18px] mb-1">
+                        <p className={`font-extrabold text-[16px] md:text-[18px] mb-1 ${amountColor}`}>
                             {formatModeUang(item?.laba, settings.gwBanget, 'list')}
                         </p>
                         <div className="flex items-center justify-end gap-1.5">
@@ -1066,12 +1096,21 @@
 
             const isServis = jenis === 'Servis';
             const isTopUp = jenis === 'Top Up';
+            const isBelanja = jenis === 'Belanja';
+            const isRejeki = jenis === 'Rejeki';
 
-            useEffect(() => { if(isServis || isTopUp) setJumlah(1); }, [isServis, isTopUp]);
+            // Kunci field jumlah kalo kategori tertentu
+            useEffect(() => { if(isServis || isTopUp || isBelanja || isRejeki) setJumlah(1); }, [jenis]);
 
             const handleSave = () => {
                 if(!nama.trim()) { showSnackbar('Woi, Keterangan / Tujuan isi dulu!'); return; }
-                const m = getRawNumber(modalStr); const j = getRawNumber(jualStr) || 0; 
+                
+                // Set logic angka tergantung jenis
+                let m = 0; let j = 0;
+                if (isBelanja) { m = getRawNumber(modalStr); j = 0; }
+                else if (isRejeki) { m = 0; j = getRawNumber(jualStr); }
+                else { m = getRawNumber(modalStr); j = getRawNumber(jualStr) || 0; }
+                
                 let finalNama = nama.trim();
                 if(isTopUp) finalNama = `Top Up ${subTopUp} (${viaTopUp}) - ${finalNama}`;
 
@@ -1081,7 +1120,9 @@
                     modal: m, jual: j, jumlah: jumlah, laba: (j - m) * jumlah, status: 'Beres'
                 };
 
-                setTransactions(prev => [newData, ...prev]); showSnackbar('Mantap! Duit dicatet 🤑'); 
+                setTransactions(prev => [newData, ...prev]); 
+                showSnackbar(isBelanja ? 'Oke bos, duit udah keluar 💸' : 'Mantap! Duit dicatet 🤑'); 
+                
                 setNama(''); setPelanggan(''); setModalStr(''); setJualStr(''); setJumlah(1);
             };
 
@@ -1098,11 +1139,14 @@
                 {jenis: 'Aksesoris', nama: 'Tempered Glass', modal: 10000, jual: 25000},
                 {jenis: 'Top Up', nama: 'Voucher Tsel 10k', modal: 10500, jual: 13000},
                 {jenis: 'Servis', nama: 'Ganti LCD', modal: 250000, jual: 400000},
-                {jenis: 'Aksesoris', nama: 'Kabel Data Fast', modal: 15000, jual: 35000}
+                {jenis: 'Belanja', nama: 'Kopi & Rokok', modal: 25000, jual: 0}
             ];
 
-            const laba = ((getRawNumber(jualStr) || 0) - getRawNumber(modalStr)) * jumlah;
-            const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'phone_iphone' };
+            // Kalkulasi preview laba real-time
+            let laba = 0;
+            if (isBelanja) laba = -getRawNumber(modalStr) * jumlah;
+            else if (isRejeki) laba = getRawNumber(jualStr) * jumlah;
+            else laba = ((getRawNumber(jualStr) || 0) - getRawNumber(modalStr)) * jumlah;
 
             return (
                 <div className="p-4 md:p-8 lg:p-12 h-full overflow-y-auto no-scrollbar pb-32 md:pb-12 flex flex-col items-center" style={{ paddingTop: 'calc(16px + var(--sa-top))' }}>
@@ -1123,11 +1167,13 @@
                                         {shortcuts.map((s, idx) => (
                                             <Ripple key={idx} onClick={() => fillShortcut(s)} className="p-4 rounded-[var(--md-shape-xl)] bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)] transition-colors group flex flex-col justify-between">
                                                 <div className="flex items-center gap-2 mb-2 text-[var(--md-sys-color-on-surface-variant)] group-hover:text-[var(--md-sys-color-on-primary-container)]">
-                                                    <span className="material-symbols-rounded text-xl">{iconMap[s.jenis]}</span>
+                                                    <span className="material-symbols-rounded text-xl">{ICON_MAP[s.jenis]}</span>
                                                     <span className="text-xs font-bold uppercase">{s.jenis}</span>
                                                 </div>
                                                 <h4 className="font-extrabold text-[var(--md-sys-color-on-surface)] group-hover:text-[var(--md-sys-color-on-primary-container)] text-[15px] leading-tight mb-1">{s.nama}</h4>
-                                                <p className="text-sm font-bold text-[var(--md-sys-color-primary)] group-hover:text-[var(--md-sys-color-primary)] mt-1">Jual Rp{formatRupiah(s.jual)}</p>
+                                                <p className={`text-sm font-bold mt-1 ${s.jenis === 'Belanja' ? 'text-[var(--md-sys-color-error)] group-hover:text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-primary)] group-hover:text-[var(--md-sys-color-primary)]'}`}>
+                                                    {s.jenis === 'Belanja' ? `-Rp${formatRupiah(s.modal)}` : `Jual Rp${formatRupiah(s.jual)}`}
+                                                </p>
                                             </Ripple>
                                         ))}
                                     </div>
@@ -1135,13 +1181,16 @@
 
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                                     <p className="text-sm font-extrabold tracking-widest uppercase text-[var(--md-sys-color-primary)] mb-4 ml-1">Pilih Kategori</p>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-                                        {['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => (
+                                    <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
+                                        {['Servis', 'Sparepart', 'Aksesoris', 'Top Up', 'Belanja', 'Rejeki'].map(j => (
                                             <button key={j} type="button" onClick={() => setJenis(j)}
-                                                className={`py-4 md:py-5 lg:py-6 px-3 text-[15px] md:text-base lg:text-lg font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 transition-all ${
+                                                className={`py-4 md:py-5 px-1 text-[13px] md:text-sm lg:text-base font-bold rounded-[var(--md-shape-xl)] spring-bounce active:scale-95 transition-all flex flex-col items-center justify-center gap-2 ${
                                                     jenis === j ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md scale-[1.02] ring-2 ring-offset-2 ring-[var(--md-sys-color-primary)] ring-offset-[var(--md-sys-color-surface-container-low)]' 
                                                     : 'bg-black/20 text-[var(--md-sys-color-on-surface-variant)] border border-transparent hover:bg-black/30'
-                                                }`}>{j}</button>
+                                                }`}>
+                                                <span className="material-symbols-rounded">{ICON_MAP[j]}</span>
+                                                {j}
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
@@ -1171,37 +1220,76 @@
 
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-                                        <TextField label={isTopUp ? 'Nomor' : 'Tipe / Nama Barang'} value={nama} onChange={setNama} icon={iconMap[jenis]} />
-                                        <TextField label="Nama Pelanggan" value={pelanggan} onChange={setPelanggan} icon="person" />
+                                        <TextField label={isTopUp ? 'Nomor' : isBelanja ? 'Beli Apa Nih?' : isRejeki ? 'Dapet Dari Mana?' : 'Tipe / Nama Barang'} value={nama} onChange={setNama} icon={ICON_MAP[jenis]} />
+                                        
+                                        {(!isBelanja && !isRejeki) && (
+                                            <TextField label="Nama Pelanggan" value={pelanggan} onChange={setPelanggan} icon="person" />
+                                        )}
+                                        {(isBelanja || isRejeki) && (
+                                            <TextField label="Catetan Tambahan (Opsional)" value={pelanggan} onChange={setPelanggan} icon="notes" />
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6">
-                                    <div className="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-                                        <TextField label="Modal Dikeluarin" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
-                                        <TextField label="Jual Harga Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
-                                    </div>
-
-                                    <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
-                                        <span className="absolute left-5 md:left-6 lg:left-8 top-3 lg:top-4 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
-                                        <div className="flex items-center gap-5 mt-2 md:mt-4 no-tab-swipe">
-                                            <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
-                                            <span className="w-12 text-center font-extrabold text-2xl md:text-3xl lg:text-4xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                {/* BLOK KOLOM UANG KHUSUS */}
+                                {isBelanja && (
+                                    <div className="bg-[var(--md-sys-color-error-container)] p-6 md:p-10 rounded-[var(--md-shape-3xl)] shadow-inner border-2 border-[var(--md-sys-color-error)] text-center flex flex-col items-center animate-page">
+                                        <p className="text-[var(--md-sys-color-on-error-container)] font-extrabold text-lg md:text-2xl mb-4 tracking-tight">Keluar Duit Berapa?</p>
+                                        <div className="flex items-center justify-center w-full relative">
+                                            <span className="text-[var(--md-sys-color-error)] font-extrabold text-3xl md:text-5xl mr-2">Rp</span>
+                                            <input type="text" inputMode="numeric" 
+                                                value={formatRupiah(getRawNumber(modalStr))} 
+                                                onChange={e => setModalStr(e.target.value)}
+                                                placeholder="0"
+                                                className="bg-transparent text-[var(--md-sys-color-error)] font-extrabold text-5xl md:text-7xl w-full max-w-[300px] outline-none text-left placeholder-[var(--md-sys-color-error)]/30" />
                                         </div>
                                     </div>
-                                </div>
+                                )}
+
+                                {isRejeki && (
+                                    <div className="bg-[var(--md-sys-color-success-container)] p-6 md:p-10 rounded-[var(--md-shape-3xl)] shadow-inner border-2 border-[var(--md-sys-color-success)] text-center flex flex-col items-center animate-page">
+                                        <p className="text-[var(--md-sys-color-on-success-container)] font-extrabold text-lg md:text-2xl mb-4 tracking-tight">Alhamdulillah, Dapet Berapa?</p>
+                                        <div className="flex items-center justify-center w-full relative">
+                                            <span className="text-[var(--md-sys-color-success)] font-extrabold text-3xl md:text-5xl mr-2">Rp</span>
+                                            <input type="text" inputMode="numeric" 
+                                                value={formatRupiah(getRawNumber(jualStr))} 
+                                                onChange={e => setJualStr(e.target.value)}
+                                                placeholder="0"
+                                                className="bg-transparent text-[var(--md-sys-color-success)] font-extrabold text-5xl md:text-7xl w-full max-w-[300px] outline-none text-left placeholder-[var(--md-sys-color-success)]/30" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {(!isBelanja && !isRejeki) && (
+                                    <div className="bg-[var(--md-sys-color-surface-container-low)] p-5 md:p-8 rounded-[var(--md-shape-2xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] space-y-4 md:space-y-6 animate-page">
+                                        <div className="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+                                            <TextField label="Modal Dikeluarin" value={modalStr ? formatRupiah(getRawNumber(modalStr)) : ''} onChange={setModalStr} inputMode="numeric" prefix="Rp" />
+                                            <TextField label="Jual Harga Berapa" value={jualStr ? formatRupiah(getRawNumber(jualStr)) : ''} onChange={setJualStr} inputMode="numeric" prefix="Rp" />
+                                        </div>
+
+                                        <div className={`bg-[var(--md-sys-color-surface-container-highest)] p-5 md:p-6 lg:p-8 rounded-[var(--md-shape-2xl)] relative pt-8 md:mt-4 transition-all duration-500 ${(isServis || isTopUp) ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                                            <span className="absolute left-5 md:left-6 lg:left-8 top-3 lg:top-4 text-[13px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah Laku</span>
+                                            <div className="flex items-center gap-5 mt-2 md:mt-4 no-tab-swipe">
+                                                <input type="range" min="1" max="50" value={jumlah} onChange={e => setJumlah(parseInt(e.target.value))} className="m3-slider flex-1" disabled={isServis || isTopUp} />
+                                                <span className="w-12 text-center font-extrabold text-2xl md:text-3xl lg:text-4xl text-[var(--md-sys-color-primary)]">{jumlah}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* KOLOM KANAN: PREVIEW CUAN, TOMBOL SIMPAN & MINI RIWAYAT */}
                             <div className="lg:col-span-4">
                                 <div className="lg:sticky lg:top-8 space-y-5 md:space-y-6 lg:space-y-8 mt-5 md:mt-0 flex flex-col h-full lg:h-[calc(100vh-100px)]">
-                                    <div className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-10 lg:p-12 rounded-[var(--md-shape-2xl)] md:rounded-[var(--md-shape-3xl)] flex md:flex-col justify-between md:justify-center items-center md:items-start shadow-md shrink-0">
+                                    <div className={`p-6 md:p-10 lg:p-12 rounded-[var(--md-shape-2xl)] md:rounded-[var(--md-shape-3xl)] flex md:flex-col justify-between md:justify-center items-center md:items-start shadow-md shrink-0 transition-colors duration-500 ${laba < 0 ? 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]' : 'bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]'}`}>
                                         <div>
-                                            <span className="text-sm md:text-base lg:text-lg font-extrabold uppercase tracking-widest opacity-80 block mb-1">Dapet Cuan</span>
-                                            <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikali jumlah pcs</span>
+                                            <span className="text-sm md:text-base lg:text-lg font-extrabold uppercase tracking-widest opacity-80 block mb-1">
+                                                {isBelanja ? 'Total Nombok' : isRejeki ? 'Rejeki Nomplok' : 'Dapet Cuan'}
+                                            </span>
+                                            <span className="text-[11px] md:text-[13px] opacity-70 font-medium">Udah dikalkulasi bos</span>
                                         </div>
                                         <span className="text-3xl md:text-5xl lg:text-6xl font-extrabold md:mt-6 tracking-tighter">
-                                            <AnimatedAmount value={laba} formatter={(v) => `Rp${formatRupiah(v)}`} duration={280} />
+                                            <AnimatedAmount value={laba} formatter={(v) => formatModeUang(v, settings.gwBanget, 'cuan')} duration={280} />
                                         </span>
                                     </div>
 
@@ -1304,13 +1392,16 @@
                                     {search && <span className="material-symbols-rounded cursor-pointer opacity-70 ml-2 p-1 bg-black/20 rounded-full" onClick={() => setSearch('')}>close</span>}
                                 </div>
 
-                                <div className="lg:col-span-2 flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1 md:flex-wrap lg:items-center hscroll-x">
-                                    {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(f => (
+                                <div className="lg:col-span-2 flex gap-2 overflow-x-auto no-scrollbar pb-2 px-1 pt-1 lg:flex-wrap lg:items-center hscroll-x">
+                                    {['Semua', 'Servis', 'Sparepart', 'Aksesoris', 'Top Up', 'Belanja', 'Rejeki'].map(f => (
                                         <button key={f} onClick={() => setFilterType(f)}
-                                            className={`px-6 h-12 lg:h-16 rounded-full text-[15px] lg:text-[17px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 ${
+                                            className={`px-5 md:px-6 h-12 lg:h-16 rounded-full text-[13px] md:text-[15px] lg:text-[17px] font-extrabold border-2 spring-bounce active:scale-95 shrink-0 flex items-center gap-2 ${
                                                 filterType === f ? 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] border-transparent shadow-sm' 
                                                 : 'border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)] bg-transparent hover:bg-[var(--md-sys-color-surface-variant)]'
-                                            }`}>{f}</button>
+                                            }`}>
+                                            {f !== 'Semua' && <span className="material-symbols-rounded text-[18px]">{ICON_MAP[f]}</span>}
+                                            {f}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -1359,6 +1450,7 @@
                 return {
                     primary: style.getPropertyValue('--md-sys-color-primary').trim(), tertiary: style.getPropertyValue('--md-sys-color-tertiary').trim(),
                     error: style.getPropertyValue('--md-sys-color-error').trim(), secondary: style.getPropertyValue('--md-sys-color-secondary').trim(),
+                    success: style.getPropertyValue('--md-sys-color-success').trim(),
                     text: style.getPropertyValue('--md-sys-color-on-surface-variant').trim(), grid: style.getPropertyValue('--md-sys-color-outline-variant').trim(),
                     bg: style.getPropertyValue('--md-sys-color-surface-container-low').trim()
                 };
@@ -1396,9 +1488,9 @@
                     inst.current.line = new Chart(refLine.current.getContext('2d'), { type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Cuan', data: lineData, borderColor: c.primary, backgroundColor: `${c.primary}30`, fill: true, tension: 0.4, pointBackgroundColor: c.bg, pointBorderColor: c.primary, pointBorderWidth: 4, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: c.grid, borderDash: [5,5] }, ticks: { callback: v => `${v/1000}k` } } } } });
                 }
 
-                const counts = ['Servis', 'Sparepart', 'Aksesoris', 'Top Up'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Beres').length);
+                const counts = ['Servis', 'Sparepart', 'Aksesoris', 'Top Up', 'Belanja', 'Rejeki'].map(j => transactions.filter(t => t.jenis === j && t.status === 'Beres').length);
                 if (refPie.current) {
-                    inst.current.pie = new Chart(refPie.current.getContext('2d'), { type: 'doughnut', data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 20 } } } } });
+                    inst.current.pie = new Chart(refPie.current.getContext('2d'), { type: 'doughnut', data: { labels: ['Servis', 'Spare', 'Aks', 'Top Up', 'Belanja', 'Rejeki'], datasets: [{ data: counts, backgroundColor: [c.primary, c.tertiary, c.error, c.secondary, '#e74c3c', c.success], borderColor: c.bg, borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { padding: 15 } } } } });
                 }
 
                 const itemsMap = {}; transactions.filter(t=>t.status==='Beres' && (t.jenis==='Sparepart' || t.jenis==='Aksesoris')).forEach(t => { itemsMap[t.nama || 'Tanpa Nama'] = (itemsMap[t.nama || 'Tanpa Nama'] || 0) + (t.jumlah || 1); }); const topItems = Object.entries(itemsMap).sort((a,b)=>b[1]-a[1]).slice(0, 4);
@@ -1410,7 +1502,7 @@
             }, [transactions, settings.theme, settings.periodFormat, getColors]);
 
             const totalSelesai = transactions.filter(t => t.status === 'Beres');
-            const totalOmset = totalSelesai.reduce((s,i) => s + ((i.jual||0) * (i.jumlah||1)), 0);
+            const totalOmset = totalSelesai.filter(t => t.jenis !== 'Belanja' && t.jenis !== 'Rejeki').reduce((s,i) => s + ((i.jual||0) * (i.jumlah||1)), 0);
             const totalLaba = totalSelesai.reduce((s,i) => s + (i.laba||0), 0);
             const margin = totalOmset > 0 ? ((totalLaba / totalOmset) * 100).toFixed(1) : 0;
             
@@ -1421,16 +1513,27 @@
                     const d = new Date(t.tanggal);
                     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
                     const monthName = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-                    if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, count: 0, countServis: 0, countBarang: 0, countTopUp: 0, itemsLaku: 0 };
-                    groups[key].totalOmset += ((t.jual||0) * (t.jumlah||1)); groups[key].totalLaba += (t.laba||0); groups[key].totalModal += ((t.modal||0) * (t.jumlah||1)); groups[key].count += 1;
-                    if(t.jenis === 'Servis') { groups[key].countServis += 1; } else if (t.jenis === 'Top Up') { groups[key].countTopUp += 1; } else { groups[key].countBarang += 1; groups[key].itemsLaku += (t.jumlah||1); }
+                    if (!groups[key]) groups[key] = { label: monthName, totalOmset: 0, totalLaba: 0, totalModal: 0, count: 0, countServis: 0, countBarang: 0, countTopUp: 0, countBelanja: 0, countRejeki: 0, itemsLaku: 0 };
+                    
+                    if (t.jenis !== 'Belanja' && t.jenis !== 'Rejeki') {
+                        groups[key].totalOmset += ((t.jual||0) * (t.jumlah||1)); 
+                        groups[key].totalModal += ((t.modal||0) * (t.jumlah||1));
+                    }
+                    groups[key].totalLaba += (t.laba||0); 
+                    groups[key].count += 1;
+                    
+                    if(t.jenis === 'Servis') { groups[key].countServis += 1; } 
+                    else if (t.jenis === 'Top Up') { groups[key].countTopUp += 1; } 
+                    else if (t.jenis === 'Belanja') { groups[key].countBelanja += 1; }
+                    else if (t.jenis === 'Rejeki') { groups[key].countRejeki += 1; }
+                    else { groups[key].countBarang += 1; groups[key].itemsLaku += (t.jumlah||1); }
                 });
                 return Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(k => groups[k]); 
             }, [totalSelesai]);
 
             // Untuk Desktop Leaderboard
             const pelanggans = {};
-            totalSelesai.forEach(t => { const n = t.pelanggan.trim() || 'Hamba Allah'; if(n !== 'Hamba Allah'){ pelanggans[n] = (pelanggans[n] || 0) + (t.laba||0); } });
+            totalSelesai.forEach(t => { const n = t.pelanggan.trim() || 'Hamba Allah'; if(n !== 'Hamba Allah' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki'){ pelanggans[n] = (pelanggans[n] || 0) + (t.laba||0); } });
             const topSpenders = Object.entries(pelanggans).sort((a,b) => b[1]-a[1]).slice(0,5);
 
             return (
@@ -1443,21 +1546,21 @@
                             {/* KIRI: GRAFIK UTAMA */}
                             <div className="lg:col-span-8 space-y-6 md:space-y-8 lg:space-y-10">
                                 <div className="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-                                    <Ripple onClick={() => setSheetInfo('margin')} className="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
+                                    <Ripple onClick={() => setSheetInfo('margin')} className={`text-[var(--md-sys-color-on-primary-container)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95 ${margin < 0 ? 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]' : 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'}`}>
                                         <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px] lg:text-[140px]">percent</span></div>
                                         <p className="text-xs md:text-sm lg:text-base font-extrabold uppercase tracking-widest opacity-80 mb-2">Persentase Untung</p>
                                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter">{margin}%</h2>
                                     </Ripple>
                                     <Ripple onClick={() => setSheetInfo('beres')} className="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl spring-bounce active:scale-95">
                                         <div className="absolute -right-4 -top-4 opacity-20"><span className="material-symbols-rounded text-[80px] md:text-[100px] lg:text-[140px]">done_all</span></div>
-                                        <p className="text-xs md:text-sm lg:text-base font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Beres</p>
-                                        <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base lg:text-2xl font-bold">Nota</span></h2>
+                                        <p className="text-xs md:text-sm lg:text-base font-extrabold uppercase tracking-widest opacity-80 mb-2">Total Data Beres</p>
+                                        <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter">{totalSelesai.length} <span className="text-base lg:text-2xl font-bold">Data</span></h2>
                                     </Ripple>
                                 </div>
 
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)]">
                                     <div className="flex justify-between items-center mb-6">
-                                        <h3 className="font-extrabold text-lg md:text-xl lg:text-2xl text-[var(--md-sys-color-on-surface)]">Grafik Cuan ({settings.periodFormat})</h3>
+                                        <h3 className="font-extrabold text-lg md:text-xl lg:text-2xl text-[var(--md-sys-color-on-surface)]">Grafik Cuan Bersih ({settings.periodFormat})</h3>
                                         <div className="w-10 h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 rounded-full bg-[var(--md-sys-color-surface-variant)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)]"><span className="material-symbols-rounded text-xl md:text-2xl lg:text-3xl">show_chart</span></div>
                                     </div>
                                     <div className="h-[250px] md:h-[350px] lg:h-[450px] relative">{transactions.length > 0 ? <canvas ref={refLine}></canvas> : <p className="text-center mt-24 text-[var(--md-sys-color-on-surface-variant)] font-bold">Sepi amat bos, belom ada data</p>}</div>
@@ -1467,13 +1570,13 @@
                             {/* KANAN: GRAFIK KECIL */}
                             <div className="lg:col-span-4 flex flex-col gap-6 md:gap-8 lg:gap-10">
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] flex-1">
-                                    <h3 className="font-extrabold text-lg lg:text-xl text-[var(--md-sys-color-on-surface)] mb-6">Dari Mana Aja?</h3>
+                                    <h3 className="font-extrabold text-lg lg:text-xl text-[var(--md-sys-color-on-surface)] mb-6">Sebaran Kategori</h3>
                                     <div className="h-[200px] md:h-[220px] lg:h-[260px] relative">{transactions.length > 0 ? <canvas ref={refPie}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Belom ada data</p>}</div>
                                 </div>
 
                                 <div className="bg-[var(--md-sys-color-surface-container-low)] p-6 md:p-8 lg:p-10 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] flex-1">
                                     <h3 className="font-extrabold text-lg lg:text-xl text-[var(--md-sys-color-on-surface)] mb-6">Barang Paling Laku</h3>
-                                    <div className="h-[200px] md:h-[220px] lg:h-[260px] relative">{transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}</div>
+                                    <div className="h-[200px] md:h-[220px] lg:h-[260px] relative">{transactions.filter(t=>t.jenis!=='Servis' && t.jenis!=='Top Up' && t.jenis!=='Belanja' && t.jenis!=='Rejeki' && t.status==='Beres').length > 0 ? <canvas ref={refBar}></canvas> : <p className="text-center mt-20 text-[var(--md-sys-color-on-surface-variant)] font-bold">Barang belom ada yang laku nih</p>}</div>
                                 </div>
                             </div>
                         </div>
@@ -1491,7 +1594,7 @@
                                             </div>
                                             <span className="font-extrabold text-[var(--md-sys-color-primary)]">Kasih Untung Rp{formatRupiah(p[1])}</span>
                                         </div>
-                                    )) : <p className="text-sm opacity-60">Belum ada catatan detail pelanggan.</p>}
+                                    )) : <p className="text-sm opacity-60">Belum ada catatan detail pelanggan dari jualan.</p>}
                                 </div>
                             </div>
 
@@ -1499,8 +1602,8 @@
                                 <h3 className="font-extrabold text-2xl text-[var(--md-sys-color-on-surface)] mb-6 flex items-center gap-3"><span className="material-symbols-rounded text-[var(--md-sys-color-secondary)]">analytics</span> Rata-Rata Per Performa</h3>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
-                                        <span className="font-bold text-lg">Untung Rata-Rata /Nota</span>
-                                        <span className="font-extrabold text-xl text-[var(--md-sys-color-on-surface)]">Rp{totalSelesai.length > 0 ? formatRupiah(Math.round(totalLaba/totalSelesai.length)) : 0}</span>
+                                        <span className="font-bold text-lg">Untung Bersih / Data</span>
+                                        <span className={`font-extrabold text-xl ${totalLaba < 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>Rp{totalSelesai.length > 0 ? formatRupiah(Math.round(totalLaba/totalSelesai.length)) : 0}</span>
                                     </div>
                                     <div className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
                                         <span className="font-bold text-lg">Persentase Sukses</span>
@@ -1508,16 +1611,16 @@
                                     </div>
                                     <div className="flex justify-between items-center bg-[var(--md-sys-color-surface-container)] p-4 rounded-xl border border-[var(--md-sys-color-outline-variant)]">
                                         <span className="font-bold text-lg">Barang Terjual (Total Pcs)</span>
-                                        <span className="font-extrabold text-xl text-[var(--md-sys-color-on-surface)]">{totalSelesai.filter(t=>t.jenis!=='Servis'&&t.jenis!=='Top Up').reduce((s,i)=>s+(i.jumlah||1),0)} Pcs</span>
+                                        <span className="font-extrabold text-xl text-[var(--md-sys-color-on-surface)]">{totalSelesai.filter(t=>t.jenis!=='Servis'&&t.jenis!=='Top Up'&&t.jenis!=='Belanja'&&t.jenis!=='Rejeki').reduce((s,i)=>s+(i.jumlah||1),0)} Pcs</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Nota Beres'}>
+                        <BottomSheet isOpen={!!sheetInfo} onClose={() => setSheetInfo(null)} title={sheetInfo === 'margin' ? 'Rincian Persentase' : 'Rincian Data Beres'}>
                             <div className="space-y-4 pt-2">
-                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">{sheetInfo === 'margin' ? 'Rincian detail perputaran duit & persentase margin laba per-bulan bos.' : 'Rekap mendalam hasil garapan per-bulannya bos.'}</p>
-                                {groupedByMonth.length === 0 && (<div className="py-8 text-center text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] rounded-[var(--md-shape-2xl)]"><span className="material-symbols-rounded text-6xl mb-2 opacity-50">inbox</span><p className="font-bold text-lg">Belom ada garapan kelar bos</p></div>)}
+                                <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium mb-4">{sheetInfo === 'margin' ? 'Rincian detail perputaran duit & persentase margin laba per-bulan bos.' : 'Rekap mendalam hasil data per-bulannya bos.'}</p>
+                                {groupedByMonth.length === 0 && (<div className="py-8 text-center text-[var(--md-sys-color-on-surface-variant)] border border-[var(--md-sys-color-outline-variant)] rounded-[var(--md-shape-2xl)]"><span className="material-symbols-rounded text-6xl mb-2 opacity-50">inbox</span><p className="font-bold text-lg">Belom ada data kelar bos</p></div>)}
                                 {groupedByMonth.map((grp, idx) => {
                                     const mrg = grp.totalOmset > 0 ? ((grp.totalLaba / grp.totalOmset) * 100).toFixed(1) : 0;
                                     return (
@@ -1525,22 +1628,26 @@
                                             <h4 className="font-extrabold text-[var(--md-sys-color-primary)] text-lg mb-2">{grp.label}</h4>
                                             {sheetInfo === 'margin' ? (
                                                 <>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Modal Dikeluarin</span><span className="font-bold text-[14px] text-[var(--md-sys-color-error)]">Rp{formatRupiah(grp.totalModal)}</span></div>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk (Kotor)</span><span className="font-bold text-[14px] text-[var(--md-sys-color-success)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Rata² Cuan per Nota</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(Math.round(grp.totalLaba/grp.count))}</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Modal Jualan Dikeluarin</span><span className="font-bold text-[14px] text-[var(--md-sys-color-error)]">Rp{formatRupiah(grp.totalModal)}</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Omset Jualan (Kotor)</span><span className="font-bold text-[14px] text-[var(--md-sys-color-success)]">Rp{formatRupiah(grp.totalOmset)}</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Rata² Bersih per Data</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(Math.round(grp.totalLaba/grp.count))}</span></div>
                                                     <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
-                                                        <span className="font-bold text-[13px] uppercase tracking-wide">Margin Total</span>
-                                                        <div className="text-right"><span className="block text-xl font-extrabold text-[var(--md-sys-color-primary)]">Rp{formatRupiah(grp.totalLaba)}</span><span className="block text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">{mrg}% dari Omset</span></div>
+                                                        <span className="font-bold text-[13px] uppercase tracking-wide">Cuan Bersih Akhir</span>
+                                                        <div className="text-right">
+                                                            <span className={`block text-xl font-extrabold ${grp.totalLaba < 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-primary)]'}`}>Rp{formatRupiah(grp.totalLaba)}</span>
+                                                            <span className="block text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">{mrg}% thd Omset</span>
+                                                        </div>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Servis</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countServis} Nota</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Servis</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countServis} Data</span></div>
                                                     <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Top Up</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countTopUp} Trx</span></div>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Jual Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Nota</span></div>
-                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Total Pcs Barang Laku</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.itemsLaku} Pcs</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-on-surface-variant)]">Dari Jual Barang</span><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)]">{grp.countBarang} Data</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-error)]">Pengeluaran (Belanja)</span><span className="font-extrabold text-base text-[var(--md-sys-color-error)]">{grp.countBelanja} Data</span></div>
+                                                    <div className="flex justify-between items-center"><span className="font-bold text-[14px] text-[var(--md-sys-color-success)]">Tambahan (Rejeki)</span><span className="font-extrabold text-base text-[var(--md-sys-color-success)]">{grp.countRejeki} Data</span></div>
                                                     <div className="border-t border-dashed border-[var(--md-sys-color-outline-variant)] pt-3 flex justify-between items-center mt-2">
-                                                        <span className="font-bold text-[13px] uppercase tracking-wide">Total Nota Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Nota</span>
+                                                        <span className="font-bold text-[13px] uppercase tracking-wide">Total Data Kelar</span><span className="text-xl font-extrabold text-[var(--md-sys-color-primary)]">{grp.count} Data</span>
                                                     </div>
                                                 </>
                                             )}
@@ -1698,29 +1805,55 @@
             const onClose = () => setSelectedItem(null);
             if (!item) return null;
             const currentItem = transactions.find(t => t.id === item.id) || item;
+            
+            const isBelanja = currentItem?.jenis === 'Belanja';
+            const isRejeki = currentItem?.jenis === 'Rejeki';
+            const isNombok = (currentItem?.laba || 0) < 0;
+
             const updateStatus = (newStatus) => { setTransactions(prev => prev.map(t => t.id === currentItem.id ? {...t, status: newStatus} : t)); showSnackbar(`Sip, Status diubah ke ${newStatus}`); };
-            const handleDelete = () => { if(confirm('Yakin mau buang data ini ke tong sampah?')) { setTransactions(prev => prev.filter(t => t.id !== currentItem.id)); showSnackbar('Satu data dibuang'); onClose(); } };
-            const iconMap = { 'Servis': 'build', 'Sparepart': 'memory', 'Aksesoris': 'shopping_bag', 'Top Up': 'account_balance_wallet' };
+            const handleDelete = () => { if(confirm('Yakin mau buang data ini?')) { setTransactions(prev => prev.filter(t => t.id !== currentItem.id)); showSnackbar('Satu data dibuang'); onClose(); } };
 
             return (
                 <BottomSheet isOpen={!!item} onClose={onClose} title="Detailnya Nih">
                     <div className="space-y-5 pt-4">
                         <div className="text-center bg-[var(--md-sys-color-surface)] p-6 rounded-[var(--md-shape-3xl)] shadow-sm border border-[var(--md-sys-color-outline-variant)] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10"><span className="material-symbols-rounded text-[100px]">{iconMap[currentItem?.jenis] || 'build'}</span></div>
+                            <div className="absolute top-0 right-0 p-4 opacity-10"><span className="material-symbols-rounded text-[100px]">{ICON_MAP[currentItem?.jenis] || 'build'}</span></div>
                             <h2 className="text-2xl font-extrabold text-[var(--md-sys-color-on-surface)] mb-2 leading-tight relative z-10">{currentItem?.nama || ''}</h2>
                             <p className="text-[var(--md-sys-color-on-surface-variant)] text-sm font-medium mb-4 relative z-10">{formatDateLong(currentItem?.tanggal)}</p>
-                            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">person</span> {currentItem?.pelanggan || ''}</div>
+                            
+                            {(!isBelanja && !isRejeki) && (
+                                <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">person</span> {currentItem?.pelanggan || ''}</div>
+                            )}
+                            {(isBelanja || isRejeki) && currentItem?.pelanggan && currentItem?.pelanggan !== 'Hamba Allah' && (
+                                <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--md-sys-color-surface-variant)] text-[var(--md-sys-color-on-surface-variant)] text-[15px] font-bold relative z-10 shadow-sm"><span className="material-symbols-rounded text-lg">notes</span> {currentItem?.pelanggan}</div>
+                            )}
                         </div>
 
                         <div className="bg-[var(--md-sys-color-surface-container)] rounded-[var(--md-shape-3xl)] p-6 shadow-md border border-[var(--md-sys-color-outline-variant)]">
-                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span><span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem?.jumlah || 1}x</span></div>
-                            <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem?.modal || 0)}</span></div>
-                            <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem?.jual || 0)}</span></div>
-                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center"><div><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">Cuan Murni</span></div><span className="text-3xl font-extrabold text-[var(--md-sys-color-primary)] tracking-tighter">Rp{formatRupiah(currentItem?.laba || 0)}</span></div>
+                            {(!isBelanja && !isRejeki) && (
+                                <>
+                                    <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jumlah</span><span className="font-extrabold text-[var(--md-sys-color-on-surface)] text-lg">{currentItem?.jumlah || 1}x</span></div>
+                                    <div className="flex justify-between items-center mb-4"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Modal Keluar /pcs</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem?.modal || 0)}</span></div>
+                                    <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Jual Harga /pcs</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem?.jual || 0)}</span></div>
+                                </>
+                            )}
+                            
+                            {isBelanja && (
+                                <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Duit Keluar</span><span className="font-extrabold text-[var(--md-sys-color-error)] text-lg">Rp{formatRupiah(currentItem?.modal || 0)}</span></div>
+                            )}
+
+                            {isRejeki && (
+                                <div className="flex justify-between items-center mb-6"><span className="text-[15px] font-bold text-[var(--md-sys-color-on-surface-variant)]">Duit Masuk</span><span className="font-extrabold text-[var(--md-sys-color-success)] text-lg">Rp{formatRupiah(currentItem?.jual || 0)}</span></div>
+                            )}
+
+                            <div className="border-t-2 border-dashed border-[var(--md-sys-color-outline-variant)] pt-5 flex justify-between items-center">
+                                <div><span className="font-extrabold text-base text-[var(--md-sys-color-on-surface)] block tracking-wide uppercase">{isBelanja ? 'Total Nombok' : isRejeki ? 'Rejeki Bersih' : 'Cuan Murni'}</span></div>
+                                <span className={`text-3xl font-extrabold tracking-tighter ${isNombok ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-primary)]'}`}>{isNombok ? '-' : ''}Rp{formatRupiah(Math.abs(currentItem?.laba || 0))}</span>
+                            </div>
                         </div>
 
                         <div>
-                            <p className="text-[13px] font-extrabold tracking-widest uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-2">Status Kerjaan</p>
+                            <p className="text-[13px] font-extrabold tracking-widest uppercase text-[var(--md-sys-color-on-surface-variant)] mb-3 ml-2">Status {isBelanja || isRejeki ? 'Data' : 'Kerjaan'}</p>
                             <div className="flex gap-2">
                                 {['Jalan', 'Beres', 'Gagal'].map(s => {
                                     let activeClass = '';

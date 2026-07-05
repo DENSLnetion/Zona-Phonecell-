@@ -901,11 +901,76 @@
         };
 
         // --- TAB 1: DASBOR ---
+        // Kalender bulanan: grid tanggal yang bisa diklik buat liat rincian harian,
+        // dipakein pas periodFormat === 'Bulan' biar tampilan bulanan tetep utama
+        // tapi tiap tanggal tetep bisa dibuka rinciannya.
+        const CalendarBulanan = ({ transactions, periodOffset, onSelectDay }) => {
+            const baseDate = new Date();
+            baseDate.setMonth(baseDate.getMonth() + periodOffset);
+            const year = baseDate.getFullYear();
+            const month = baseDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDayIdx = new Date(year, month, 1).getDay(); // 0=Min..6=Sab
+            const leadingBlanks = (firstDayIdx + 6) % 7; // geser jadi mulai Senin
+
+            const dayStats = useMemo(() => {
+                const map = {};
+                transactions.forEach(t => {
+                    if (!t?.tanggal) return;
+                    const d = new Date(t.tanggal);
+                    if (d.getFullYear() === year && d.getMonth() === month) {
+                        const key = d.getDate();
+                        if (!map[key]) map[key] = { laba: 0, count: 0 };
+                        if (t.status === 'Beres') map[key].laba += (t.laba || 0);
+                        map[key].count += 1;
+                    }
+                });
+                return map;
+            }, [transactions, year, month]);
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+            const cells = [];
+            for (let i = 0; i < leadingBlanks; i++) cells.push(null);
+            for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+            const weekLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+            return (
+                <div className="bg-[var(--md-sys-color-surface-container-low)] p-4 md:p-6 rounded-[var(--md-shape-3xl)] border border-[var(--md-sys-color-outline-variant)]">
+                    <div className="grid grid-cols-7 gap-1 mb-3">
+                        {weekLabels.map(w => (
+                            <div key={w} className="text-center text-[10px] md:text-xs font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wide">{w}</div>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 md:gap-2">
+                        {cells.map((d, idx) => {
+                            if (d === null) return <div key={idx}></div>;
+                            const stat = dayStats[d];
+                            const isToday = isCurrentMonth && today.getDate() === d;
+                            let dotColor = '';
+                            if (stat) dotColor = stat.laba < 0 ? 'bg-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-primary)]';
+                            return (
+                                <Ripple key={idx} onClick={() => onSelectDay(new Date(year, month, d))}
+                                    className={`aspect-square flex flex-col items-center justify-center rounded-xl md:rounded-2xl cursor-pointer relative transition-colors
+                                    ${isToday ? 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]' : 'hover:bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface)]'}`}>
+                                    <span className={`text-xs md:text-sm ${isToday ? 'font-extrabold' : 'font-bold'}`}>{d}</span>
+                                    <div className={`w-1.5 h-1.5 rounded-full mt-0.5 ${stat ? dotColor : 'opacity-0'}`}></div>
+                                </Ripple>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
         const TabDasbor = () => {
             const { transactions, settings, setSettings, setTransactions, showSnackbar, setSelectedItem, setActiveTab } = useContext(AppContext);
             const [periodOffset, setPeriodOffset] = useState(0);
             const [activeSheet, setActiveSheet] = useState(null);
             const [targetInput, setTargetInput] = useState('');
+            const [selectedDay, setSelectedDay] = useState(null);
 
             useEffect(() => { setPeriodOffset(0); }, [settings.periodFormat]);
 
@@ -980,9 +1045,20 @@
                 setActiveSheet(null);
             };
 
+            // Rincian harian: dipicu klik tanggal di kalender bulanan.
+            const openDaySheet = (dateObj) => { setSelectedDay(dateObj); setActiveSheet('harian'); };
+            const dayTransactions = selectedDay ? transactions.filter(t => {
+                if (!t?.tanggal) return false;
+                const d = new Date(t.tanggal);
+                return d.getFullYear() === selectedDay.getFullYear() && d.getMonth() === selectedDay.getMonth() && d.getDate() === selectedDay.getDate();
+            }) : [];
+            const dayLaba = dayTransactions.filter(t => t.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
+            const dayOmset = dayTransactions.filter(t => t.status === 'Beres' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
+
             const sheetTitles = {
                 progres: 'Kerjaan Belom Kelar', barang: 'Rincian Barang Laku', target: `Atur ${targetLabel}`,
-                modal: 'Rincian Modal Keluar', pelanggan: 'Daftar Pelanggan', rata: 'Rata-Rata Cuan / Transaksi'
+                modal: 'Rincian Modal Keluar', pelanggan: 'Daftar Pelanggan', rata: 'Rata-Rata Cuan / Transaksi',
+                harian: selectedDay ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(selectedDay) : 'Rincian Harian'
             };
 
             return (
@@ -1034,6 +1110,11 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* KALENDER BULANAN: tampil pas periodFormat = Bulan, tiap tanggal bisa diklik buat liat rincian harian */}
+                                {settings.periodFormat === 'Bulan' && (
+                                    <CalendarBulanan transactions={transactions} periodOffset={periodOffset} onSelectDay={openDaySheet} />
+                                )}
 
                                 {/* BARIS 1: Progres, Barang Laku, Target Hari Ini */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -1298,6 +1379,33 @@
                                         <span className={`font-extrabold shrink-0 ${(worstTrx.laba||0) < 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>Rp{formatRupiah(worstTrx.laba||0)}</span>
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {activeSheet === 'harian' && (
+                            <div className="space-y-4 pt-2">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className={`p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] ${dayLaba < 0 ? 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]' : 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'}`}>
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1">Cuan Hari Ini</p>
+                                        <p className="text-xl font-extrabold">Rp{formatRupiah(dayLaba)}</p>
+                                    </div>
+                                    <div className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)]">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1 text-[var(--md-sys-color-on-surface-variant)]">Omset</p>
+                                        <p className="text-xl font-extrabold text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(dayOmset)}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    {dayTransactions.length === 0 ? (
+                                        <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
+                                            <span className="material-symbols-rounded text-6xl mb-2 opacity-50">event_busy</span>
+                                            <p className="font-bold text-lg">Ga ada transaksi di tanggal ini</p>
+                                        </div>
+                                    ) : (
+                                        dayTransactions.map(item => (
+                                            <ActivityItem key={item.id} item={item} onClick={() => { setActiveSheet(null); setSelectedItem(item); }} />
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         )}
                     </BottomSheet>

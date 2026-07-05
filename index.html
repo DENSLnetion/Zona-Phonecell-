@@ -1054,6 +1054,10 @@
             }) : [];
             const dayLaba = dayTransactions.filter(t => t.status === 'Beres').reduce((s, i) => s + (i.laba || 0), 0);
             const dayOmset = dayTransactions.filter(t => t.status === 'Beres' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki').reduce((s, i) => s + ((i.jual || 0) * (i.jumlah || 1)), 0);
+            const dayModal = dayTransactions.filter(t => t.status === 'Beres').reduce((s, i) => s + ((i.modal || 0) * (i.jumlah || 1)), 0);
+            const dayNota = dayTransactions.length;
+            const dayPending = dayTransactions.filter(t => t.status === 'Jalan').length;
+            const dayBarangPcs = dayTransactions.filter(t => t.jenis !== 'Servis' && t.jenis !== 'Top Up' && t.jenis !== 'Belanja' && t.jenis !== 'Rejeki' && t.status === 'Beres').reduce((s, i) => s + (i.jumlah || 1), 0);
 
             const sheetTitles = {
                 progres: 'Kerjaan Belom Kelar', barang: 'Rincian Barang Laku', target: `Atur ${targetLabel}`,
@@ -1393,8 +1397,25 @@
                                         <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1 text-[var(--md-sys-color-on-surface-variant)]">Omset</p>
                                         <p className="text-xl font-extrabold text-[var(--md-sys-color-on-surface)]">Rp{formatRupiah(dayOmset)}</p>
                                     </div>
+                                    <div className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1">Modal Keluar</p>
+                                        <p className="text-xl font-extrabold">Rp{formatRupiah(dayModal)}</p>
+                                    </div>
+                                    <div className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1">Barang Laku</p>
+                                        <p className="text-xl font-extrabold">{dayBarangPcs} Pcs</p>
+                                    </div>
+                                    <div className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container)]">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1 text-[var(--md-sys-color-on-surface-variant)]">Total Nota</p>
+                                        <p className="text-xl font-extrabold text-[var(--md-sys-color-on-surface)]">{dayNota} Transaksi</p>
+                                    </div>
+                                    <div className="p-4 rounded-[var(--md-shape-2xl)] border border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-70 mb-1">PR Belum Kelar</p>
+                                        <p className="text-xl font-extrabold">{dayPending} Kerjaan</p>
+                                    </div>
                                 </div>
                                 <div className="space-y-3">
+                                    <h3 className="text-sm font-extrabold text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest ml-1">Daftar Transaksi</h3>
                                     {dayTransactions.length === 0 ? (
                                         <div className="text-center text-[var(--md-sys-color-on-surface-variant)] py-12">
                                             <span className="material-symbols-rounded text-6xl mb-2 opacity-50">event_busy</span>
